@@ -16,7 +16,9 @@ Format: `<id>.idx` (gzip JSON index) and `<id>.bin` (one gzip member per article
 
 ## Pictures (optional image packs `*-images.*`)
 
-Small (320 px) versions of the lead picture of some articles, taken from **Wikimedia Commons**. Only pictures whose Commons
-page shows a free license (CC BY, CC BY-SA, CC0 or public domain) are included, and the author and license of each picture
-are stored with it and shown under the picture in the app (tap it to open the file page). Pictures shown over the internet
-come from Wikipedia and show a link to their Commons file page.
+Small (max 360 px) versions of the pictures used in the course articles, taken from **Wikimedia Commons**. A picture is included
+only if its file page exists on Commons (Commons hosts free-licensed or public-domain files only); local English-Wikipedia
+uploads (which can be non-free) and files marked for deletion or as copyright violations are left out. The author and license
+shown with each picture are read from its Commons file page when they could be recognised; otherwise the credit is just
+"Wikimedia Commons" and the app links to the file page (tap the picture, then the link icon). Pictures shown over the internet
+come from Wikipedia and link to their Commons file page.
