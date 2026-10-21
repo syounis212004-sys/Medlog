@@ -13,3 +13,10 @@ The scripts that built the packs are in `build/`. The content is for learning an
 hospital protocols or clinical judgement.
 
 Format: `<id>.idx` (gzip JSON index) and `<id>.bin` (one gzip member per article). `catalog.json` lists the packs with SHA-256 checksums.
+
+## Pictures (optional image packs `*-images.*`)
+
+Small (320 px) versions of the lead picture of some articles, taken from **Wikimedia Commons**. Only pictures whose Commons
+page shows a free license (CC BY, CC BY-SA, CC0 or public domain) are included, and the author and license of each picture
+are stored with it and shown under the picture in the app (tap it to open the file page). Pictures shown over the internet
+come from Wikipedia and show a link to their Commons file page.
