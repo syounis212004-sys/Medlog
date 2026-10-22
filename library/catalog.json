@@ -21,17 +21,17 @@
    "id": "clinical-essentials",
    "title": "Clinical Essentials",
    "course": "Clinical essentials",
-   "count": 1543,
+   "count": 2386,
    "date": "2026-10-22",
    "license": "Mixed open licenses, per article: CC BY-SA 4.0 (WikEM, Wikipedia), CC BY 4.0 (Project Tulip), public domain (CDC, NCI text). See each article's source line.",
    "source": "WikEM, Wikipedia (WikiProject Medicine), CDC, National Cancer Institute, Project Tulip; text only, condensed",
    "kind": "wiki",
    "desc": "Concise high-yield clinical articles for board and intern revision: emergency medicine (WikEM), internal medicine (Project Tulip), infectious disease and vaccines (CDC), oncology (NCI), and condensed essentials from Wikipedia. Each article lists its source, license and authors.",
-   "bytes": 5305034,
+   "bytes": 6741705,
    "idx": "clinical-essentials.idx",
    "bin": "clinical-essentials.bin",
-   "sha256_bin": "3d9429b86e3a40af1a2e5b51c013e2c66084ed9a325ce39f631b624b42b8da49",
-   "sha256_idx": "dcafc0fe91907c406879dfb25e66c5a2bf3f99a220400654942219fdada2334c"
+   "sha256_bin": "e402400e8751c971599c929a11089b8d61a67b7073ed95c6369dffe8158a94e5",
+   "sha256_idx": "c92a7845c3cff461838ec3607f03bd714390504c834a8455cb0fef54fe8bdeac"
   },
   {
    "id": "anatomy-physiology",
