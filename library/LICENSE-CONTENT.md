@@ -22,3 +22,9 @@ uploads (which can be non-free) and files marked for deletion or as copyright vi
 shown with each picture are read from its Commons file page when they could be recognised; otherwise the credit is just
 "Wikimedia Commons" and the app links to the file page (tap the picture, then the link icon). Pictures shown over the internet
 come from Wikipedia and link to their Commons file page.
+
+## Clinical Essentials (1.7.0)
+Pack `clinical-essentials` merges text from WikEM (CC BY-SA 4.0), Wikipedia (CC BY-SA 4.0), Project Tulip (CC BY 4.0),
+CDC (public domain, with CDC attribution/disclaimer) and National Cancer Institute text (free of copyright, labelled as adapted,
+not an official PDQ summary). Every article lists its source, license, original URL and authors. Full details, quoted license
+sentences and what was taken: `SOURCES-clinical-essentials.md`. Wikipedia packs now also contain content tables (CC BY-SA 4.0).

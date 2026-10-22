@@ -18,6 +18,22 @@
    "sha256_idx": "bb8d6f8469034c21cb7e3bd0ac72533b7543fc4343d316f84b071a04beefcd26"
   },
   {
+   "id": "clinical-essentials",
+   "title": "Clinical Essentials",
+   "course": "Clinical essentials",
+   "count": 1543,
+   "date": "2026-10-22",
+   "license": "Mixed open licenses, per article: CC BY-SA 4.0 (WikEM, Wikipedia), CC BY 4.0 (Project Tulip), public domain (CDC, NCI text). See each article's source line.",
+   "source": "WikEM, Wikipedia (WikiProject Medicine), CDC, National Cancer Institute, Project Tulip; text only, condensed",
+   "kind": "wiki",
+   "desc": "Concise high-yield clinical articles for board and intern revision: emergency medicine (WikEM), internal medicine (Project Tulip), infectious disease and vaccines (CDC), oncology (NCI), and condensed essentials from Wikipedia. Each article lists its source, license and authors.",
+   "bytes": 5305034,
+   "idx": "clinical-essentials.idx",
+   "bin": "clinical-essentials.bin",
+   "sha256_bin": "3d9429b86e3a40af1a2e5b51c013e2c66084ed9a325ce39f631b624b42b8da49",
+   "sha256_idx": "dcafc0fe91907c406879dfb25e66c5a2bf3f99a220400654942219fdada2334c"
+  },
+  {
    "id": "anatomy-physiology",
    "title": "Anatomy & Physiology",
    "course": "Anatomy & Physiology",
@@ -26,12 +42,12 @@
    "license": "CC BY-SA 4.0",
    "source": "Wikipedia (WikiProject Medicine, via Kiwix, text only)",
    "kind": "wiki",
-   "desc": "Medical articles from Wikipedia, text only (no images or tables).",
-   "bytes": 3360179,
+   "desc": "Medical articles from Wikipedia, text and tables.",
+   "bytes": 3396581,
    "idx": "anatomy-physiology.idx",
    "bin": "anatomy-physiology.bin",
-   "sha256_bin": "33d145987c338ec6e66a4ebee0f3c9817cdd755200c2fea761d904ab077a6604",
-   "sha256_idx": "e8dccb391222123ba93960e8772405f7ca75cc8282e960c66f6b9836bab586a6"
+   "sha256_bin": "2e0ee9ee7682d79f0d3a1eae2b4e0f71a562d26872074446956099d4e010b58c",
+   "sha256_idx": "8ce0a9d072b2498087823517ea48d3c576298ceb58313771a0bb059a7e80fd1d"
   },
   {
    "id": "anesthesiology",
@@ -42,12 +58,12 @@
    "license": "CC BY-SA 4.0",
    "source": "Wikipedia (WikiProject Medicine, via Kiwix, text only)",
    "kind": "wiki",
-   "desc": "Medical articles from Wikipedia, text only (no images or tables).",
-   "bytes": 659484,
+   "desc": "Medical articles from Wikipedia, text and tables.",
+   "bytes": 671400,
    "idx": "anesthesiology.idx",
    "bin": "anesthesiology.bin",
-   "sha256_bin": "dafbb354f82c45140456857c976afd6036531c11b13544af7406d99b919dbec6",
-   "sha256_idx": "5334cdfa35701f8fc5470b3559810352cbe4b9dcdd450bd0bd475134a2abda93"
+   "sha256_bin": "8eceefc7018e934ed9a179f27da1e22c6b7e391dc3b778c96f4dcb5c45ef9961",
+   "sha256_idx": "182e75b60071f7bcbf89302b73e0294ed7bfbe150dda0f9e1c22ed3277a830a6"
   },
   {
    "id": "cardiology",
@@ -58,12 +74,12 @@
    "license": "CC BY-SA 4.0",
    "source": "Wikipedia (WikiProject Medicine, via Kiwix, text only)",
    "kind": "wiki",
-   "desc": "Medical articles from Wikipedia, text only (no images or tables).",
-   "bytes": 2641762,
+   "desc": "Medical articles from Wikipedia, text and tables.",
+   "bytes": 2685133,
    "idx": "cardiology.idx",
    "bin": "cardiology.bin",
-   "sha256_bin": "06c4264f3ac78e8620d881498a8c3e2ad69c82166a482ed9d6d586d642a685ba",
-   "sha256_idx": "5cad66109335c93166d249edf108a0fc4f1311679a7ef9dd95e474d7aec55293"
+   "sha256_bin": "ab75cf4fe768f233a1c9a0faad8c65532b543c03c802953829738ca95a06b8ec",
+   "sha256_idx": "fa0ec42b104022a577ad5f6037a90579bb03c896a41d25d324254310e587d434"
   },
   {
    "id": "dermatology",
@@ -74,12 +90,12 @@
    "license": "CC BY-SA 4.0",
    "source": "Wikipedia (WikiProject Medicine, via Kiwix, text only)",
    "kind": "wiki",
-   "desc": "Medical articles from Wikipedia, text only (no images or tables).",
-   "bytes": 1456951,
+   "desc": "Medical articles from Wikipedia, text and tables.",
+   "bytes": 1472329,
    "idx": "dermatology.idx",
    "bin": "dermatology.bin",
-   "sha256_bin": "e0fbf84913d0471eaf3a2a837a5fceb7fd6b0137eccb3d543d3ab8d9fe73b122",
-   "sha256_idx": "23d4ed7c32d8eb97e03ce07bf718e9eed6ef728331a793921bef94bcb33f6adb"
+   "sha256_bin": "2a38acc5fdd2fd97f4ba20def37b0234ca597636bb3849fb4afc5ec35c374c7e",
+   "sha256_idx": "2d6c651934a1eaa201d0df56dbb62a13a06b913b5337a0d38ead8093eecd1eef"
   },
   {
    "id": "emergency-critical-care",
@@ -90,12 +106,12 @@
    "license": "CC BY-SA 4.0",
    "source": "Wikipedia (WikiProject Medicine, via Kiwix, text only)",
    "kind": "wiki",
-   "desc": "Medical articles from Wikipedia, text only (no images or tables).",
-   "bytes": 1815378,
+   "desc": "Medical articles from Wikipedia, text and tables.",
+   "bytes": 1847698,
    "idx": "emergency-critical-care.idx",
    "bin": "emergency-critical-care.bin",
-   "sha256_bin": "0f3d8ab5ffa36144880e102498e074e2d11aeb6df353b9cc4e0b86a6fdb20cfb",
-   "sha256_idx": "a7d2c3af40222da295e502da28bbde742b3b8a8a6ca3377d0433522744365be4"
+   "sha256_bin": "cb21905f6a5742b6ce536b8afc6d9b1c2797cb2338d9bebfb36bcb8b1a752959",
+   "sha256_idx": "476528a975e4c49189573f1bef23e0b4bbc30c9a1f08da6a02bcc29063ceeb17"
   },
   {
    "id": "endocrinology",
@@ -106,12 +122,12 @@
    "license": "CC BY-SA 4.0",
    "source": "Wikipedia (WikiProject Medicine, via Kiwix, text only)",
    "kind": "wiki",
-   "desc": "Medical articles from Wikipedia, text only (no images or tables).",
-   "bytes": 2399563,
+   "desc": "Medical articles from Wikipedia, text and tables.",
+   "bytes": 2466611,
    "idx": "endocrinology.idx",
    "bin": "endocrinology.bin",
-   "sha256_bin": "0e54dde79ac2f1d2713ca67bdd038a223318fda127dcf0cf891229801c7d4b39",
-   "sha256_idx": "9ff4c1db44559419d101780eade802b7a265e767195f27c73ffa26848623e20c"
+   "sha256_bin": "e709f79c51e0c55e7a73f5da85ea7011e7181f3bc30a82b877cd47cedf2f0ee0",
+   "sha256_idx": "f7a48a72ba1e2712dddce88d4505bf629adc46f87c0c12711bb65d8c001f2df6"
   },
   {
    "id": "ent",
@@ -122,12 +138,12 @@
    "license": "CC BY-SA 4.0",
    "source": "Wikipedia (WikiProject Medicine, via Kiwix, text only)",
    "kind": "wiki",
-   "desc": "Medical articles from Wikipedia, text only (no images or tables).",
-   "bytes": 3119951,
+   "desc": "Medical articles from Wikipedia, text and tables.",
+   "bytes": 3156165,
    "idx": "ent.idx",
    "bin": "ent.bin",
-   "sha256_bin": "15dbeb866a72befeec860dbd546308dd2dc0f988888e116fd2e9f03995b9ccf8",
-   "sha256_idx": "5aeb053eeee52a94d9db3a2c00e66a7b5497f696b83b925c8571ab5370fca317"
+   "sha256_bin": "4c3e995699fa72590a07e84910dc04da4e173870630f162965523791ac8c7e93",
+   "sha256_idx": "9fd308d45f30756aa449cad6862ffaa5eba299b60360b91a682be39bc8ab90a5"
   },
   {
    "id": "gastroenterology",
@@ -138,12 +154,12 @@
    "license": "CC BY-SA 4.0",
    "source": "Wikipedia (WikiProject Medicine, via Kiwix, text only)",
    "kind": "wiki",
-   "desc": "Medical articles from Wikipedia, text only (no images or tables).",
-   "bytes": 2581058,
+   "desc": "Medical articles from Wikipedia, text and tables.",
+   "bytes": 2607576,
    "idx": "gastroenterology.idx",
    "bin": "gastroenterology.bin",
-   "sha256_bin": "102fef38c75de099a1649942a5fa7aa8ac8a60dc44ee2a7734863fd273e59470",
-   "sha256_idx": "37b37beec0338c52e7746684cab3d63b561d3ee0e9356f0477e7dcfd83c0c66e"
+   "sha256_bin": "af99596a32df2e33dfb49ea8ebc2e48bc227e6007c36262540aa5108087d436c",
+   "sha256_idx": "e11c74043c1eb5f313208ee86a2e8255f8b8b45c54cfc0cc458e8eb056c6744c"
   },
   {
    "id": "general-medicine",
@@ -154,12 +170,12 @@
    "license": "CC BY-SA 4.0",
    "source": "Wikipedia (WikiProject Medicine, via Kiwix, text only)",
    "kind": "wiki",
-   "desc": "Medical articles from Wikipedia, text only (no images or tables).",
-   "bytes": 6963630,
+   "desc": "Medical articles from Wikipedia, text and tables.",
+   "bytes": 7051334,
    "idx": "general-medicine.idx",
    "bin": "general-medicine.bin",
-   "sha256_bin": "2260f6b1cb83fff958eb0442d1007ade888cfe9fc70dfdb84494fd6525faeeaa",
-   "sha256_idx": "b3d27bde7f961ecd9da480abcdc1f8f56844d4be786c6ed3d6d19bd60c162203"
+   "sha256_bin": "69d9fe60b1f853a4f3f54e00f42cada4aa725208e1ae021513521c1a74b6d3a0",
+   "sha256_idx": "ae8a56ee73b4f9d9053c022a102203f9d5b1676065da60b894f1e0137b4fb38d"
   },
   {
    "id": "hematology-oncology",
@@ -170,12 +186,12 @@
    "license": "CC BY-SA 4.0",
    "source": "Wikipedia (WikiProject Medicine, via Kiwix, text only)",
    "kind": "wiki",
-   "desc": "Medical articles from Wikipedia, text only (no images or tables).",
-   "bytes": 3795772,
+   "desc": "Medical articles from Wikipedia, text and tables.",
+   "bytes": 3873113,
    "idx": "hematology-oncology.idx",
    "bin": "hematology-oncology.bin",
-   "sha256_bin": "a35d32fb719e16d1cdb3274205cf183b445ce0b679cdd705d25df21c3da74cfc",
-   "sha256_idx": "8e6213bd16713e5433d731b121959d399a613ba1b8c7e470f02fa877480517c0"
+   "sha256_bin": "477c3b83070e50607bfe9789782028c1b6f4c2d408f59c3ce4611b124aeb2858",
+   "sha256_idx": "afb12a24346fe9f809029b6f6fb5b12b4ba4446b89dc2b64e626c571ac165714"
   },
   {
    "id": "infectious-diseases",
@@ -186,12 +202,12 @@
    "license": "CC BY-SA 4.0",
    "source": "Wikipedia (WikiProject Medicine, via Kiwix, text only)",
    "kind": "wiki",
-   "desc": "Medical articles from Wikipedia, text only (no images or tables).",
-   "bytes": 5652126,
+   "desc": "Medical articles from Wikipedia, text and tables.",
+   "bytes": 5734356,
    "idx": "infectious-diseases.idx",
    "bin": "infectious-diseases.bin",
-   "sha256_bin": "047fe66f44820be025c73755141c419758b26721b76053750e0b5bf764821e18",
-   "sha256_idx": "19e5134c626423891a2974c29ae0c781fcd167d59cd3bfaf7ac0f3df6046ac41"
+   "sha256_bin": "798eed33ba186a131c2dd1bc3711c5b6897841a3361994c10a1036d3525bb64f",
+   "sha256_idx": "8682021980509814a759492de39623bb7354e9eba6b5a4737816d00d1214ec82"
   },
   {
    "id": "nephrology-urology",
@@ -202,12 +218,12 @@
    "license": "CC BY-SA 4.0",
    "source": "Wikipedia (WikiProject Medicine, via Kiwix, text only)",
    "kind": "wiki",
-   "desc": "Medical articles from Wikipedia, text only (no images or tables).",
-   "bytes": 1810290,
+   "desc": "Medical articles from Wikipedia, text and tables.",
+   "bytes": 1835506,
    "idx": "nephrology-urology.idx",
    "bin": "nephrology-urology.bin",
-   "sha256_bin": "54e2e1923bc088c546109c5451f7f7f0bba1e248174ab21afa642828632aaa9b",
-   "sha256_idx": "6fe68f031dd35acc64b2505f687b6ee38d9bd9eebe1f8e6685f6db8cb392a872"
+   "sha256_bin": "59fa59a750adce1f5e2929c76c0a1db4e3f60a90adf477e4e363f36ea314a070",
+   "sha256_idx": "3156512cc0ac278a0688bcbe25e4602219acf8ac25ef7bcf504d7066bddf281a"
   },
   {
    "id": "neurology",
@@ -218,12 +234,12 @@
    "license": "CC BY-SA 4.0",
    "source": "Wikipedia (WikiProject Medicine, via Kiwix, text only)",
    "kind": "wiki",
-   "desc": "Medical articles from Wikipedia, text only (no images or tables).",
-   "bytes": 5632052,
+   "desc": "Medical articles from Wikipedia, text and tables.",
+   "bytes": 5684888,
    "idx": "neurology.idx",
    "bin": "neurology.bin",
-   "sha256_bin": "8737315d0131bd905949df75962023daa1c37140e264458f3e8acd30c903f4fd",
-   "sha256_idx": "ff835e32625b697ed3f078745a0fbefb4959c1966b83e9a5b925d8f903c03788"
+   "sha256_bin": "f4211f4e53fc58c66a1213328a49909f1da844b43b8911240260b66783d4dbfc",
+   "sha256_idx": "ad48152ead934e87deb782aa6cc05f8fc5ba9a27c890f54b13f24336d1aa58ac"
   },
   {
    "id": "obstetrics-gynecology",
@@ -234,12 +250,12 @@
    "license": "CC BY-SA 4.0",
    "source": "Wikipedia (WikiProject Medicine, via Kiwix, text only)",
    "kind": "wiki",
-   "desc": "Medical articles from Wikipedia, text only (no images or tables).",
-   "bytes": 2881780,
+   "desc": "Medical articles from Wikipedia, text and tables.",
+   "bytes": 2927345,
    "idx": "obstetrics-gynecology.idx",
    "bin": "obstetrics-gynecology.bin",
-   "sha256_bin": "c5c56480055ac2e3b5441fe842038238d5ccd93d9de76c0ebdca3e75bade0536",
-   "sha256_idx": "0b3f369b6b0e390456c9f1cbcb4e0289a50700ed95a6f9b50e906077dc5f4ab2"
+   "sha256_bin": "4492f2044592eb05c29a2fd58db20a54b31838a9bf557610815fdfb12ba41bdf",
+   "sha256_idx": "01ed16e1da91363df5597e12d85d07745c5c8dcee572441042506e2593a998a2"
   },
   {
    "id": "ophthalmology",
@@ -250,12 +266,12 @@
    "license": "CC BY-SA 4.0",
    "source": "Wikipedia (WikiProject Medicine, via Kiwix, text only)",
    "kind": "wiki",
-   "desc": "Medical articles from Wikipedia, text only (no images or tables).",
-   "bytes": 1480997,
+   "desc": "Medical articles from Wikipedia, text and tables.",
+   "bytes": 1491350,
    "idx": "ophthalmology.idx",
    "bin": "ophthalmology.bin",
-   "sha256_bin": "968da2ecc0d9ee47aeb077edef43d73fcd2e6832a6ec6a270b69e9ab4a5e1f24",
-   "sha256_idx": "8cbfcb78ebbe417f97609c24b03d8b71699c319d65992111cb8cc9afeba4955a"
+   "sha256_bin": "661b89c09082716a1a18ef2f1463c62bba3df842a2565d36c83778a785a183af",
+   "sha256_idx": "0f50ab4f12f8d716f9e7b19b4247734fb0d3815a1e04d153971f1ef31c6c6438"
   },
   {
    "id": "orthopedics",
@@ -266,12 +282,12 @@
    "license": "CC BY-SA 4.0",
    "source": "Wikipedia (WikiProject Medicine, via Kiwix, text only)",
    "kind": "wiki",
-   "desc": "Medical articles from Wikipedia, text only (no images or tables).",
-   "bytes": 3107873,
+   "desc": "Medical articles from Wikipedia, text and tables.",
+   "bytes": 3157634,
    "idx": "orthopedics.idx",
    "bin": "orthopedics.bin",
-   "sha256_bin": "2b22e737d70985d2ce2530703475ddb4a2189a52ab00baf4f38042fc2920cf15",
-   "sha256_idx": "5e8a10fbbd9d20b41d22a9f8f72c54f92f1076044374fa6e3b23f28cb29892df"
+   "sha256_bin": "3f813ce15b4989368b62ed7e7a03bf97015ffab60ce385cf461371fa41d8c044",
+   "sha256_idx": "f721cd99323027ac82817eb6246e5aec8d9eb991912082754030f73a60b4d33b"
   },
   {
    "id": "pathology-laboratory",
@@ -282,12 +298,12 @@
    "license": "CC BY-SA 4.0",
    "source": "Wikipedia (WikiProject Medicine, via Kiwix, text only)",
    "kind": "wiki",
-   "desc": "Medical articles from Wikipedia, text only (no images or tables).",
-   "bytes": 1839355,
+   "desc": "Medical articles from Wikipedia, text and tables.",
+   "bytes": 1862226,
    "idx": "pathology-laboratory.idx",
    "bin": "pathology-laboratory.bin",
-   "sha256_bin": "43e5d8c37efbad4cd757d7df6f2c270543d5ef97101313a660de449a8d165cf6",
-   "sha256_idx": "4943e2463bc38997b84618b8edba8acf1eea2db825bbc47b25565da3ded056c5"
+   "sha256_bin": "ae80bde4a9effd90e4c4f2b724b03cacb4f484de1f43a4efd9610502e534cab6",
+   "sha256_idx": "d8522a995a49318b135e2bd65bf9dd6883bd05492f11dd2817310eca647ade65"
   },
   {
    "id": "pediatrics",
@@ -298,12 +314,12 @@
    "license": "CC BY-SA 4.0",
    "source": "Wikipedia (WikiProject Medicine, via Kiwix, text only)",
    "kind": "wiki",
-   "desc": "Medical articles from Wikipedia, text only (no images or tables).",
-   "bytes": 5208157,
+   "desc": "Medical articles from Wikipedia, text and tables.",
+   "bytes": 5277064,
    "idx": "pediatrics.idx",
    "bin": "pediatrics.bin",
-   "sha256_bin": "6526e238338b27c4febb401fe83512490069e35bef7d22e12b50248e2ac73a3e",
-   "sha256_idx": "70b5bbe263f0ae330d00a72e767a0dc226ad628e2420861eb5c40cea6999e55e"
+   "sha256_bin": "17c34ef4129cb472af61fa4836e88aae4475a0b1f8f5241da860544ed69c33e2",
+   "sha256_idx": "d07cbcda8456f7ed122871bd3674c65c44b4036890ca21a99820def269af5b2a"
   },
   {
    "id": "pharmacology",
@@ -314,12 +330,12 @@
    "license": "CC BY-SA 4.0",
    "source": "Wikipedia (WikiProject Medicine, via Kiwix, text only)",
    "kind": "wiki",
-   "desc": "Medical articles from Wikipedia, text only (no images or tables).",
-   "bytes": 8255900,
+   "desc": "Medical articles from Wikipedia, text and tables.",
+   "bytes": 8452629,
    "idx": "pharmacology.idx",
    "bin": "pharmacology.bin",
-   "sha256_bin": "c0220c12d65a8d0059cae330a265381980d48bd3281d8bb869021bfbcb794ff6",
-   "sha256_idx": "55b5b49f3c9d24355132a663b4860490c8bf2b73bd162ef196789f34ad2124d2"
+   "sha256_bin": "dd7f7d8dd2da85c70a598ee8bfd74977508bc79b135f20ff7d5555b71dd75f8d",
+   "sha256_idx": "791b24884884a1cb1ceb2d704a46efc18c203e9396e1afe2fff552c66c0ad3ed"
   },
   {
    "id": "psychiatry",
@@ -330,12 +346,12 @@
    "license": "CC BY-SA 4.0",
    "source": "Wikipedia (WikiProject Medicine, via Kiwix, text only)",
    "kind": "wiki",
-   "desc": "Medical articles from Wikipedia, text only (no images or tables).",
-   "bytes": 5532897,
+   "desc": "Medical articles from Wikipedia, text and tables.",
+   "bytes": 5605963,
    "idx": "psychiatry.idx",
    "bin": "psychiatry.bin",
-   "sha256_bin": "060f8b8a00a5a92d51492b460931b37c7ff224715475e982193372161d716ebd",
-   "sha256_idx": "1f76efc1aa1ae68e8dcd6be6884b50cec051266335a2c3e60688b0819a926698"
+   "sha256_bin": "493af64ddcb5a624a2262172c9e198e067a76852d7f73f7799b6178b1536911d",
+   "sha256_idx": "1f6efa90e7ab186da75b0a57297f850b6f0be5c66c010016cf15d9d9f0efca6f"
   },
   {
    "id": "public-health",
@@ -346,12 +362,12 @@
    "license": "CC BY-SA 4.0",
    "source": "Wikipedia (WikiProject Medicine, via Kiwix, text only)",
    "kind": "wiki",
-   "desc": "Medical articles from Wikipedia, text only (no images or tables).",
-   "bytes": 2590115,
+   "desc": "Medical articles from Wikipedia, text and tables.",
+   "bytes": 2643131,
    "idx": "public-health.idx",
    "bin": "public-health.bin",
-   "sha256_bin": "8965636d706180c3a44de22f783e6c525e90f085a7b2186d3dd6a2d2ae71101e",
-   "sha256_idx": "be55eaeabe22e7041998dbb0965d6b0548b1fa4d298073b738fa5d37c4a30d97"
+   "sha256_bin": "2ec032de6bad9aaea42589b3f2066e8a52c6589952553dff2090653c4f2f4094",
+   "sha256_idx": "ca75652fca6b74db3dd7fd98ef09102f59b0eaf7c910ea60a22294b0e98cbe51"
   },
   {
    "id": "pulmonology",
@@ -362,12 +378,12 @@
    "license": "CC BY-SA 4.0",
    "source": "Wikipedia (WikiProject Medicine, via Kiwix, text only)",
    "kind": "wiki",
-   "desc": "Medical articles from Wikipedia, text only (no images or tables).",
-   "bytes": 1934033,
+   "desc": "Medical articles from Wikipedia, text and tables.",
+   "bytes": 1958783,
    "idx": "pulmonology.idx",
    "bin": "pulmonology.bin",
-   "sha256_bin": "6d332b8d11825556cbaf0712f535ab8b563d6d37c0c41ff54bf0218694ddb1ee",
-   "sha256_idx": "67b3f97a763ba028aefc52b21ec88c608b0800c16aa78805071d8aceea9c8cf1"
+   "sha256_bin": "90b65eb0a7b6b9a4321b27e2c163ca97441fa8605af4a639943daede37e6874d",
+   "sha256_idx": "a59dc49937ce30b698ea03fb7d3da74bbc8f798850e56480b2db7157d009015a"
   },
   {
    "id": "radiology",
@@ -378,12 +394,12 @@
    "license": "CC BY-SA 4.0",
    "source": "Wikipedia (WikiProject Medicine, via Kiwix, text only)",
    "kind": "wiki",
-   "desc": "Medical articles from Wikipedia, text only (no images or tables).",
-   "bytes": 962401,
+   "desc": "Medical articles from Wikipedia, text and tables.",
+   "bytes": 974157,
    "idx": "radiology.idx",
    "bin": "radiology.bin",
-   "sha256_bin": "d206a842db785e2d8c3f1c1436d793f387be81e5283a40ac61fc743123d4dea8",
-   "sha256_idx": "32959c8e0c2c578e6eaf50175e047a5c660f412c9b1df8455c6c5ba048539f3f"
+   "sha256_bin": "a108b00b2ce598bef1b4ba05e20f4ddd53ef22e13924d5244f866fd98d1d2c84",
+   "sha256_idx": "bb42c5fc1f5f49ea3b75fc5233c4e08376133cf9f5cff93a188a4df5b8540784"
   },
   {
    "id": "rheumatology-immunology",
@@ -394,12 +410,12 @@
    "license": "CC BY-SA 4.0",
    "source": "Wikipedia (WikiProject Medicine, via Kiwix, text only)",
    "kind": "wiki",
-   "desc": "Medical articles from Wikipedia, text only (no images or tables).",
-   "bytes": 1703462,
+   "desc": "Medical articles from Wikipedia, text and tables.",
+   "bytes": 1741621,
    "idx": "rheumatology-immunology.idx",
    "bin": "rheumatology-immunology.bin",
-   "sha256_bin": "e83617f9e4d4c517928983eb30ed791fbc257f7130ccaa55b95db5add1d978bd",
-   "sha256_idx": "3a23b08fea78217399f17d0fb3f51c74fb94c0dabeb7f6855d10d30e6e7fef5e"
+   "sha256_bin": "97d23a151630a6c08c4398d2c8ba437033305c3cfa7f89347a8cf6a4d910300a",
+   "sha256_idx": "35f7303cc4749c18ae8b51bf2679e7aef429fd7ded8ebde772c2f5969be9d3b0"
   },
   {
    "id": "signs-symptoms",
@@ -410,12 +426,12 @@
    "license": "CC BY-SA 4.0",
    "source": "Wikipedia (WikiProject Medicine, via Kiwix, text only)",
    "kind": "wiki",
-   "desc": "Medical articles from Wikipedia, text only (no images or tables).",
-   "bytes": 845180,
+   "desc": "Medical articles from Wikipedia, text and tables.",
+   "bytes": 865297,
    "idx": "signs-symptoms.idx",
    "bin": "signs-symptoms.bin",
-   "sha256_bin": "8846b86a4d5b1bd64f0a2f61682659f5acb2a6fae5c327d47adf3a5413bd68fe",
-   "sha256_idx": "acdc66fb70113a873c1a8db9bf469a395f1e7eb983633a1d18eaac5ad4abfc1d"
+   "sha256_bin": "40eb87a7e79a0bfe2ca4751cdc2820f91a71c19a707f9e645d54c2a23156a925",
+   "sha256_idx": "1fd0293429d529c83c3c1d0635f6aac8f3928992e521aa6c7c7f74d3ca73e967"
   },
   {
    "id": "surgery",
@@ -426,12 +442,12 @@
    "license": "CC BY-SA 4.0",
    "source": "Wikipedia (WikiProject Medicine, via Kiwix, text only)",
    "kind": "wiki",
-   "desc": "Medical articles from Wikipedia, text only (no images or tables).",
-   "bytes": 1819411,
+   "desc": "Medical articles from Wikipedia, text and tables.",
+   "bytes": 1832119,
    "idx": "surgery.idx",
    "bin": "surgery.bin",
-   "sha256_bin": "4c47dd9c9a3a74e65ac91f42e04bdd67733d38ec40058fc2ce87e5121bfbcc6a",
-   "sha256_idx": "5566497c26cc649a8e740fef6bfe706a8b499d52f34af854fc6491a8a49a9a97"
+   "sha256_bin": "2c49d5651b0f8bc76c7ffda39195e7bc0b7faf55d25b575f49b7a0d8a2bd6cb1",
+   "sha256_idx": "83a4b754213938781125ddf491832115435f310e750bb2631dc904a5b8e5bc2d"
   },
   {
    "id": "anatomy-physiology-images",
