@@ -18,20 +18,36 @@
    "sha256_idx": "bb8d6f8469034c21cb7e3bd0ac72533b7543fc4343d316f84b071a04beefcd26"
   },
   {
-   "id": "clinical-essentials",
    "title": "Clinical Essentials",
    "course": "Clinical essentials",
-   "count": 2386,
-   "date": "2026-10-22",
    "license": "Mixed open licenses, per article: CC BY-SA 4.0 (WikEM, Wikipedia), CC BY 4.0 (Project Tulip), public domain (CDC, NCI text). See each article's source line.",
    "source": "WikEM, Wikipedia (WikiProject Medicine), CDC, National Cancer Institute, Project Tulip; text only, condensed",
    "kind": "wiki",
-   "desc": "Concise high-yield clinical articles for board and intern revision: emergency medicine (WikEM), internal medicine (Project Tulip), infectious disease and vaccines (CDC), oncology (NCI), and condensed essentials from Wikipedia. Each article lists its source, license and authors.",
-   "bytes": 6741705,
+   "desc": "Concise high-yield clinical articles for board and intern revision: emergency medicine and clinical scores (WikEM), internal medicine (Project Tulip), infectious disease and vaccines (CDC), oncology (NCI), and condensed essentials from Wikipedia. Each article lists its source, license and authors.",
+   "id": "clinical-essentials",
+   "count": 2864,
+   "date": "2026-10-23",
+   "bytes": 7758065,
    "idx": "clinical-essentials.idx",
    "bin": "clinical-essentials.bin",
-   "sha256_bin": "e402400e8751c971599c929a11089b8d61a67b7073ed95c6369dffe8158a94e5",
-   "sha256_idx": "c92a7845c3cff461838ec3607f03bd714390504c834a8455cb0fef54fe8bdeac"
+   "sha256_bin": "673a4d48febb6557460b476ee70e9a6f69f49e9895d504dd0418400f82dda761",
+   "sha256_idx": "daae1aa169398e0a9b009602094471551425b0069ceb31eae9cac01f5e4d8f7c"
+  },
+  {
+   "title": "Drug reference (WikEM)",
+   "course": "Pharmacology reference",
+   "license": "CC BY-SA 4.0 (WikEM)",
+   "source": "WikEM (wikem.org), text only, condensed",
+   "kind": "wiki",
+   "desc": "Concise drug pages from WikEM: adult and pediatric doses, renal and hepatic adjustment, contraindications, adverse effects, plus weight-based quick-reference tables. Each article lists its source, license and authors.",
+   "id": "drug-reference",
+   "count": 694,
+   "date": "2026-10-23",
+   "bytes": 932553,
+   "idx": "drug-reference.idx",
+   "bin": "drug-reference.bin",
+   "sha256_bin": "4cc969335358dc7e691f76bcb29b9e8afd10d7913c6d0edddd6e8481fa0671e4",
+   "sha256_idx": "92e730600f28d48420233f041a3592faf177d7b5d9ba065e7e6b69beef5f9cfa"
   },
   {
    "id": "anatomy-physiology",
