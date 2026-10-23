@@ -28,3 +28,9 @@ Pack `clinical-essentials` merges text from WikEM (CC BY-SA 4.0), Wikipedia (CC 
 CDC (public domain, with CDC attribution/disclaimer) and National Cancer Institute text (free of copyright, labelled as adapted,
 not an official PDQ summary). Every article lists its source, license, original URL and authors. Full details, quoted license
 sentences and what was taken: `SOURCES-clinical-essentials.md`. Wikipedia packs now also contain content tables (CC BY-SA 4.0).
+
+## CDC packs (2.1.0)
+Packs `cdc-infection-control`, `cdc-vaccines`, `cdc-infectious-disease` and `cdc-clinical-guidance` contain CDC health-care-provider pages.
+CDC states most of its content is in the public domain; each article carries attribution and the CDC non-endorsement disclaimer, and pages with
+third-party copyright marks were excluded. See `SOURCES-clinical-essentials.md`. The CDC Yellow Book pack was built but is not published
+because some chapters have contributing authors outside CDC.
