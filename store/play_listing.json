@@ -1,0 +1,235 @@
+{
+ "googlePlayListing": {
+  "en": {
+   "title": "MedLog: Clinical Logbook",
+   "shortDescription": "Offline clinical logbook and bilingual study library for physicians.",
+   "fullDescription": "MedLog brings your clinical learning and study materials together in a bilingual Android app for physicians.\n\nKeep an educational clinical logbook and access your downloaded medical study library offline. Use English and Arabic in an app designed to support learning alongside clinical practice.\n\n• Keep an offline clinical logbook.\n• Access a medical study library on your device.\n• Use English and Arabic.\n• Keep saved content locally on your device.\n• Download optional library packs from GitHub.\n• Use optional voice input with microphone permission.\n• Access optional AI using your own API key and chosen provider.\n• Create backup files that you keep and manage.\n\nNo account is required. MedLog contains no ads or analytics.\n\nThe logbook and downloaded library work offline. AI requests and library downloads require internet access. AI providers may charge separately. Voice input availability and online processing depend on the speech recognition service used.\n\nBefore an AI request is sent, MedLog applies automatic removal of patient identifiers and shows a preview. Review every request: automatic removal may miss identifying information. Submitted content is processed under your chosen provider’s terms and privacy policy.\n\nMedLog is for educational use only. It is not a medical device and does not diagnose, treat, cure, or prevent medical conditions. It does not replace clinical judgment, current guidelines, or local protocols. Verify information, including AI output, before clinical use. Consult a qualified healthcare professional for medical advice, diagnosis, or treatment. You are responsible for removing patient identifiers before recording, transmitting, or sharing content.",
+   "featureBullets": [
+    "Keep an offline clinical logbook.",
+    "Access a medical study library on your device.",
+    "Use English and Arabic.",
+    "Keep saved content locally on your device.",
+    "Download optional library packs from GitHub.",
+    "Use optional voice input with microphone permission.",
+    "Access optional AI using your own API key and chosen provider.",
+    "Create backup files that you keep and manage."
+   ]
+  },
+  "ar": {
+   "title": "MedLog: السجل السريري",
+   "shortDescription": "سجل سريري ومكتبة دراسية ثنائية اللغة للأطباء، يعملان دون إنترنت.",
+   "fullDescription": "يجمع MedLog تعلّمك السريري وموادك الدراسية في تطبيق أندرويد ثنائي اللغة للأطباء.\n\nدوّن خبراتك في سجل سريري تعليمي، وارجع إلى مكتبتك الطبية المنزلة دون اتصال بالإنترنت. استخدم العربية والإنجليزية في تطبيق يدعم التعلّم إلى جانب الممارسة السريرية.\n\n• دوّن خبراتك في سجل سريري يعمل دون إنترنت.\n• تصفّح مكتبة دراسية طبية محفوظة على جهازك.\n• استخدم التطبيق بالعربية والإنجليزية.\n• احتفظ بالمحتوى المحفوظ محليًا على جهازك.\n• نزّل حزم مكتبة إضافية اختياريًا من GitHub.\n• استخدم الإدخال الصوتي اختياريًا بعد منح إذن الميكروفون.\n• استخدم الذكاء الاصطناعي بمفتاح API الخاص بك والمزوّد الذي تختاره.\n• أنشئ ملفات نسخ احتياطي تحتفظ بها وتديرها بنفسك.\n\nلا يتطلب MedLog إنشاء حساب، ولا يتضمن إعلانات أو أدوات لتحليل الاستخدام.\n\nيعمل السجل والمكتبة المنزلة دون إنترنت. تتطلب طلبات الذكاء الاصطناعي وتنزيل الحزم اتصالًا بالإنترنت. قد يفرض مزوّد الذكاء الاصطناعي رسومًا منفصلة. يعتمد توفر الإدخال الصوتي ومعالجته عبر الإنترنت على خدمة التعرّف على الكلام المستخدمة.\n\nقبل إرسال طلب ذكاء اصطناعي، يطبّق MedLog إزالة آلية للمعلومات التي تحدد هوية المريض، ويعرض معاينة. راجع كل طلب؛ فقد تفوت الإزالة الآلية بعض المعلومات. يخضع المحتوى المرسل لشروط المزوّد المختار وسياسة خصوصيته.\n\nMedLog مخصص للاستخدام التعليمي فقط. ليس جهازًا طبيًا، ولا يشخّص الحالات الطبية أو يعالجها أو يشفيها أو يقي منها. لا يحل محل الحكم السريري أو الإرشادات الحديثة أو البروتوكولات المحلية. تحقّق من المعلومات، بما فيها مخرجات الذكاء الاصطناعي، قبل استخدامها سريريًا. استشر مختصًا صحيًا مؤهلًا للمشورة الطبية أو التشخيص أو العلاج. تتحمل مسؤولية إزالة المعلومات التي تكشف هوية المرضى قبل تسجيل المحتوى أو إرساله أو مشاركته.",
+   "featureBullets": [
+    "دوّن خبراتك في سجل سريري يعمل دون إنترنت.",
+    "تصفّح مكتبة دراسية طبية محفوظة على جهازك.",
+    "استخدم التطبيق بالعربية والإنجليزية.",
+    "احتفظ بالمحتوى المحفوظ محليًا على جهازك.",
+    "نزّل حزم مكتبة إضافية اختياريًا من GitHub.",
+    "استخدم الإدخال الصوتي اختياريًا بعد منح إذن الميكروفون.",
+    "استخدم الذكاء الاصطناعي بمفتاح API الخاص بك والمزوّد الذي تختاره.",
+    "أنشئ ملفات نسخ احتياطي تحتفظ بها وتديرها بنفسك."
+   ]
+  }
+ },
+ "dataSafetyForm": {
+  "status": "provisional_not_a_completed_play_console_submission",
+  "notes": {
+   "en": "Answers must match the released build and every included SDK. Google Play treats off-device transmission as collection even when data goes directly to a third party. Do not select No data collected without reviewing optional online features.",
+   "ar": "يجب أن تطابق الإجابات النسخة المنشورة وجميع حزم SDK المضمنة. يُعد إرسال البيانات خارج الجهاز جمعًا للبيانات وفق تعريف Google Play، حتى عند إرسالها مباشرة إلى طرف ثالث. لا تختَر لا يتم جمع أي بيانات دون مراجعة الميزات الاختيارية المتصلة بالإنترنت."
+  },
+  "answers": [
+   {
+    "id": "dataCollection",
+    "question": {
+     "en": "Any user data collected?",
+     "ar": "هل تُجمع بيانات المستخدم؟"
+    },
+    "answer": {
+     "en": "Yes for disclosable data sent through optional online features. Identify the actual transmitted categories.",
+     "ar": "نعم للبيانات الواجب الإفصاح عنها التي ترسلها الميزات الاختيارية. حدّد الفئات المرسلة فعليًا."
+    },
+    "status": "implementation_dependent"
+   },
+   {
+    "id": "localData",
+    "question": {
+     "en": "Local logbook and library",
+     "ar": "السجل والمكتبة المحليان"
+    },
+    "answer": {
+     "en": "Local-only processing is outside collection disclosure.",
+     "ar": "المعالجة المحلية فقط لا تُعد جمعًا واجب الإفصاح عنه."
+    },
+    "status": "based_on_supplied_facts"
+   },
+   {
+    "id": "aiText",
+    "question": {
+     "en": "AI prompt text",
+     "ar": "نصوص طلبات الذكاء الاصطناعي"
+    },
+    "answer": {
+     "en": "Assess Other user-generated content; add Health info when health information is transmitted. Optional; purpose: App functionality.",
+     "ar": "قيّم فئة المحتوى الآخر الذي ينشئه المستخدم، وأضف المعلومات الصحية عند إرسالها. اختياري؛ الغرض: وظائف التطبيق."
+    },
+    "status": "implementation_dependent"
+   },
+   {
+    "id": "attachments",
+    "question": {
+     "en": "Images or documents",
+     "ar": "الصور أو المستندات"
+    },
+    "answer": {
+     "en": "Declare relevant categories only if supported and transmitted.",
+     "ar": "أفصح عن الفئات المناسبة فقط إذا كان إرسالها مدعومًا ويحدث فعليًا."
+    },
+    "status": "implementation_dependent"
+   },
+   {
+    "id": "voice",
+    "question": {
+     "en": "Voice recordings",
+     "ar": "التسجيلات الصوتية"
+    },
+    "answer": {
+     "en": "If audio leaves the device, assess Voice or sound recordings; optional; app functionality. Local-only audio processing does not require collection disclosure.",
+     "ar": "إذا غادر الصوت الجهاز، فقيّم فئة التسجيلات الصوتية؛ اختياري؛ لوظائف التطبيق. لا تتطلب معالجة الصوت المحلية فقط الإفصاح عن جمعه."
+    },
+    "status": "implementation_dependent"
+   },
+   {
+    "id": "apiKey",
+    "question": {
+     "en": "API authentication",
+     "ar": "المصادقة بمفتاح API"
+    },
+    "answer": {
+     "en": "Verify credential and account-identifier handling against the selected provider and current categories. Do not assume the key is anonymous.",
+     "ar": "تحقّق من معالجة بيانات المصادقة ومعرّفات الحساب لدى المزوّد والفئات الحالية؛ لا تفترض أن المفتاح مجهول الهوية."
+    },
+    "status": "unverified"
+   },
+   {
+    "id": "github",
+    "question": {
+     "en": "GitHub requests",
+     "ar": "طلبات GitHub"
+    },
+    "answer": {
+     "en": "Review actual request metadata and recipient use; do not declare precise location merely because an IP address is transmitted.",
+     "ar": "راجع بيانات الطلب واستخدام المستلِم لها؛ إرسال عنوان IP وحده لا يعني جمع موقع دقيق."
+    },
+    "status": "implementation_dependent"
+   },
+   {
+    "id": "sharing",
+    "question": {
+     "en": "Data shared?",
+     "ar": "هل تُشارك البيانات؟"
+    },
+    "answer": {
+     "en": "Conditional. Specific user-initiated transfers may qualify for Play’s sharing exception. Confirm disclosure, consent, and all other transfers before answering No.",
+     "ar": "مشروط. قد ينطبق استثناء المشاركة على إرسال يطلبه المستخدم تحديدًا؛ تحقّق من الإفصاح والموافقة وبقية عمليات الإرسال قبل الإجابة بلا."
+    },
+    "status": "implementation_dependent"
+   },
+   {
+    "id": "optional",
+    "question": {
+     "en": "Required or optional?",
+     "ar": "إلزامي أم اختياري؟"
+    },
+    "answer": {
+     "en": "Optional for AI and voice transmissions, provided all users can use core functions without them.",
+     "ar": "اختياري لإرسال بيانات الذكاء الاصطناعي والصوت، ما دام الجميع يستطيع استخدام الوظائف الأساسية دونه."
+    },
+    "status": "implementation_dependent"
+   },
+   {
+    "id": "ephemeral",
+    "question": {
+     "en": "Ephemeral processing?",
+     "ar": "معالجة مؤقتة؟"
+    },
+    "answer": {
+     "en": "Unverified. Confirm actual provider retention; do not assume immediate deletion.",
+     "ar": "غير متحقق منه. تحقّق من الاحتفاظ الفعلي لدى المزوّد؛ لا تفترض الحذف الفوري."
+    },
+    "status": "unverified"
+   },
+   {
+    "id": "transport",
+    "question": {
+     "en": "Encrypted in transit?",
+     "ar": "مشفّرة أثناء النقل؟"
+    },
+    "answer": {
+     "en": "Unverified until all transmission paths are checked. Answer Yes only when every applicable path uses secure transport.",
+     "ar": "غير متحقق منه حتى فحص جميع مسارات الإرسال. أجب بنعم فقط عند استخدام نقل آمن في جميع المسارات المعنية."
+    },
+    "status": "unverified"
+   },
+   {
+    "id": "purposes",
+    "question": {
+     "en": "Analytics or advertising purposes?",
+     "ar": "التحليلات أو الإعلانات؟"
+    },
+    "answer": {
+     "en": "No MedLog analytics or ads. Check providers and SDKs for additional uses.",
+     "ar": "لا تحليلات استخدام أو إعلانات في MedLog؛ تحقّق من الاستخدامات الإضافية للمزوّدين وحزم SDK."
+    },
+    "status": "implementation_dependent"
+   },
+   {
+    "id": "accounts",
+    "question": {
+     "en": "Account creation",
+     "ar": "إنشاء الحسابات"
+    },
+    "answer": {
+     "en": "No MedLog accounts.",
+     "ar": "لا توجد حسابات MedLog."
+    },
+    "status": "based_on_supplied_facts"
+   },
+   {
+    "id": "accountDeletion",
+    "question": {
+     "en": "Account deletion",
+     "ar": "حذف الحساب"
+    },
+    "answer": {
+     "en": "Not applicable to MedLog accounts; none exist.",
+     "ar": "لا ينطبق؛ لا توجد حسابات داخل التطبيق."
+    },
+    "status": "based_on_supplied_facts"
+   },
+   {
+    "id": "deletion",
+    "question": {
+     "en": "Data deletion",
+     "ar": "حذف البيانات"
+    },
+    "answer": {
+     "en": "Describe local clearing, separate backup deletion, and provider-specific deletion. Do not promise deletion of remote copies you cannot control.",
+     "ar": "وضّح مسح البيانات المحلية وحذف النسخ الاحتياطية وإجراءات المزوّد، دون ضمان حذف نسخ خارج سيطرتك."
+    },
+    "status": "implementation_dependent"
+   },
+   {
+    "id": "securityReview",
+    "question": {
+     "en": "Independent security review",
+     "ar": "مراجعة أمنية مستقلة"
+    },
+    "answer": {
+     "en": "Do not claim one unless completed and documented.",
+     "ar": "لا تدّعِ إجراءها دون تنفيذ موثق."
+    },
+    "status": "unverified"
+   }
+  ]
+ }
+}
