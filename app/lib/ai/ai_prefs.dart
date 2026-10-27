@@ -61,7 +61,8 @@ class AiPrefs {
   static set fabY(double v) => _set('aiFabY', v);
 
   /// Per-screen switch, e.g. screen 'quiz', 'case', 'article', 'calc', 'library', 'home', 'portfolio', 'search'.
-  static bool screenOn(String screen) => _get<bool>('aiScr_$screen', true);
+  // reading an article: the floating button covered the text, so it starts off there (the article's own menu has the AI tools)
+  static bool screenOn(String screen) => _get<bool>('aiScr_$screen', screen != 'article');
   static void setScreenOn(String screen, bool v) => _set('aiScr_$screen', v);
 
   static bool get showCitations => _get<bool>('aiCitations', true);

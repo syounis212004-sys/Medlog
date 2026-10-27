@@ -60,7 +60,7 @@ void main() {
     await push(tester, CaseEditorScreen(rec: c));
     await openPage(tester, Icons.forum_outlined);
     await settle(tester, 700);
-    expect(find.text('Complaint templates'), findsOneWidget);
+    expect(find.text('Complaint templates'), findsOneWidget); // the compact bar above the card
     expect(find.text('Chest pain'), findsWidgets);
     await shot(tester, 'G11_complaint_bar');
     await tester.tap(find.widgetWithText(ActionChip, 'Chest pain').first);
@@ -68,7 +68,7 @@ void main() {
     expect(CaseChoices(c).complaintIds, ['complaint-chest-pain']);
     expect(find.text('Pain site'), findsWidgets);
     await shot(tester, 'G11_complaint_added');
-    await tester.tap(find.widgetWithText(ActionChip, 'More complaints'));
+    await tester.tap(find.widgetWithText(ActionChip, 'Complaint templates'));
     await settle(tester, 600);
     await shot(tester, 'G11_complaint_sheet');
     expect(tester.takeException(), isNull);

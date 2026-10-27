@@ -25,7 +25,10 @@ class ChoicesSection extends StatefulWidget {
 
   /// Stores a derived value in the case and in its text field.
   final void Function(String key, String value) write;
-  const ChoicesSection({super.key, required this.rec, required this.section, required this.onChanged, required this.write});
+
+  /// Takes the person to the History tab (the exam, tests and plan questions follow the History answers).
+  final void Function(BuildContext context)? onGoHistory;
+  const ChoicesSection({super.key, required this.rec, required this.section, required this.onChanged, required this.write, this.onGoHistory});
   @override
   State<ChoicesSection> createState() => _ChoicesSectionState();
 }
@@ -164,21 +167,25 @@ class _ChoicesSectionState extends State<ChoicesSection> {
     }
     final theme = Theme.of(context);
     if (shown.isEmpty) {
-      // nothing to ask yet: a single line instead of an empty card
+      // nothing to ask yet: the questions of this tab follow the History answers
       return Padding(
         padding: const EdgeInsets.only(bottom: 12),
-        child: Row(children: [
-          Icon(Icons.touch_app_outlined, size: 18, color: theme.colorScheme.onSurfaceVariant),
-          const SizedBox(width: 8),
-          Expanded(child: Text('Choose the site and the problem in History: the quick choices of this tab then appear.', style: theme.textTheme.bodySmall)),
-        ]),
+        child: Container(
+          padding: const EdgeInsetsDirectional.fromSTEB(14, 10, 6, 10),
+          decoration: BoxDecoration(color: theme.colorScheme.secondaryContainer.withAlpha(90), borderRadius: BorderRadius.circular(14)),
+          child: Row(children: [
+            Expanded(child: Text('The questions of this tab appear after you answer the site and the problem in History.', style: theme.textTheme.bodySmall)),
+            if (widget.onGoHistory != null && widget.section != 'History')
+              TextButton(onPressed: () => widget.onGoHistory!(context), child: Text('Open History')),
+          ]),
+        ),
       );
     }
     var done = 0;
     for (final s in steps) {
       if (cc.pick(s.id).v.isNotEmpty) done++;
     }
-    return Card(
+    final card = Card(
       elevation: 0,
       margin: const EdgeInsets.only(bottom: 12),
       child: ExpansionTile(
@@ -192,6 +199,8 @@ class _ChoicesSectionState extends State<ChoicesSection> {
         children: _all ? _allChildren(cc, t, shown, resolved, hidden, theme) : _guidedChildren(cc, t, shown, steps, resolved, theme, done),
       ),
     );
+    if (widget.section != 'History') return card;
+    return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [_complaintBar(cc), card]);
   }
 
   Widget _groupHeader(ChStep st, ThemeData theme) => Padding(
@@ -218,7 +227,6 @@ class _ChoicesSectionState extends State<ChoicesSection> {
       }
     }
     final out = <Widget>[
-      if (widget.section == 'History') _complaintBar(cc),
       Padding(
         padding: const EdgeInsets.only(top: 4, bottom: 4),
         child: Row(children: [
@@ -308,7 +316,6 @@ class _ChoicesSectionState extends State<ChoicesSection> {
 
   List<Widget> _allChildren(CaseChoices cc, ChTemplate t, List<ChStep> shown, Map<String, List<ChOption>> resolved, int hidden, ThemeData theme) {
     return [
-          if (widget.section == 'History') _complaintBar(cc),
           for (var i = 0; i < shown.length; i++) ...[
             if (shown[i].group.isNotEmpty && (i == 0 || shown[i - 1].group != shown[i].group))
               Padding(
@@ -344,47 +351,42 @@ class _ChoicesSectionState extends State<ChoicesSection> {
     final attached = cc.complaintIds;
     final sug = [for (final c in ChoicesRepo.suggest(widget.rec.s('cc'))) if (!attached.contains(c.id)) c];
     return Padding(
-      padding: const EdgeInsets.only(bottom: 4),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text('Complaint templates', style: theme.textTheme.labelLarge),
-        const SizedBox(height: 4),
-        Directionality(
-          textDirection: TextDirection.ltr,
-          child: Wrap(spacing: 6, runSpacing: 2, children: [
-            for (final id in attached)
-              if (ChoicesRepo.byId(id) != null)
-                InputChip(
-                  avatar: const Icon(Icons.assignment_outlined, size: 16),
-                  label: m.Text(ChoicesRepo.byId(id)!.specialty),
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Padding(padding: const EdgeInsetsDirectional.only(end: 8, top: 8), child: Icon(Icons.assignment_outlined, size: 20, color: theme.colorScheme.primary)),
+        Expanded(
+          child: Directionality(
+            textDirection: TextDirection.ltr,
+            child: Wrap(spacing: 6, runSpacing: 4, children: [
+              for (final id in attached)
+                if (ChoicesRepo.byId(id) != null)
+                  InputChip(
+                    label: m.Text(ChoicesRepo.byId(id)!.specialty),
+                    visualDensity: VisualDensity.compact,
+                    onDeleted: () {
+                      cc.removeComplaint(id);
+                      _changed();
+                    },
+                  ),
+              for (final c in sug)
+                ActionChip(
+                  avatar: const Icon(Icons.add, size: 16),
+                  label: m.Text(c.specialty),
                   visualDensity: VisualDensity.compact,
-                  onDeleted: () {
-                    cc.removeComplaint(id);
+                  onPressed: () {
+                    cc.addComplaint(c.id);
                     _changed();
                   },
                 ),
-            for (final c in sug)
               ActionChip(
-                avatar: const Icon(Icons.add, size: 16),
-                label: m.Text(c.specialty),
+                avatar: const Icon(Icons.list_alt, size: 16),
+                label: m.Text(tr('Complaint templates')),
                 visualDensity: VisualDensity.compact,
-                onPressed: () {
-                  cc.addComplaint(c.id);
-                  _changed();
-                },
+                onPressed: () => _openComplaints(cc),
               ),
-            ActionChip(
-              avatar: const Icon(Icons.list_alt, size: 16),
-              label: m.Text(tr('More complaints')),
-              visualDensity: VisualDensity.compact,
-              onPressed: () => _openComplaints(cc),
-            ),
-          ]),
-        ),
-        if (attached.isEmpty && sug.isEmpty)
-          Padding(
-            padding: const EdgeInsets.only(top: 4),
-            child: Text('Add a complaint template to get the questions of that presentation (for example chest pain or fever).', style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+            ]),
           ),
+        ),
       ]),
     );
   }
@@ -503,7 +505,7 @@ class _ChoicesSectionState extends State<ChoicesSection> {
       padding: const EdgeInsets.only(top: 12),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(children: [
-          Expanded(child: Align(alignment: AlignmentDirectional.centerStart, child: _en(s.label, style: theme.textTheme.labelLarge))),
+          Expanded(child: Align(alignment: guided ? Alignment.centerLeft : AlignmentDirectional.centerStart, child: _en(s.label, style: guided ? theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700) : theme.textTheme.labelLarge))),
           if (!adder && !inline)
             TextButton(
               style: TextButton.styleFrom(visualDensity: VisualDensity.compact),
@@ -573,7 +575,7 @@ class _ChoicesSectionState extends State<ChoicesSection> {
             ]),
           )
         else
-          Text('Nothing chosen', style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+          const SizedBox.shrink(),
         if (s.id == 'diagnostic_certainty' && p.v.isNotEmpty) _certaintyNote(cc, theme),
         if (stale.isNotEmpty && !adder) ...[
           const SizedBox(height: 4),

@@ -685,31 +685,26 @@ class _CaseEditorScreenState extends State<CaseEditorScreen>
     return Column(children: [
       Padding(
         padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
-        child: Row(children: [
+        child: Wrap(spacing: 8, runSpacing: 6, children: [
           for (var i = 0; i < pages.length; i++)
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsetsDirectional.only(end: 6),
-                child: ChoiceChip(
-                  key: ValueKey('page_${pages[i]}'),
-                  avatar: Stack(clipBehavior: Clip.none, children: [
-                    Icon(_pageChip[pages[i]].$1, size: 18),
-                    if (filled[pages[i]])
-                      PositionedDirectional(
-                        top: -2,
-                        end: -4,
-                        child: Container(width: 7, height: 7, decoration: BoxDecoration(color: Colors.green, shape: BoxShape.circle, border: Border.all(color: cs.surface, width: 1))),
-                      ),
-                  ]),
-                  label: FittedBox(fit: BoxFit.scaleDown, child: Text(trUi(_pageChip[pages[i]].$2))),
-                  selected: _sub[g] == i,
-                  showCheckmark: false,
-                  onSelected: (_) {
-                    setState(() => _sub[g] = i);
-                    _rememberTab(g);
-                  },
-                ),
-              ),
+            ChoiceChip(
+              key: ValueKey('page_${pages[i]}'),
+              avatar: Stack(clipBehavior: Clip.none, children: [
+                Icon(_pageChip[pages[i]].$1, size: 18),
+                if (filled[pages[i]])
+                  PositionedDirectional(
+                    top: -2,
+                    end: -4,
+                    child: Container(width: 7, height: 7, decoration: BoxDecoration(color: Colors.green, shape: BoxShape.circle, border: Border.all(color: cs.surface, width: 1))),
+                  ),
+              ]),
+              label: Text(trUi(_pageChip[pages[i]].$2)),
+              selected: _sub[g] == i,
+              showCheckmark: false,
+              onSelected: (_) {
+                setState(() => _sub[g] = i);
+                _rememberTab(g);
+              },
             ),
         ]),
       ),
@@ -887,7 +882,7 @@ class _CaseEditorScreenState extends State<CaseEditorScreen>
       child: TextField(
         controller: _tc(key),
         // empty: at most 2 lines; it grows with what is typed
-        minLines: lines > 1 ? 2 : 1,
+        minLines: lines >= 4 ? 2 : 1,
         maxLines: lines == 1 ? 1 : null,
         keyboardType: lines > 1 ? TextInputType.multiline : kt,
         textCapitalization: TextCapitalization.sentences,
@@ -966,26 +961,30 @@ class _CaseEditorScreenState extends State<CaseEditorScreen>
     );
   }
 
+  /// A row of phrases to tap, scrolling sideways (a wall of chips used to fill the screen).
+  Widget _chipRow(List<Widget> chips) => Padding(
+        padding: const EdgeInsets.only(bottom: 12),
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(children: [for (final c in chips) Padding(padding: const EdgeInsetsDirectional.only(end: 6), child: c)]),
+        ),
+      );
+
   Widget _quick(String key, List<String> items) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Wrap(
-        spacing: 6,
-        children: [
-          for (final t in items)
-            ActionChip(
-              label: Text(t),
-              onPressed: () {
-                final c = _tc(key);
-                final cur = c.text.trim();
-                c.text = cur.isEmpty ? t : '$cur; $t';
-                rec.set(key, c.text);
-                _changed();
-              },
-            ),
-        ],
-      ),
-    );
+    return _chipRow([
+      for (final t in items)
+        ActionChip(
+          label: Text(t),
+          visualDensity: VisualDensity.compact,
+          onPressed: () {
+            final c = _tc(key);
+            final cur = c.text.trim();
+            c.text = cur.isEmpty ? t : '$cur; $t';
+            rec.set(key, c.text);
+            _changed();
+          },
+        ),
+    ]);
   }
 
   Widget _banner(String text, {IconData icon = Icons.shield_outlined}) {
@@ -1780,45 +1779,44 @@ class _CaseEditorScreenState extends State<CaseEditorScreen>
       padding: const EdgeInsets.all(16),
       children: [
         _fillNormalButton(history: false),
-        ChoicesSection(rec: rec, section: 'Examination', onChanged: _changed, write: _writeDerived),
+        ChoicesSection(rec: rec, section: 'Examination', onChanged: _changed, write: _writeDerived, onGoHistory: (c) => _goPage(c, 1)),
         Text('Vital signs', style: Theme.of(context).textTheme.titleMedium),
         if (!adult)
           Text(
               'Abnormal-value highlighting works for Adult only (set age group in Info).',
               style: Theme.of(context).textTheme.bodySmall),
         const SizedBox(height: 8),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: [
-            for (final v in vitals)
-              SizedBox(
-                width: 104,
-                child: TextField(
-                  controller: _tc(v[0]),
-                  keyboardType: v[0] == 'v_bp'
-                      ? TextInputType.text
-                      : const TextInputType.numberWithOptions(decimal: true),
-                  decoration: InputDecoration(
-                    labelText: tr(v[1]),
-                    hintText: v[2],
-                    isDense: true,
-                    contentPadding: const EdgeInsets.fromLTRB(12, 24, 12, 10),
-                    enabledBorder: vitalAbnormal(v[0], rec.s(v[0]), adult)
-                        ? UnderlineInputBorder(
-                            borderRadius: BorderRadius.circular(14),
-                            borderSide:
-                                const BorderSide(color: Colors.red, width: 2))
-                        : null,
+        LayoutBuilder(builder: (ctx, c) {
+          final cols = c.maxWidth >= 340 ? 4 : 3;
+          final w = (c.maxWidth - 8 * (cols - 1)) / cols;
+          return Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              for (final v in vitals)
+                SizedBox(
+                  width: w,
+                  child: TextField(
+                    controller: _tc(v[0]),
+                    keyboardType: v[0] == 'v_bp' ? TextInputType.text : const TextInputType.numberWithOptions(decimal: true),
+                    decoration: InputDecoration(
+                      labelText: tr(v[1]),
+                      hintText: v[2],
+                      isDense: true,
+                      contentPadding: const EdgeInsets.fromLTRB(10, 22, 10, 8),
+                      enabledBorder: vitalAbnormal(v[0], rec.s(v[0]), adult)
+                          ? UnderlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: const BorderSide(color: Colors.red, width: 2))
+                          : null,
+                    ),
+                    onChanged: (t) {
+                      rec.set(v[0], t);
+                      _changed();
+                    },
                   ),
-                  onChanged: (t) {
-                    rec.set(v[0], t);
-                    _changed();
-                  },
                 ),
-              ),
-          ],
-        ),
+            ],
+          );
+        }),
         const SizedBox(height: 16),
         _systems(),
         Fold(
@@ -2159,36 +2157,15 @@ class _CaseEditorScreenState extends State<CaseEditorScreen>
       padding: const EdgeInsets.all(16),
       children: [
         LabSection(rec: rec, onChanged: _changed),
-        ChoicesSection(rec: rec, section: 'Investigations', onChanged: _changed, write: _writeDerived),
+        ChoicesSection(rec: rec, section: 'Investigations', onChanged: _changed, write: _writeDerived, onGoHistory: (c) => _goPage(c, 1)),
         const SizedBox(height: 8),
         Text('Quick add (as requested / pending)',
             style: Theme.of(context).textTheme.labelLarge),
         const SizedBox(height: 4),
-        Wrap(
-          spacing: 6,
-          children: [
-            for (final n in const [
-              'CBC',
-              'KFT',
-              'LFT',
-              'Electrolytes',
-              'ABG',
-              'CRP',
-              'Troponin',
-              'Coagulation',
-              'Urinalysis',
-              'ECG',
-              'CXR',
-              'Ultrasound',
-              'CT',
-              'MRI',
-            ])
-              ActionChip(
-                label: Text(n),
-                onPressed: () => _quickInv(n),
-              ),
-          ],
-        ),
+        _chipRow([
+          for (final n in const ['CBC', 'KFT', 'LFT', 'Electrolytes', 'ABG', 'CRP', 'Troponin', 'Coagulation', 'Urinalysis', 'ECG', 'CXR', 'Ultrasound', 'CT', 'MRI'])
+            ActionChip(label: Text(n), visualDensity: VisualDensity.compact, onPressed: () => _quickInv(n)),
+        ]),
         const SizedBox(height: 8),
         OutlinedButton.icon(
           onPressed: () => _editInv(),
@@ -2332,7 +2309,7 @@ class _CaseEditorScreenState extends State<CaseEditorScreen>
       padding: const EdgeInsets.all(16),
       children: [
         ProblemSection(rec: rec, onChanged: _changed),
-        ChoicesSection(rec: rec, section: 'Assessment', onChanged: _changed, write: _writeDerived),
+        ChoicesSection(rec: rec, section: 'Assessment', onChanged: _changed, write: _writeDerived, onGoHistory: (c) => _goPage(c, 1)),
         ScoresSection(rec: rec, onChanged: _changed),
         _tf('problems', 'Problem list (free text)', lines: 3),
         _tf('ddx', 'Differential diagnosis (most likely first)', lines: 4),
@@ -2485,7 +2462,7 @@ class _CaseEditorScreenState extends State<CaseEditorScreen>
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        ChoicesSection(rec: rec, section: 'Management', onChanged: _changed, write: _writeDerived),
+        ChoicesSection(rec: rec, section: 'Management', onChanged: _changed, write: _writeDerived, onGoHistory: (c) => _goPage(c, 1)),
         _banner(
             'Mark honestly who made each decision: what you suggested, what the '
             'team decided, and what the supervisor changed.',

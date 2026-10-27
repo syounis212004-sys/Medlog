@@ -555,7 +555,10 @@ void main() {
       expect(v(shell: false), false); // splash
       AiPrefs.setScreenOn('quiz', false);
       expect(v(kind: 'quiz'), false);
+      expect(v(kind: 'article'), false); // reading an article: off by default, the text must not be covered
+      AiPrefs.setScreenOn('article', true);
       expect(v(kind: 'article'), true);
+      AiPrefs.setScreenOn('article', false);
       AiPrefs.setScreenOn('quiz', true);
       // never over the bottom bar
       final (minY, maxY) = AiFab.yRange(const Size(412, 892), const EdgeInsets.only(top: 24, bottom: 16), 1.0);
@@ -687,6 +690,7 @@ void main() {
         expect(tester.getRect(fab).top >= 56, true);
 
         // open the chat with an article context
+        AiPrefs.setScreenOn('article', true);
         final nav0 = tester.state<NavigatorState>(find.byType(Navigator).first);
         nav0.push(MaterialPageRoute(builder: (_) => const Scaffold(body: AiContextScope(ctx: AiScreenContext(kind: 'article', title: 'Hip fracture'), child: Text('article page')))));
         await settle(tester, 700);

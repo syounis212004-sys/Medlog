@@ -1206,7 +1206,7 @@ class _ImgStrip extends StatelessWidget {
                 Container(
                   height: height,
                   width: double.infinity,
-                  decoration: BoxDecoration(color: cs.surfaceContainerHighest.withAlpha(100), borderRadius: BorderRadius.circular(14)),
+                  decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(14), border: Border.all(color: cs.outlineVariant)),
                   clipBehavior: Clip.antiAlias,
                   child: Image.memory(im.bytes, fit: BoxFit.contain, gaplessPlayback: true),
                 ),
@@ -1214,8 +1214,8 @@ class _ImgStrip extends StatelessWidget {
                 Directionality(
                   textDirection: TextDirection.ltr,
                   child: im.file.startsWith('book:')
-                      ? m.Text(im.caption.isEmpty ? im.file : im.caption, textDirection: TextDirection.ltr, textAlign: TextAlign.left, maxLines: 2, overflow: TextOverflow.ellipsis, style: theme.textTheme.labelSmall?.copyWith(color: cs.outline))
-                      : Text(im.caption.isEmpty ? im.file : im.caption, maxLines: 2, overflow: TextOverflow.ellipsis, style: theme.textTheme.labelSmall?.copyWith(color: cs.outline)),
+                      ? m.Text(im.caption.isEmpty ? im.file : im.caption, textDirection: TextDirection.ltr, textAlign: TextAlign.left, maxLines: 6, overflow: TextOverflow.ellipsis, style: theme.textTheme.labelSmall?.copyWith(color: cs.outline))
+                      : Text(im.caption.isEmpty ? im.file : im.caption, maxLines: 6, overflow: TextOverflow.ellipsis, style: theme.textTheme.labelSmall?.copyWith(color: cs.outline)),
                 ),
               ]),
             ),
