@@ -40,6 +40,7 @@ import 'package:medlog/screens_library.dart';
 import 'package:medlog/med_terms.dart';
 import 'package:medlog/i18n.dart' show textDirectionFor, medEnglish, tr;
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
+import 'lib2_util.dart' show openPage;
 
 class FakePP extends PathProviderPlatform {
   final String dir;
@@ -219,7 +220,7 @@ void tour2() {
       await tester.tap(find.text('Acute coronary syndrome').first);
       await settle(tester, 1500);
       await shot(tester, 'h_${tag}_editor_info');
-      await tester.tap(find.byIcon(Icons.history_edu_outlined));
+      await openPage(tester, Icons.history_edu_outlined);
       await settle(tester, 800);
       await shot(tester, 'h_${tag}_editor_history');
     });
@@ -348,7 +349,7 @@ void tourA() {
       await settle(tester);
       await tester.tap(find.text('Acute coronary syndrome').first);
       await settle(tester, 1200);
-      await tester.tap(find.byIcon(Icons.history_edu_outlined));
+      await openPage(tester, Icons.history_edu_outlined);
       await settle(tester, 600);
       final ccField = find.byType(TextField).first;
       await tester.enterText(ccField, 'Changed complaint text');
@@ -643,19 +644,13 @@ void tourD() {
       nav0.push(MaterialPageRoute(builder: (_) => CaseEditorScreen(rec: store.cases['c0']!, initialTab: 2)));
       await settle(tester, 1500);
       await shot(tester, 'D_${lang}_exam');
-      await tester.ensureVisible(find.byIcon(Icons.event_note_outlined));
-      await tester.pump(const Duration(milliseconds: 400));
-      await tester.tap(find.byIcon(Icons.event_note_outlined));
+      await openPage(tester, Icons.event_note_outlined);
       await settle(tester, 1000);
       await shot(tester, 'D_${lang}_timeline');
-      await tester.ensureVisible(find.byIcon(Icons.school_outlined));
-      await tester.pump(const Duration(milliseconds: 400));
-      await tester.tap(find.byIcon(Icons.school_outlined));
+      await openPage(tester, Icons.school_outlined);
       await settle(tester, 1000);
       await shot(tester, 'D_${lang}_learning');
-      await tester.ensureVisible(find.byIcon(Icons.psychology_outlined).first);
-      await tester.pump(const Duration(milliseconds: 400));
-      await tester.tap(find.byIcon(Icons.psychology_outlined).first);
+      await openPage(tester, Icons.psychology_outlined);
       await settle(tester, 1000);
       await shot(tester, 'D_${lang}_assess');
       nav0.pop();

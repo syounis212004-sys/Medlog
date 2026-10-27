@@ -28,6 +28,7 @@ import 'case_scores.dart';
 import 'dose_context.dart';
 import 'screens_calc.dart';
 import 'screens_choices.dart';
+import 'choices_engine.dart' show ChoicesSync;
 import 'screens_dosing.dart';
 import 'screens_images.dart';
 import 'screens_review.dart';
@@ -624,9 +625,134 @@ class _CaseEditorScreenState extends State<CaseEditorScreen>
         state == AppLifecycleState.inactive) _flush();
   }
 
-  void _rememberTab(int i) {
-    store.settings['lastTab'] = i;
+  // The nine pages of a case live in five tabs; the pages of a tab are chosen with the chips on top of it.
+  // Page numbers: 0 Info, 1 History, 2 Exam, 3 Investigations, 4 Assessment, 5 Management, 6 Progress, 7 Learning, 8 Timeline.
+  static const List<List<int>> _groups = [
+    [0],
+    [1, 2, 3],
+    [4, 5],
+    [6, 8],
+    [7],
+  ];
+  late final List<int> _sub = [for (var g = 0; g < _groups.length; g++) _groups[g].contains(widget.initialTab) ? _groups[g].indexOf(widget.initialTab) : 0];
+
+  static int _groupOf(int page) => _groups.indexWhere((g) => g.contains(page));
+
+  void _rememberTab(int g) {
+    store.settings['lastTab'] = _groups[g][_sub[g]];
     store.saveSettings();
+  }
+
+  /// Goes to a page: its tab opens and the page is chosen in it.
+  void _goPage(BuildContext ctx, int page) {
+    final g = _groupOf(page);
+    if (g < 0) return;
+    setState(() => _sub[g] = _groups[g].indexOf(page));
+    DefaultTabController.of(ctx).animateTo(g);
+    store.settings['lastTab'] = page;
+    store.saveSettings();
+  }
+
+  Widget _pageOf(int page) => switch (page) {
+        0 => _info(),
+        1 => _history(),
+        2 => _exam(),
+        3 => _inv(),
+        4 => _assess(),
+        5 => _mgmt(),
+        6 => _progress(),
+        7 => _learn(),
+        _ => _timeline(),
+      };
+
+  static const List<(IconData, String)> _pageChip = [
+    (Icons.badge_outlined, 'Info'),
+    (Icons.history_edu_outlined, 'History'),
+    (Icons.monitor_heart_outlined, 'Exam'),
+    (Icons.biotech_outlined, 'Investigations'),
+    (Icons.psychology_outlined, 'Assessment'),
+    (Icons.medication_outlined, 'Management'),
+    (Icons.timeline, 'Progress'),
+    (Icons.school_outlined, 'Learning'),
+    (Icons.event_note_outlined, 'Timeline'),
+  ];
+
+  /// One tab: its page, with the chips that switch between its pages when it has several.
+  Widget _group(int g, List<bool> filled) {
+    final pages = _groups[g];
+    if (pages.length == 1) return _pageOf(pages[0]);
+    final cs = Theme.of(context).colorScheme;
+    return Column(children: [
+      Padding(
+        padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
+        child: Row(children: [
+          for (var i = 0; i < pages.length; i++)
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsetsDirectional.only(end: 6),
+                child: ChoiceChip(
+                  key: ValueKey('page_${pages[i]}'),
+                  avatar: Stack(clipBehavior: Clip.none, children: [
+                    Icon(_pageChip[pages[i]].$1, size: 18),
+                    if (filled[pages[i]])
+                      PositionedDirectional(
+                        top: -2,
+                        end: -4,
+                        child: Container(width: 7, height: 7, decoration: BoxDecoration(color: Colors.green, shape: BoxShape.circle, border: Border.all(color: cs.surface, width: 1))),
+                      ),
+                  ]),
+                  label: FittedBox(fit: BoxFit.scaleDown, child: Text(trUi(_pageChip[pages[i]].$2))),
+                  selected: _sub[g] == i,
+                  showCheckmark: false,
+                  onSelected: (_) {
+                    setState(() => _sub[g] = i);
+                    _rememberTab(g);
+                  },
+                ),
+              ),
+            ),
+        ]),
+      ),
+      Expanded(child: KeyedSubtree(key: ValueKey('grp_${g}_${_sub[g]}'), child: _pageOf(pages[_sub[g]]))),
+    ]);
+  }
+
+  /// Always at hand under every page: the library, the calculators, the doses and the search, for this case.
+  Widget _toolsBar() {
+    final topic = [rec.s('finalDx'), rec.s('workingDx'), rec.s('cc')].firstWhere((e) => e.trim().isNotEmpty, orElse: () => '');
+    Widget tool(IconData icon, String label, VoidCallback onTap, {String? key}) => Expanded(
+          child: InkWell(
+            key: key == null ? null : ValueKey(key),
+            onTap: onTap,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 6),
+              child: Column(mainAxisSize: MainAxisSize.min, children: [
+                Icon(icon, size: 22),
+                const SizedBox(height: 2),
+                Text(label, style: const TextStyle(fontSize: 11), maxLines: 1, overflow: TextOverflow.ellipsis),
+              ]),
+            ),
+          ),
+        );
+    Future<void> open(Widget Function() page) async {
+      await _flush();
+      if (!mounted) return;
+      await Navigator.push(context, MaterialPageRoute(builder: (_) => page()));
+      if (mounted) setState(() {});
+    }
+
+    return Material(
+      color: Theme.of(context).colorScheme.surfaceContainer,
+      child: SafeArea(
+        top: false,
+        child: Row(children: [
+          tool(Icons.menu_book_outlined, trUi('Library'), () => open(() => LibraryScreen(initialQuery: topic)), key: 'tool_library'),
+          tool(Icons.calculate_outlined, trUi('Calculators'), () => open(() => CalculatorsScreen(attachTo: rec)), key: 'tool_calcs'),
+          tool(Icons.vaccines_outlined, trUi('Doses'), () => open(() => DosingScreen(patient: DoseContext.fromCase(rec))), key: 'tool_doses'),
+          tool(Icons.search, trUi('Search'), () => open(() => SearchScreen(initial: topic)), key: 'tool_search'),
+        ]),
+      ),
+    );
   }
 
   void _doUndo() {
@@ -936,11 +1062,7 @@ class _CaseEditorScreenState extends State<CaseEditorScreen>
         child: Align(
           alignment: AlignmentDirectional.centerEnd,
           child: FilledButton.tonalIcon(
-            onPressed: () {
-              DefaultTabController.of(ctx).animateTo(from + 1);
-              store.settings['lastTab'] = from + 1;
-              store.saveSettings();
-            },
+            onPressed: () => _goPage(ctx, from + 1),
             icon: const Icon(Icons.arrow_forward),
             iconAlignment: IconAlignment.end,
             label: Text('${trUi('Next')}: ${trUi(names[from + 1])}'),
@@ -1199,76 +1321,14 @@ class _CaseEditorScreenState extends State<CaseEditorScreen>
     final hasAllergy =
         al.isNotEmpty && !const ['nkda', 'none', 'no', 'nka'].contains(al);
     final extra = specialtyFieldsFor(rec.s('specialty'));
-    final tpls = templatesFor(rec.s('specialty'));
+    final mine = [for (final t in templatesFor(rec.s('specialty'))) if (t.mine) t];
+    final fromChoices = ChoicesSync.historyText(rec);
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
         _fillNormalButton(history: true),
-        ChoicesSection(rec: rec, section: 'History', onChanged: _changed, write: _writeDerived),
-        if (tpls.isNotEmpty) ...[
-          Text('Quick templates',
-              style: Theme.of(context).textTheme.labelLarge),
-          const SizedBox(height: 4),
-          Wrap(
-            spacing: 6,
-            runSpacing: 0,
-            children: [
-              for (final t in tpls)
-                GestureDetector(
-                  onLongPress: t.mine ? () => _deleteMyTemplate(t) : null,
-                  child: ActionChip(
-                    avatar: Icon(t.mine ? Icons.person_outline : Icons.auto_fix_high, size: 16),
-                    label: Text(t.label),
-                    onPressed: () => _applyTemplate(t),
-                  ),
-                ),
-            ],
-          ),
-          const SizedBox(height: 4),
-        ],
-        Align(
-          alignment: AlignmentDirectional.centerStart,
-          child: TextButton.icon(
-            key: const ValueKey('save_my_template'),
-            style: TextButton.styleFrom(minimumSize: const Size(0, 48)),
-            onPressed: _saveMyTemplate,
-            icon: const Icon(Icons.bookmark_add_outlined, size: 18),
-            label: Text('Save this history as my template'),
-          ),
-        ),
-        const SizedBox(height: 4),
         _tf('cc', 'Chief complaint + duration', lines: 2),
-        _tf('hpi', 'History of presenting illness', lines: 6),
-        Padding(
-          padding: const EdgeInsets.only(bottom: 12),
-          child: Wrap(
-            spacing: 6,
-            children: [
-              ActionChip(
-                label: const Text('SOCRATES template'),
-                onPressed: () {
-                  final c = _tc('hpi');
-                  const tpl = 'Site: \nOnset: \nCharacter: \nRadiation: \n'
-                      'Associations: \nTime course: \nExacerbating/relieving: \nSeverity: \n';
-                  c.text = c.text.trim().isEmpty ? tpl : '${c.text}\n$tpl';
-                  rec.set('hpi', c.text);
-                  _changed();
-                },
-              ),
-              ActionChip(
-                label: const Text('Pertinent negatives'),
-                onPressed: () {
-                  final c = _tc('hpi');
-                  c.text = '${c.text.trim()}\nPertinent negatives: '.trim();
-                  rec.set('hpi', c.text);
-                  _changed();
-                },
-              ),
-            ],
-          ),
-        ),
-        _tf('pmh', 'Past medical history', lines: 2, unc: true),
-        _tf('drugs', 'Drug history (name, dose)', lines: 2, unc: true),
+        ChoicesSection(rec: rec, section: 'History', onChanged: _changed, write: _writeDerived),
         _tf('allergies', 'Allergies', hint: 'NKDA or list', unc: true),
         if (hasAllergy)
           Padding(
@@ -1287,9 +1347,28 @@ class _CaseEditorScreenState extends State<CaseEditorScreen>
               ],
             ),
           ),
+        // everything written in words lives in one folded block: the questions above already cover it
         _more(
-          'More history',
+          'Written history',
           [
+            _tf('hpi', 'History of presenting illness', lines: 6),
+            if (fromChoices.isNotEmpty)
+              Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: TextButton.icon(
+                  key: const ValueKey('hpi_from_choices'),
+                  onPressed: () {
+                    final c = _tc('hpi');
+                    if (!c.text.contains(fromChoices)) c.text = c.text.trim().isEmpty ? fromChoices : '${c.text.trim()}\n$fromChoices';
+                    rec.set('hpi', c.text);
+                    _changed();
+                  },
+                  icon: const Icon(Icons.subdirectory_arrow_left, size: 18),
+                  label: Text('Add my answers to the text'),
+                ),
+              ),
+            _tf('pmh', 'Past medical history', lines: 2, unc: true),
+            _tf('drugs', 'Drug history (name, dose)', lines: 2, unc: true),
             _tf('psh', 'Past surgical history', lines: 2),
             _tf('family', 'Family history', lines: 2, unc: true),
             _tf('social', 'Social history (smoking, occupation...)', lines: 2),
@@ -1308,14 +1387,32 @@ class _CaseEditorScreenState extends State<CaseEditorScreen>
               'Dysuria',
               'Headache',
             ]),
+            if (extra != null) ...[
+              SectionHeader('${tr(rec.s('specialty'))} • ${tr('specific')}'),
+              for (final f in extra) _tf(f[0], f[1], lines: 2),
+            ],
+            if (mine.isNotEmpty) ...[
+              Text('My templates', style: Theme.of(context).textTheme.labelLarge),
+              Wrap(spacing: 6, children: [
+                for (final t in mine)
+                  GestureDetector(
+                    onLongPress: () => _deleteMyTemplate(t),
+                    child: ActionChip(avatar: const Icon(Icons.person_outline, size: 16), label: Text(t.label), onPressed: () => _applyTemplate(t)),
+                  ),
+              ]),
+            ],
+            Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: TextButton.icon(
+                key: const ValueKey('save_my_template'),
+                onPressed: _saveMyTemplate,
+                icon: const Icon(Icons.bookmark_add_outlined, size: 18),
+                label: Text('Save this history as my template'),
+              ),
+            ),
           ],
-          open: ['psh', 'family', 'social', 'ros']
-              .any((k) => rec.s(k).isNotEmpty),
+          open: ['hpi', 'pmh', 'drugs', 'psh', 'family', 'social', 'ros'].any((k) => rec.s(k).isNotEmpty),
         ),
-        if (extra != null) ...[
-          SectionHeader('${tr(rec.s('specialty'))} • ${tr('specific')}'),
-          for (final f in extra) _tf(f[0], f[1], lines: 2),
-        ],
         _next(1),
       ],
     );
@@ -1728,7 +1825,7 @@ class _CaseEditorScreenState extends State<CaseEditorScreen>
             id: 'ex_general',
             title: tr('General examination'),
             icon: Icons.accessibility_new,
-            initiallyOpen: true,
+            initiallyOpen: rec.s('examGeneral').isNotEmpty,
             children: [
               _tf('examGeneral', 'General examination', lines: 3),
               _obs('obsGeneral', 'examGeneral'),
@@ -1747,7 +1844,7 @@ class _CaseEditorScreenState extends State<CaseEditorScreen>
             id: 'ex_systemic',
             title: tr('Systemic examination (CVS / Resp / Abd / CNS / MSK)'),
             icon: Icons.monitor_heart_outlined,
-            initiallyOpen: true,
+            initiallyOpen: rec.s('examSystemic').isNotEmpty,
             children: [
               _tf('examSystemic',
                   'Systemic examination (CVS / Resp / Abd / CNS / MSK)',
@@ -1769,7 +1866,7 @@ class _CaseEditorScreenState extends State<CaseEditorScreen>
             id: 'ex_focused',
             title: tr('Focused examination / positive findings'),
             icon: Icons.center_focus_strong_outlined,
-            initiallyOpen: true,
+            initiallyOpen: rec.s('examFocused').isNotEmpty,
             children: [
               _tf('examFocused', 'Focused examination / positive findings',
                   lines: 3),
@@ -3000,7 +3097,8 @@ class _CaseEditorScreenState extends State<CaseEditorScreen>
     final done = filled.where((e) => e).length;
     final cs = Theme.of(context).colorScheme;
 
-    Widget tab(IconData icon, String label, int i) {
+    Widget tab(IconData icon, String label, List<int> pages) {
+      final lit = pages.any((p) => filled[p]);
       return Tab(
         height: 58,
         child: Column(
@@ -3014,7 +3112,7 @@ class _CaseEditorScreenState extends State<CaseEditorScreen>
                   top: -2,
                   end: -5,
                   child: AnimatedScale(
-                    scale: filled[i] ? 1 : 0,
+                    scale: lit ? 1 : 0,
                     duration: const Duration(milliseconds: 250),
                     curve: Curves.easeOutBack,
                     child: Container(
@@ -3031,7 +3129,7 @@ class _CaseEditorScreenState extends State<CaseEditorScreen>
               ],
             ),
             const SizedBox(height: 2),
-            Text(label, style: const TextStyle(fontSize: 12)),
+            FittedBox(fit: BoxFit.scaleDown, child: Text(label, style: const TextStyle(fontSize: 12), maxLines: 1)),
           ],
         ),
       );
@@ -3040,8 +3138,8 @@ class _CaseEditorScreenState extends State<CaseEditorScreen>
     return AiContextScope(
       ctx: const AiScreenContext(kind: 'case', title: 'Case'),
       child: DefaultTabController(
-      length: 9,
-      initialIndex: widget.initialTab.clamp(0, 8),
+      length: 5,
+      initialIndex: _groupOf(widget.initialTab.clamp(0, 8)),
       child: PopScope(
         onPopInvokedWithResult: (didPop, _) {
           if (didPop) _flush();
@@ -3164,18 +3262,12 @@ class _CaseEditorScreenState extends State<CaseEditorScreen>
                 children: [
                   TabBar(
                     onTap: _rememberTab,
-                    isScrollable: true,
-                    tabAlignment: TabAlignment.start,
                     tabs: [
-                      tab(Icons.badge_outlined, trUi('Info'), 0),
-                      tab(Icons.history_edu_outlined, trUi('History'), 1),
-                      tab(Icons.monitor_heart_outlined, trUi('Exam'), 2),
-                      tab(Icons.biotech_outlined, trUi('Investigations'), 3),
-                      tab(Icons.psychology_outlined, trUi('Assessment'), 4),
-                      tab(Icons.medication_outlined, trUi('Management'), 5),
-                      tab(Icons.timeline, trUi('Progress'), 6),
-                      tab(Icons.school_outlined, trUi('Learning'), 7),
-                      tab(Icons.event_note_outlined, trUi('Timeline'), 8),
+                      tab(Icons.badge_outlined, trUi('Info'), [0]),
+                      tab(Icons.medical_services_outlined, trUi('Clinical'), [1, 2, 3]),
+                      tab(Icons.assignment_turned_in_outlined, trUi('Plan'), [4, 5]),
+                      tab(Icons.timeline, trUi('Follow-up'), [6, 8]),
+                      tab(Icons.school_outlined, trUi('Learning'), [7]),
                     ],
                   ),
                   AnimatedBar(done / filled.length, height: 3),
@@ -3183,6 +3275,7 @@ class _CaseEditorScreenState extends State<CaseEditorScreen>
               ),
             ),
           ),
+          bottomNavigationBar: _toolsBar(),
           body: Column(
             children: [
               if (_failedShown)
@@ -3205,17 +3298,7 @@ class _CaseEditorScreenState extends State<CaseEditorScreen>
                 ),
               Expanded(
                 child: TabBarView(
-                  children: [
-                    _info(),
-                    _history(),
-                    _exam(),
-                    _inv(),
-                    _assess(),
-                    _mgmt(),
-                    _progress(),
-                    _learn(),
-                    _timeline(),
-                  ],
+                  children: [for (var g = 0; g < _groups.length; g++) _group(g, filled)],
                 ),
               ),
             ],

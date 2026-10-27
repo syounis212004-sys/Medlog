@@ -11,6 +11,7 @@ import 'package:medlog/data.dart';
 import 'package:medlog/main.dart';
 import 'package:medlog/screens_cases.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
+import 'lib2_util.dart' show openPage;
 
 class FakePP extends PathProviderPlatform {
   final String dir;
@@ -122,7 +123,7 @@ void main() {
   testWidgets('exam fill: systems normal, vitals untouched', (tester) async {
     await boot(tester, 'en');
     final rec = store.cases['c0']!;
-    await tester.tap(find.byIcon(Icons.monitor_heart_outlined).first);
+    await openPage(tester, Icons.monitor_heart_outlined);
     await settle(tester, 1000);
     await fill(tester);
     final sys = rec.d['sys'] as Map;
@@ -158,7 +159,7 @@ void main() {
     await shot(tester, 'QF_ar_history_before');
     await fill(tester);
     await shot(tester, 'QF_ar_history');
-    await tester.tap(find.byIcon(Icons.monitor_heart_outlined).first);
+    await openPage(tester, Icons.monitor_heart_outlined);
     await settle(tester, 1000);
     await shot(tester, 'QF_ar_exam');
     await fill(tester);

@@ -97,6 +97,15 @@ class ChoicesRepo {
     parse(j);
     try {
       final manifest = await AssetManifest.loadFromAssetBundle(rootBundle);
+      final spec = [for (final a in manifest.listAssets()) if (RegExp(r'^assets/data/specialty_\d+\.json$').hasMatch(a)) a]..sort();
+      for (final f in spec) {
+        try {
+          parseSpecialty(jsonDecode(await rootBundle.loadString(f)) as Map);
+        } catch (_) {}
+      }
+    } catch (_) {}
+    try {
+      final manifest = await AssetManifest.loadFromAssetBundle(rootBundle);
       final files = [for (final a in manifest.listAssets()) if (RegExp(r'^assets/data/complaints_\d+\.json$').hasMatch(a)) a]..sort();
       for (final f in files) {
         try {
@@ -127,6 +136,25 @@ class ChoicesRepo {
     }
     final ids = {for (final t in add) t.id};
     _complaints = [for (final t in _complaints) if (!ids.contains(t.id)) t, ...add];
+  }
+
+  /// Templates of the first release of each specialty: cases answered with them keep their answers visible even when a
+  /// newer specialty file no longer has the same questions.
+  static Map<String, ChTemplate> legacy = {};
+
+  /// A specialty file replaces the template with the same id (or adds it); the replaced one is kept as [legacy].
+  static void parseSpecialty(Map j) {
+    final add = <ChTemplate>[];
+    for (final t in (j['templates'] as List? ?? const [])) {
+      if (t is! Map) continue;
+      add.add(ChTemplate('${t['id']}', '${t['specialty']}', [for (final a in (t['aliases'] as List? ?? const [])) '$a'],
+          [for (final st in (t['steps'] as List? ?? const [])) ChStep.fromJson(st as Map)]));
+    }
+    final ids = {for (final t in add) t.id};
+    for (final old in _all) {
+      if (ids.contains(old.id)) legacy.putIfAbsent(old.id, () => old);
+    }
+    _all = [for (final t in _all) if (!ids.contains(t.id)) t, ...add];
   }
 
   static void parse(Map j) {
@@ -250,9 +278,21 @@ class CaseChoices {
     final base = baseTemplate();
     if (base == null) return null;
     final extra = [for (final id in complaintIds) ChoicesRepo.byId(id)].whereType<ChTemplate>().toList();
-    if (extra.isEmpty) return base;
     final have = {for (final st in base.steps) st.id};
     final steps = [...base.steps];
+    // answers given with an earlier version of the specialty's questions stay visible
+    final old = ChoicesRepo.legacy[base.id];
+    final saved = rec.d['choices'];
+    if (old != null && saved is Map && saved['s'] is Map) {
+      for (final st in old.steps) {
+        final m = (saved['s'] as Map)[st.id];
+        if (!have.contains(st.id) && m is Map && (((m['v'] as List?) ?? const []).isNotEmpty || '${m['d'] ?? ''}'.trim().isNotEmpty)) {
+          have.add(st.id);
+          steps.add(st.inGroup(st.group.isEmpty ? 'Earlier questions' : st.group));
+        }
+      }
+    }
+    if (extra.isEmpty && steps.length == base.steps.length) return base;
     for (final t in extra) {
       for (final st in t.steps) {
         if (have.add(st.id)) steps.add(st);
@@ -390,6 +430,12 @@ const Set<String> kChoiceAdders = {'investigations', 'management'};
 /// Writes what the picks mean into the case's own fields, but only into fields that are empty or still hold the
 /// value written here earlier, so anything typed by the user is never overwritten.
 class ChoicesSync {
+  /// The History choices as sentences ("Site: Elbow."), to start the written history from them.
+  static String historyText(CaseRec rec) {
+    final lines = CaseChoices(rec).lines(section: 'History');
+    return [for (final l in lines) '${l[0]}: ${l[1]}${l[2].isEmpty ? '' : ' (${l[2]})'}.'].join('\n');
+  }
+
   /// Fields filled from choices: key -> last value written here.
   static Map<String, dynamic> _auto(CaseRec rec) {
     final v = rec.d['choicesAuto'];

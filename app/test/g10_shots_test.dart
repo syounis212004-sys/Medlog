@@ -7,6 +7,7 @@ import 'package:medlog/data.dart';
 import 'package:medlog/screens_cases.dart';
 
 import 'g5_test.dart' show boot, push, settle, shot;
+import 'lib2_util.dart' show openPage;
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -14,10 +15,11 @@ void main() {
     testWidgets('choices ui $lang', (tester) async {
       await tester.runAsync(() => ChoicesRepo.load());
       await boot(tester, lang);
+      store.settings['choicesAll'] = true; // this test walks every question of the tab
       final c = store.cases.values.firstWhere((x) => x.id == 'cA');
       c.d['specialty'] = 'Orthopedics';
       await push(tester, CaseEditorScreen(rec: c));
-      await tester.tap(find.byIcon(Icons.history_edu_outlined).first);
+      await openPage(tester, Icons.history_edu_outlined);
       await settle(tester, 700);
       await shot(tester, 'G10_${lang}_hist0');
       final elbow = find.text('Elbow');
@@ -39,10 +41,10 @@ void main() {
       cc.toggle(t, t.step('assessment')!, res['assessment']!, res['assessment']!.first.v);
       cc.toggle(t, t.step('diagnostic_certainty')!, res['diagnostic_certainty']!, 'Confirmed');
       ChoicesSync.derive(c, (k, v) => c.set(k, v));
-      await tester.tap(find.byIcon(Icons.psychology_outlined).first);
+      await openPage(tester, Icons.psychology_outlined);
       await settle(tester, 700);
       await shot(tester, 'G10_${lang}_assess');
-      await tester.tap(find.byIcon(Icons.medication_outlined).first);
+      await openPage(tester, Icons.medication_outlined);
       await settle(tester, 500);
       await shot(tester, 'G10_${lang}_mgmt');
       expect(tester.takeException(), isNull);

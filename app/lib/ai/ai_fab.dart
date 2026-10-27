@@ -28,8 +28,8 @@ class AiFab extends StatefulWidget {
   /// True while the user scrolls anything: the button fades so it never hides a list item.
   static final ValueNotifier<bool> scrolling = ValueNotifier<bool>(false);
 
-  /// Pages where the button is never drawn (administration, access, error log).
-  static const Set<String> neverOn = {'admin', 'access', 'errors'};
+  /// Pages where the button is never drawn (administration, access, error log, and the case editor: it has its own AI button in the bar).
+  static const Set<String> neverOn = {'admin', 'access', 'errors', 'case'};
 
   /// Size of the button and the room kept for the bottom bar.
   static const double size = 50;

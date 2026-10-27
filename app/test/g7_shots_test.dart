@@ -10,6 +10,7 @@ import 'package:medlog/screens_cases.dart';
 import 'package:medlog/screens_ref.dart';
 
 import 'g5_test.dart' show boot, push, settle, shot;
+import 'lib2_util.dart' show openPage;
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -58,10 +59,10 @@ void main() {
       ];
       await push(tester, CaseEditorScreen(rec: c));
       await shot(tester, 'G7_${lang}_case_info');
-      await tester.tap(find.byIcon(Icons.biotech_outlined).first);
+      await openPage(tester, Icons.biotech_outlined);
       await settle(tester, 700);
       await shot(tester, 'G7_${lang}_case_labs');
-      await tester.tap(find.byIcon(Icons.psychology_outlined).first);
+      await openPage(tester, Icons.psychology_outlined);
       await settle(tester, 700);
       await shot(tester, 'G7_${lang}_case_problems');
     });

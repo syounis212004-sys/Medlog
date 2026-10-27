@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart' show IconData, Icons;
+import 'package:flutter_test/flutter_test.dart' show WidgetTester, find;
 import 'dart:convert';
 import 'dart:io';
 
@@ -64,4 +66,32 @@ Future<HttpServer> serveBuild() async {
     await req.response.close();
   });
   return server;
+}
+
+/// The nine pages of a case live in five tabs: opens the tab of the page, then the page.
+Future<void> openPage(WidgetTester tester, IconData icon) async {
+  final tabOf = <IconData, IconData>{
+    Icons.history_edu_outlined: Icons.medical_services_outlined,
+    Icons.monitor_heart_outlined: Icons.medical_services_outlined,
+    Icons.biotech_outlined: Icons.medical_services_outlined,
+    Icons.psychology_outlined: Icons.assignment_turned_in_outlined,
+    Icons.medication_outlined: Icons.assignment_turned_in_outlined,
+    Icons.timeline: Icons.timeline,
+    Icons.event_note_outlined: Icons.timeline,
+  };
+  final tab = tabOf[icon];
+  if (tab != null) {
+    await tester.tap(find.byIcon(tab).first);
+    for (var i = 0; i < 10; i++) {
+      await tester.pump(const Duration(milliseconds: 50));
+    }
+    if (tab != icon) {
+      await tester.tap(find.byIcon(icon).first);
+    }
+  } else {
+    await tester.tap(find.byIcon(icon).first);
+  }
+  for (var i = 0; i < 12; i++) {
+    await tester.pump(const Duration(milliseconds: 50));
+  }
 }

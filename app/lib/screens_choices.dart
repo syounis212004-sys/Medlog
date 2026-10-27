@@ -175,7 +175,7 @@ class _ChoicesSectionState extends State<ChoicesSection> {
       );
     }
     var done = 0;
-    for (final s in shown) {
+    for (final s in steps) {
       if (cc.pick(s.id).v.isNotEmpty) done++;
     }
     return Card(
@@ -186,10 +186,10 @@ class _ChoicesSectionState extends State<ChoicesSection> {
         initiallyExpanded: widget.section == 'History' || widget.section == 'Assessment',
         leading: const Icon(Icons.touch_app_outlined),
         title: Text('Quick choices', style: const TextStyle(fontWeight: FontWeight.w700)),
-        subtitle: _en('${t.specialty}  •  $done/${shown.length}', style: theme.textTheme.bodySmall),
+        subtitle: _en('${t.specialty}  •  $done/${steps.length}', style: theme.textTheme.bodySmall),
         childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
         expandedCrossAxisAlignment: CrossAxisAlignment.start,
-        children: _all ? _allChildren(cc, t, shown, resolved, hidden, theme) : _guidedChildren(cc, t, shown, resolved, theme, done),
+        children: _all ? _allChildren(cc, t, shown, resolved, hidden, theme) : _guidedChildren(cc, t, shown, steps, resolved, theme, done),
       ),
     );
   }
@@ -204,7 +204,7 @@ class _ChoicesSectionState extends State<ChoicesSection> {
       );
 
   /// One question at a time: the first unanswered one (or the one you went back to), with the progress above it.
-  List<Widget> _guidedChildren(CaseChoices cc, ChTemplate t, List<ChStep> shown, Map<String, List<ChOption>> resolved, ThemeData theme, int done) {
+  List<Widget> _guidedChildren(CaseChoices cc, ChTemplate t, List<ChStep> shown, List<ChStep> steps, Map<String, List<ChOption>> resolved, ThemeData theme, int done) {
     bool answered(ChStep st) => cc.pick(st.id).v.isNotEmpty || cc.pick(st.id).details.isNotEmpty;
     var cur = -1;
     if (_focus != null && _focus! >= 0 && _focus! < shown.length) {
@@ -222,18 +222,17 @@ class _ChoicesSectionState extends State<ChoicesSection> {
       Padding(
         padding: const EdgeInsets.only(top: 4, bottom: 4),
         child: Row(children: [
-          Expanded(child: AnimatedBar(shown.isEmpty ? 0 : done / shown.length, height: 6)),
+          Expanded(child: AnimatedBar(steps.isEmpty ? 0 : done / steps.length, height: 6)),
           const SizedBox(width: 8),
-          Text(cur >= 0 ? trp('Question {i} of {n}', {'i': cur + 1, 'n': shown.length}) : '$done/${shown.length}', style: theme.textTheme.labelMedium),
+          Text(cur >= 0 ? trp('Question {i} of {n}', {'i': steps.indexOf(shown[cur]) + 1, 'n': steps.length}) : '$done/${steps.length}', style: theme.textTheme.labelMedium),
         ]),
       ),
     ];
     if (cur >= 0) {
       final st = shown[cur];
       if (st.group.isNotEmpty) out.add(_groupHeader(st, theme));
-      out.add(KeyedSubtree(key: ValueKey('guided_${st.id}'), child: _stepView(cc, t, st, resolved[st.id] ?? st.options)));
       out.add(Padding(
-        padding: const EdgeInsets.only(top: 8),
+        padding: const EdgeInsets.only(top: 4),
         child: Row(children: [
           if (cur > 0) TextButton.icon(onPressed: () => setState(() => _focus = cur - 1), icon: const Icon(Icons.chevron_left, size: 18), label: Text('Back')),
           const Spacer(),
@@ -252,6 +251,7 @@ class _ChoicesSectionState extends State<ChoicesSection> {
             ),
         ]),
       ));
+      out.add(KeyedSubtree(key: ValueKey('guided_${st.id}'), child: _stepView(cc, t, st, resolved[st.id] ?? st.options, guided: true)));
     } else {
       out.add(Padding(
         padding: const EdgeInsets.symmetric(vertical: 8),
@@ -406,12 +406,26 @@ class _ChoicesSectionState extends State<ChoicesSection> {
     );
   }
 
-  Widget _stepView(CaseChoices cc, ChTemplate t, ChStep s, List<ChOption> options) {
+  String _optFilter = '';
+  String _optFilterFor = '';
+
+  Widget _stepView(CaseChoices cc, ChTemplate t, ChStep s, List<ChOption> options, {bool guided = false}) {
     final theme = Theme.of(context);
     final p = cc.pick(s.id);
     final stale = cc.stale(s, options);
     final adder = kChoiceAdders.contains(s.id);
-    final inline = options.length <= _kInlineMax;
+    final inline = guided || options.length <= _kInlineMax;
+    // a long list in guided mode: the options you use most first, and a filter box when it is very long
+    if (guided && _optFilterFor != s.id) {
+      _optFilterFor = s.id;
+      _optFilter = '';
+    }
+    var shownOptions = options;
+    if (guided && options.length > 10) {
+      final freq = ChoiceUsage.topPicks(widget.rec, s.id, [for (final o in options) o.v]);
+      shownOptions = [for (final f in freq) options.firstWhere((o) => o.v == f), for (final o in options) if (!freq.contains(o.v)) o];
+    }
+    if (guided && _optFilter.isNotEmpty) shownOptions = [for (final o in shownOptions) if (o.v.toLowerCase().contains(_optFilter) || p.v.contains(o.v)) o];
     final selected = [for (final o in options) if (p.v.contains(o.v)) o];
     return Padding(
       padding: const EdgeInsets.only(top: 12),
@@ -435,11 +449,20 @@ class _ChoicesSectionState extends State<ChoicesSection> {
         if (adder)
           Text(s.id == 'investigations' ? 'Chosen tests go to the investigations list below.' : 'Chosen items go to the plan list below.',
               style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant))
-        else if (inline)
+        else if (inline) ...[
+          if (guided && options.length > 20)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 6),
+              child: TextField(
+                key: ValueKey('filter_${s.id}'),
+                decoration: InputDecoration(isDense: true, prefixIcon: const Icon(Icons.search), labelText: tr('Search')),
+                onChanged: (v) => setState(() => _optFilter = v.trim().toLowerCase()),
+              ),
+            ),
           Directionality(
             textDirection: TextDirection.ltr,
             child: Wrap(spacing: 6, runSpacing: 2, children: [
-              for (final o in options)
+              for (final o in shownOptions)
                 s.multi
                     ? FilterChip(
                         label: m.Text(o.v),
@@ -455,6 +478,7 @@ class _ChoicesSectionState extends State<ChoicesSection> {
                       ),
             ]),
           )
+        ]
         else if (selected.isNotEmpty)
           Directionality(
             textDirection: TextDirection.ltr,

@@ -7,6 +7,7 @@ import 'package:medlog/data.dart';
 import 'package:medlog/screens_cases.dart';
 
 import 'g5_test.dart' show boot, push, settle, shot;
+import 'lib2_util.dart' show openPage;
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -57,7 +58,7 @@ void main() {
     c.d['specialty'] = 'Emergency';
     c.d['cc'] = 'Chest pain';
     await push(tester, CaseEditorScreen(rec: c));
-    await tester.tap(find.byIcon(Icons.history_edu_outlined).first);
+    await openPage(tester, Icons.history_edu_outlined);
     await settle(tester, 700);
     expect(find.text('Complaint templates'), findsOneWidget);
     expect(find.text('Chest pain'), findsWidgets);
@@ -81,21 +82,22 @@ void main() {
     c.d['specialty'] = 'Orthopedics';
     c.d.remove('choices');
     await push(tester, CaseEditorScreen(rec: c));
-    await tester.tap(find.byIcon(Icons.history_edu_outlined).first);
+    await openPage(tester, Icons.history_edu_outlined);
     await settle(tester, 700);
     expect(find.textContaining('Question 1 of'), findsOneWidget);
     await shot(tester, 'G11_guided_1');
-    await tester.tap(find.text('Choose').first); // a long list opens its sheet
-    await settle(tester, 500);
+    expect(find.text('Choose'), findsNothing); // no sheet: the options of the question are on the page
     expect(find.text('Elbow'), findsWidgets);
     await tester.tap(find.text('Elbow').first);
     await settle(tester, 600);
     expect(CaseChoices(c).pick('site').v, ['Elbow']);
     expect(find.textContaining('Question 2 of'), findsOneWidget); // moved on by itself
     await shot(tester, 'G11_guided_2');
+    await tester.ensureVisible(find.text('Skip').first);
     await tester.tap(find.text('Skip').first);
     await settle(tester, 500);
-    expect(find.textContaining('skipped: tap to answer'), findsOneWidget);
+    expect(find.textContaining('Question 3 of'), findsOneWidget); // skipping moves on
+    await tester.ensureVisible(find.text('Show all questions').first);
     await tester.tap(find.text('Show all questions').first);
     await settle(tester, 600);
     expect(store.settings['choicesAll'], true);
