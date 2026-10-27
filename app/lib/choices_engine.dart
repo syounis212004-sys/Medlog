@@ -96,6 +96,14 @@ class ChoicesRepo {
     final j = jsonDecode(await rootBundle.loadString('assets/data/choices.json')) as Map;
     parse(j);
     try {
+      // the first release of the specialty questions: answers given with them stay visible in older cases
+      final v1 = jsonDecode(await rootBundle.loadString('assets/data/choices_v1.json')) as Map;
+      for (final t in v1['templates'] as List) {
+        t as Map;
+        legacy['${t['id']}'] = ChTemplate('${t['id']}', '${t['specialty']}', const [], [for (final st in t['steps'] as List) ChStep.fromJson(st as Map)]);
+      }
+    } catch (_) {}
+    try {
       final manifest = await AssetManifest.loadFromAssetBundle(rootBundle);
       final spec = [for (final a in manifest.listAssets()) if (RegExp(r'^assets/data/specialty_\d+\.json$').hasMatch(a)) a]..sort();
       for (final f in spec) {

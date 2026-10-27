@@ -71,13 +71,13 @@ Future<HttpServer> serveBuild() async {
 /// The nine pages of a case live in five tabs: opens the tab of the page, then the page.
 Future<void> openPage(WidgetTester tester, IconData icon) async {
   final tabOf = <IconData, IconData>{
-    Icons.history_edu_outlined: Icons.medical_services_outlined,
+    Icons.forum_outlined: Icons.medical_services_outlined,
     Icons.monitor_heart_outlined: Icons.medical_services_outlined,
     Icons.biotech_outlined: Icons.medical_services_outlined,
-    Icons.psychology_outlined: Icons.assignment_turned_in_outlined,
-    Icons.medication_outlined: Icons.assignment_turned_in_outlined,
-    Icons.timeline: Icons.timeline,
-    Icons.event_note_outlined: Icons.timeline,
+    Icons.psychology_outlined: Icons.fact_check_outlined,
+    Icons.healing_outlined: Icons.fact_check_outlined,
+    Icons.trending_up_outlined: Icons.update_outlined,
+    Icons.timeline_outlined: Icons.update_outlined,
   };
   final tab = tabOf[icon];
   if (tab != null) {

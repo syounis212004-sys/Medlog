@@ -2834,6 +2834,7 @@ const Map<String, String> kAr = {
   'My templates': 'قوالبي',
   'Clinical': 'السريري',
   'Doses': 'الجرعات',
+  'Next ({n} selected)': 'التالي ({n} محدد)',
   'Annotate': 'رسم وتعليم',
   'Label': 'تسمية',
   'e.g. fracture line': 'مثال: خط الكسر',

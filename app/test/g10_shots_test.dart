@@ -19,7 +19,7 @@ void main() {
       final c = store.cases.values.firstWhere((x) => x.id == 'cA');
       c.d['specialty'] = 'Orthopedics';
       await push(tester, CaseEditorScreen(rec: c));
-      await openPage(tester, Icons.history_edu_outlined);
+      await openPage(tester, Icons.forum_outlined);
       await settle(tester, 700);
       await shot(tester, 'G10_${lang}_hist0');
       final elbow = find.text('Elbow');
@@ -44,7 +44,7 @@ void main() {
       await openPage(tester, Icons.psychology_outlined);
       await settle(tester, 700);
       await shot(tester, 'G10_${lang}_assess');
-      await openPage(tester, Icons.medication_outlined);
+      await openPage(tester, Icons.healing_outlined);
       await settle(tester, 500);
       await shot(tester, 'G10_${lang}_mgmt');
       expect(tester.takeException(), isNull);

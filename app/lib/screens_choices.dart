@@ -251,7 +251,7 @@ class _ChoicesSectionState extends State<ChoicesSection> {
             ),
         ]),
       ));
-      out.add(KeyedSubtree(key: ValueKey('guided_${st.id}'), child: _stepView(cc, t, st, resolved[st.id] ?? st.options, guided: true)));
+      out.add(KeyedSubtree(key: ValueKey('guided_${st.id}'), child: _stepView(cc, t, st, resolved[st.id] ?? st.options, guided: true, onNext: () => setState(() => _focus = cur + 1 < shown.length ? cur + 1 : null))));
     } else {
       out.add(Padding(
         padding: const EdgeInsets.symmetric(vertical: 8),
@@ -406,10 +406,82 @@ class _ChoicesSectionState extends State<ChoicesSection> {
     );
   }
 
+  static const Set<String> _metaAnswers = {'Not assessed', 'Unable to assess', 'Other'};
+
+  /// The options of the question on the page as rows: a radio for one answer, a check box for several, with the
+  /// answers "Not assessed / Unable to assess / Other" apart at the bottom. One answer moves on by itself; for
+  /// several a visible button moves on and says how many are chosen.
+  Widget _optionRows(CaseChoices cc, ChTemplate t, ChStep s, List<ChOption> shown, List<ChOption> all, ChPick p, VoidCallback? onNext) {
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    final main = [for (final o in shown) if (!_metaAnswers.contains(o.v)) o];
+    final meta = [for (final o in shown) if (_metaAnswers.contains(o.v)) o];
+    Widget row(ChOption o, {bool muted = false}) {
+      final on = p.v.contains(o.v);
+      final icon = s.multi ? (on ? Icons.check_box : Icons.check_box_outline_blank) : (on ? Icons.radio_button_checked : Icons.radio_button_unchecked);
+      return Material(
+        color: on ? cs.primaryContainer.withAlpha(120) : Colors.transparent,
+        child: InkWell(
+          key: ValueKey('opt_${s.id}_${o.v}'),
+          onTap: () => _tap(cc, t, s, all, o.v),
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 12, vertical: muted ? 8 : 11),
+            child: Row(children: [
+              Icon(icon, size: 22, color: on ? cs.primary : cs.outline),
+              const SizedBox(width: 12),
+              Expanded(
+                child: m.Text(o.v, style: (muted ? theme.textTheme.bodyMedium?.copyWith(color: cs.onSurfaceVariant) : theme.textTheme.bodyLarge)?.copyWith(fontWeight: on ? FontWeight.w700 : null)),
+              ),
+            ]),
+          ),
+        ),
+      );
+    }
+
+    Widget group(List<ChOption> list, {bool muted = false}) => Container(
+          decoration: BoxDecoration(
+            border: Border.all(color: cs.outlineVariant),
+            borderRadius: BorderRadius.circular(14),
+          ),
+          clipBehavior: Clip.antiAlias,
+          child: Column(children: [
+            for (var i = 0; i < list.length; i++) ...[
+              if (i > 0) Divider(height: 1, color: cs.outlineVariant.withAlpha(120)),
+              row(list[i], muted: muted),
+            ],
+          ]),
+        );
+
+    final n = p.v.length;
+    return Directionality(
+      textDirection: TextDirection.ltr,
+      child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        if (main.isNotEmpty) group(main),
+        if (meta.isNotEmpty) ...[
+          const SizedBox(height: 8),
+          group(meta, muted: true),
+        ],
+        if (s.multi && onNext != null) ...[
+          const SizedBox(height: 10),
+          Directionality(
+            textDirection: Directionality.of(context) == TextDirection.ltr ? TextDirection.ltr : TextDirection.rtl,
+            child: FilledButton.icon(
+              key: ValueKey('next_${s.id}'),
+              onPressed: onNext,
+              icon: const Icon(Icons.arrow_forward),
+              iconAlignment: IconAlignment.end,
+              label: Text(n == 0 ? tr('Skip') : trp('Next ({n} selected)', {'n': n})),
+            ),
+          ),
+        ],
+      ]),
+    );
+  }
+
   String _optFilter = '';
   String _optFilterFor = '';
 
-  Widget _stepView(CaseChoices cc, ChTemplate t, ChStep s, List<ChOption> options, {bool guided = false}) {
+  Widget _stepView(CaseChoices cc, ChTemplate t, ChStep s, List<ChOption> options, {bool guided = false, VoidCallback? onNext}) {
     final theme = Theme.of(context);
     final p = cc.pick(s.id);
     final stale = cc.stale(s, options);
@@ -459,6 +531,9 @@ class _ChoicesSectionState extends State<ChoicesSection> {
                 onChanged: (v) => setState(() => _optFilter = v.trim().toLowerCase()),
               ),
             ),
+          if (guided)
+            _optionRows(cc, t, s, shownOptions, options, p, onNext)
+          else
           Directionality(
             textDirection: TextDirection.ltr,
             child: Wrap(spacing: 6, runSpacing: 2, children: [

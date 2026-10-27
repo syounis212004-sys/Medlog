@@ -666,15 +666,15 @@ class _CaseEditorScreenState extends State<CaseEditorScreen>
       };
 
   static const List<(IconData, String)> _pageChip = [
-    (Icons.badge_outlined, 'Info'),
-    (Icons.history_edu_outlined, 'History'),
+    (Icons.assignment_ind_outlined, 'Info'),
+    (Icons.forum_outlined, 'History'),
     (Icons.monitor_heart_outlined, 'Exam'),
     (Icons.biotech_outlined, 'Investigations'),
     (Icons.psychology_outlined, 'Assessment'),
-    (Icons.medication_outlined, 'Management'),
-    (Icons.timeline, 'Progress'),
+    (Icons.healing_outlined, 'Management'),
+    (Icons.trending_up_outlined, 'Progress'),
     (Icons.school_outlined, 'Learning'),
-    (Icons.event_note_outlined, 'Timeline'),
+    (Icons.timeline_outlined, 'Timeline'),
   ];
 
   /// One tab: its page, with the chips that switch between its pages when it has several.
@@ -748,8 +748,8 @@ class _CaseEditorScreenState extends State<CaseEditorScreen>
         child: Row(children: [
           tool(Icons.menu_book_outlined, trUi('Library'), () => open(() => LibraryScreen(initialQuery: topic)), key: 'tool_library'),
           tool(Icons.calculate_outlined, trUi('Calculators'), () => open(() => CalculatorsScreen(attachTo: rec)), key: 'tool_calcs'),
-          tool(Icons.vaccines_outlined, trUi('Doses'), () => open(() => DosingScreen(patient: DoseContext.fromCase(rec))), key: 'tool_doses'),
-          tool(Icons.search, trUi('Search'), () => open(() => SearchScreen(initial: topic)), key: 'tool_search'),
+          tool(Icons.medication_outlined, trUi('Doses'), () => open(() => DosingScreen(patient: DoseContext.fromCase(rec))), key: 'tool_doses'),
+          tool(Icons.search_outlined, trUi('Search'), () => open(() => SearchScreen(initial: topic)), key: 'tool_search'),
         ]),
       ),
     );
@@ -3263,10 +3263,10 @@ class _CaseEditorScreenState extends State<CaseEditorScreen>
                   TabBar(
                     onTap: _rememberTab,
                     tabs: [
-                      tab(Icons.badge_outlined, trUi('Info'), [0]),
+                      tab(Icons.assignment_ind_outlined, trUi('Info'), [0]),
                       tab(Icons.medical_services_outlined, trUi('Clinical'), [1, 2, 3]),
-                      tab(Icons.assignment_turned_in_outlined, trUi('Plan'), [4, 5]),
-                      tab(Icons.timeline, trUi('Follow-up'), [6, 8]),
+                      tab(Icons.fact_check_outlined, trUi('Plan'), [4, 5]),
+                      tab(Icons.update_outlined, trUi('Follow-up'), [6, 8]),
                       tab(Icons.school_outlined, trUi('Learning'), [7]),
                     ],
                   ),

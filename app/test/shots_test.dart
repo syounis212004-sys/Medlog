@@ -220,7 +220,7 @@ void tour2() {
       await tester.tap(find.text('Acute coronary syndrome').first);
       await settle(tester, 1500);
       await shot(tester, 'h_${tag}_editor_info');
-      await openPage(tester, Icons.history_edu_outlined);
+      await openPage(tester, Icons.forum_outlined);
       await settle(tester, 800);
       await shot(tester, 'h_${tag}_editor_history');
     });
@@ -349,7 +349,7 @@ void tourA() {
       await settle(tester);
       await tester.tap(find.text('Acute coronary syndrome').first);
       await settle(tester, 1200);
-      await openPage(tester, Icons.history_edu_outlined);
+      await openPage(tester, Icons.forum_outlined);
       await settle(tester, 600);
       final ccField = find.byType(TextField).first;
       await tester.enterText(ccField, 'Changed complaint text');
@@ -644,7 +644,7 @@ void tourD() {
       nav0.push(MaterialPageRoute(builder: (_) => CaseEditorScreen(rec: store.cases['c0']!, initialTab: 2)));
       await settle(tester, 1500);
       await shot(tester, 'D_${lang}_exam');
-      await openPage(tester, Icons.event_note_outlined);
+      await openPage(tester, Icons.timeline_outlined);
       await settle(tester, 1000);
       await shot(tester, 'D_${lang}_timeline');
       await openPage(tester, Icons.school_outlined);

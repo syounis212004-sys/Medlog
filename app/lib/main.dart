@@ -472,9 +472,9 @@ class _NavItem {
 
 const List<_NavItem> _kNav = [
   _NavItem(Icons.home_outlined, Icons.home_rounded, 'Home'),
-  _NavItem(Icons.folder_copy_outlined, Icons.folder_copy, 'Cases'),
+  _NavItem(Icons.folder_shared_outlined, Icons.folder_shared, 'Cases'),
   _NavItem(Icons.local_library_outlined, Icons.local_library, 'Library'),
-  _NavItem(Icons.school_outlined, Icons.school, 'Learn'),
+  _NavItem(Icons.lightbulb_outlined, Icons.lightbulb, 'Learn'),
 ];
 
 /// Bottom bar with a sliding pill, bouncing icons and a raised "add case" button.
