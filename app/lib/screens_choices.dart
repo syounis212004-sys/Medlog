@@ -163,7 +163,19 @@ class _ChoicesSectionState extends State<ChoicesSection> {
         childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
         expandedCrossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          for (final s in shown) _stepView(cc, t, s, resolved[s.id] ?? s.options),
+          if (widget.section == 'History') _complaintBar(cc),
+          for (var i = 0; i < shown.length; i++) ...[
+            if (shown[i].group.isNotEmpty && (i == 0 || shown[i - 1].group != shown[i].group))
+              Padding(
+                padding: const EdgeInsets.only(top: 16),
+                child: Row(children: [
+                  Icon(Icons.assignment_outlined, size: 16, color: theme.colorScheme.primary),
+                  const SizedBox(width: 6),
+                  Expanded(child: _en(shown[i].group, style: theme.textTheme.titleSmall?.copyWith(color: theme.colorScheme.primary))),
+                ]),
+              ),
+            _stepView(cc, t, shown[i], resolved[shown[i].id] ?? shown[i].options),
+          ],
           if (hidden > 0)
             Padding(
               padding: const EdgeInsets.only(top: 8),
@@ -173,6 +185,76 @@ class _ChoicesSectionState extends State<ChoicesSection> {
           Text('Choices record what you found or decided. An empty step means not documented.',
               style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
         ],
+      ),
+    );
+  }
+
+  /// Complaint templates of the case (chest pain, fever, ...): the ones added, the ones the chief complaint suggests,
+  /// and a button for the full list. Their questions follow the specialty's in the tabs.
+  Widget _complaintBar(CaseChoices cc) {
+    final theme = Theme.of(context);
+    if (ChoicesRepo.complaints.isEmpty) return const SizedBox.shrink();
+    final attached = cc.complaintIds;
+    final sug = [for (final c in ChoicesRepo.suggest(widget.rec.s('cc'))) if (!attached.contains(c.id)) c];
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 4),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Text('Complaint templates', style: theme.textTheme.labelLarge),
+        const SizedBox(height: 4),
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: Wrap(spacing: 6, runSpacing: 2, children: [
+            for (final id in attached)
+              if (ChoicesRepo.byId(id) != null)
+                InputChip(
+                  avatar: const Icon(Icons.assignment_outlined, size: 16),
+                  label: m.Text(ChoicesRepo.byId(id)!.specialty),
+                  visualDensity: VisualDensity.compact,
+                  onDeleted: () {
+                    cc.removeComplaint(id);
+                    _changed();
+                  },
+                ),
+            for (final c in sug)
+              ActionChip(
+                avatar: const Icon(Icons.add, size: 16),
+                label: m.Text(c.specialty),
+                visualDensity: VisualDensity.compact,
+                onPressed: () {
+                  cc.addComplaint(c.id);
+                  _changed();
+                },
+              ),
+            ActionChip(
+              avatar: const Icon(Icons.list_alt, size: 16),
+              label: m.Text(tr('More complaints')),
+              visualDensity: VisualDensity.compact,
+              onPressed: () => _openComplaints(cc),
+            ),
+          ]),
+        ),
+        if (attached.isEmpty && sug.isEmpty)
+          Padding(
+            padding: const EdgeInsets.only(top: 4),
+            child: Text('Add a complaint template to get the questions of that presentation (for example chest pain or fever).', style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+          ),
+      ]),
+    );
+  }
+
+  Future<void> _openComplaints(CaseChoices cc) async {
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      builder: (ctx) => _ComplaintSheet(
+        specialty: widget.rec.s('specialty'),
+        attached: cc.complaintIds,
+        onToggle: (id, on) {
+          on ? cc.addComplaint(id) : cc.removeComplaint(id);
+          _changed();
+          return cc.complaintIds;
+        },
       ),
     );
   }
@@ -483,4 +565,80 @@ class _DetailFieldState extends State<_DetailField> {
           onChanged: widget.onChanged,
         ),
       );
+}
+
+
+class _ComplaintSheet extends StatefulWidget {
+  final String specialty;
+  final List<String> attached;
+  final List<String> Function(String id, bool on) onToggle;
+  const _ComplaintSheet({required this.specialty, required this.attached, required this.onToggle});
+  @override
+  State<_ComplaintSheet> createState() => _ComplaintSheetState();
+}
+
+class _ComplaintSheetState extends State<_ComplaintSheet> {
+  late List<String> _sel = List<String>.from(widget.attached);
+  String _q = '';
+
+  String _sourceLine(ChTemplate t) {
+    final names = <String>[];
+    for (final id in t.sourceIds) {
+      final pub = ChoicesRepo.sources[id]?['publisher'] ?? '';
+      final short = pub.contains('NICE') || pub.contains('National Institute for Health and Care') ? 'NICE' : (pub.contains('National Heart') ? 'NHLBI' : (pub.contains('Centers for Disease') ? 'CDC' : (pub.contains('British Thoracic') ? 'BTS' : '')));
+      if (short.isNotEmpty && !names.contains(short)) names.add(short);
+    }
+    return names.join(' • ');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final all = ChoicesRepo.complaintsFor(widget.specialty);
+    final list = [
+      for (final t in all)
+        if (_q.isEmpty || t.specialty.toLowerCase().contains(_q) || t.aliases.any((a) => a.toLowerCase().contains(_q))) t
+    ];
+    return SafeArea(
+      child: Padding(
+        padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+        child: SizedBox(
+          height: MediaQuery.of(context).size.height * 0.75,
+          child: Column(children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+              child: Row(children: [
+                Expanded(child: Text('Complaint templates', style: theme.textTheme.titleMedium)),
+                FilledButton(onPressed: () => Navigator.pop(context), child: Text('Done')),
+              ]),
+            ),
+            if (ChoicesRepo.complaintStatus.contains('pending'))
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                child: Text('Draft content: it has not been through a clinical review yet. It lists what to document; it is not advice.', style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.error)),
+              ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+              child: TextField(
+                decoration: InputDecoration(isDense: true, prefixIcon: const Icon(Icons.search), labelText: tr('Search')),
+                onChanged: (v) => setState(() => _q = v.trim().toLowerCase()),
+              ),
+            ),
+            Expanded(
+              child: ListView(children: [
+                for (final t in list)
+                  CheckboxListTile(
+                    dense: true,
+                    value: _sel.contains(t.id),
+                    title: _en(t.specialty),
+                    subtitle: _en([trp('{n} questions', {'n': t.steps.length}), _sourceLine(t)].where((e) => e.isNotEmpty).join('  •  ')),
+                    onChanged: (v) => setState(() => _sel = widget.onToggle(t.id, v == true)),
+                  ),
+              ]),
+            ),
+          ]),
+        ),
+      ),
+    );
+  }
 }

@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:flutter/services.dart' show rootBundle;
+import 'package:flutter/services.dart' show AssetManifest, rootBundle;
 
 import 'data.dart';
 
@@ -29,7 +29,12 @@ class ChStep {
   final List<String> dependsOn;
   final List<ChOption> options;
   final String detailsLabel;
-  const ChStep(this.id, this.label, this.section, this.multi, this.dependsOn, this.options, this.detailsLabel);
+
+  /// The complaint a step belongs to ('' for the specialty's own steps).
+  final String group;
+  const ChStep(this.id, this.label, this.section, this.multi, this.dependsOn, this.options, this.detailsLabel, [this.group = '']);
+
+  ChStep inGroup(String g) => ChStep(id, label, section, multi, dependsOn, options, detailsLabel, g);
 
   factory ChStep.fromJson(Map j) => ChStep(
         '${j['id']}',
@@ -46,7 +51,10 @@ class ChTemplate {
   final String id, specialty;
   final List<String> aliases;
   final List<ChStep> steps;
-  const ChTemplate(this.id, this.specialty, this.aliases, this.steps);
+
+  /// Complaint templates: the app specialties they are offered first for, and the ids of their sources.
+  final List<String> appliesTo, sourceIds;
+  const ChTemplate(this.id, this.specialty, this.aliases, this.steps, {this.appliesTo = const [], this.sourceIds = const []});
 
   ChStep? step(String id) {
     for (final s in steps) {
@@ -75,10 +83,50 @@ class ChoicesRepo {
   static String reviewStatus = '';
   static bool loaded = false;
 
+  static List<ChTemplate> _complaints = const [];
+
+  /// The sources the complaint files cite: id -> {title, publisher, url, license}.
+  static Map<String, Map<String, String>> sources = {};
+  static String complaintStatus = '';
+
+  static List<ChTemplate> get complaints => _complaints;
+
   static Future<void> load() async {
     if (loaded) return;
     final j = jsonDecode(await rootBundle.loadString('assets/data/choices.json')) as Map;
     parse(j);
+    try {
+      final manifest = await AssetManifest.loadFromAssetBundle(rootBundle);
+      final files = [for (final a in manifest.listAssets()) if (RegExp(r'^assets/data/complaints_\d+\.json$').hasMatch(a)) a]..sort();
+      for (final f in files) {
+        try {
+          parseComplaints(jsonDecode(await rootBundle.loadString(f)) as Map);
+        } catch (_) {}
+      }
+    } catch (_) {}
+  }
+
+  static void parseComplaints(Map j) {
+    final meta = (j['meta'] as Map?) ?? const {};
+    for (final src in (meta['sources'] as List? ?? const [])) {
+      if (src is Map) sources['${src['id']}'] = {for (final e in src.entries) '${e.key}': '${e.value}'};
+    }
+    if ('${meta['status'] ?? ''}'.isNotEmpty) complaintStatus = '${meta['status']}';
+    final add = <ChTemplate>[];
+    for (final t in (j['templates'] as List? ?? const [])) {
+      if (t is! Map) continue;
+      final name = '${t['specialty']}';
+      add.add(ChTemplate(
+        '${t['id']}',
+        name,
+        [for (final a in (t['aliases'] as List? ?? const [])) '$a'],
+        [for (final st in (t['steps'] as List? ?? const [])) ChStep.fromJson(st as Map).inGroup(name)],
+        appliesTo: [for (final a in (t['appliesTo'] as List? ?? const [])) '$a'],
+        sourceIds: [for (final a in (t['sourceIds'] as List? ?? const [])) '$a'],
+      ));
+    }
+    final ids = {for (final t in add) t.id};
+    _complaints = [for (final t in _complaints) if (!ids.contains(t.id)) t, ...add];
   }
 
   static void parse(Map j) {
@@ -117,7 +165,35 @@ class ChoicesRepo {
     for (final t in _all) {
       if (t.id == id) return t;
     }
+    for (final t in _complaints) {
+      if (t.id == id) return t;
+    }
     return null;
+  }
+
+  /// Complaint templates for the picker: the ones meant for the specialty first, then the rest, each alphabetical.
+  static List<ChTemplate> complaintsFor(String specialty) {
+    final key = _norm(specialty);
+    bool mine(ChTemplate t) => t.appliesTo.any((a) => _norm(a) == key);
+    final list = [..._complaints]..sort((a, b) {
+        final m = (mine(b) ? 1 : 0) - (mine(a) ? 1 : 0);
+        return m != 0 ? m : a.specialty.compareTo(b.specialty);
+      });
+    return list;
+  }
+
+  /// Complaint templates whose name or alias occurs in free text (the chief complaint of the case).
+  static List<ChTemplate> suggest(String text) {
+    final t = _norm(text);
+    if (t.length < 3) return const [];
+    return [
+      for (final c in _complaints)
+        if ([c.specialty, ...c.aliases].any((n) {
+          final k = _norm(n);
+          return k.length >= 3 && (t.contains(k) || (t.length >= 4 && k.contains(t)));
+        }))
+          c
+    ];
   }
 }
 
@@ -144,14 +220,45 @@ class CaseChoices {
     return s.values.every((e) => e is! Map || (((e['v'] as List?) ?? const []).isEmpty && '${e['d'] ?? ''}'.trim().isEmpty));
   }
 
-  /// The template the picks were made with (kept even if the case specialty changes later), else the specialty's.
-  ChTemplate? template() {
+  /// The ids of the complaint templates added to this case (stored under 'x').
+  List<String> get complaintIds {
+    final v = rec.d['choices'];
+    return v is Map && v['x'] is List ? [for (final e in v['x'] as List) '$e'] : const [];
+  }
+
+  void addComplaint(String id) {
+    final cur = complaintIds;
+    if (cur.contains(id)) return;
+    _root['x'] = [...cur, id];
+  }
+
+  /// Takes the template off the case. Its picks stay in the case data, so adding it again brings them back.
+  void removeComplaint(String id) => _root['x'] = [for (final e in complaintIds) if (e != id) e];
+
+  /// The specialty's own template (the one the picks were made with, kept even if the specialty changes later).
+  ChTemplate? baseTemplate() {
     final saved = rec.d['choices'];
     if (saved is Map && saved['t'] != null) {
       final t = ChoicesRepo.byId('${saved['t']}');
       if (t != null) return t;
     }
     return ChoicesRepo.forSpecialty(rec.s('specialty'));
+  }
+
+  /// The specialty template followed by the steps of the complaint templates added to the case.
+  ChTemplate? template() {
+    final base = baseTemplate();
+    if (base == null) return null;
+    final extra = [for (final id in complaintIds) ChoicesRepo.byId(id)].whereType<ChTemplate>().toList();
+    if (extra.isEmpty) return base;
+    final have = {for (final st in base.steps) st.id};
+    final steps = [...base.steps];
+    for (final t in extra) {
+      for (final st in t.steps) {
+        if (have.add(st.id)) steps.add(st);
+      }
+    }
+    return ChTemplate(base.id, base.specialty, base.aliases, steps);
   }
 
   Map<String, dynamic> _stepMap(String id) {
@@ -266,7 +373,7 @@ class CaseChoices {
       final details = moved.contains(s.id) && vals.isEmpty ? '' : p.details.trim();
       if (vals.isEmpty && details.isEmpty) continue;
       final shown = [for (final v in vals) p.optionDetails[v]?.trim().isNotEmpty == true ? '$v (${p.optionDetails[v]!.trim()})' : v];
-      out.add([s.label, shown.join(', '), details]);
+      out.add([s.group.isEmpty ? s.label : '${s.group}: ${s.label}', shown.join(', '), details]);
     }
     return out;
   }

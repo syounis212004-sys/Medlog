@@ -1,3 +1,7 @@
+import 'dart:convert';
+
+import 'package:crypto/crypto.dart' as crypto;
+
 /// Source-bound drug reference (schemaVersion 2) and its models. The dose engine is in dose_calc.dart.
 /// Everything here is data read from the user's imported files: nothing is invented, and a regimen can only be
 /// calculated after it was approved (by the file itself or by the user's own check against the source).
@@ -157,7 +161,25 @@ class FRegimen {
 class FExample {
   final String regimenId, formId;
   final double? weightKg, ageMonths, perDose, scheduledDaily, maxDaily, volumeMl;
-  const FExample(this.regimenId, this.formId, this.weightKg, this.ageMonths, this.perDose, this.scheduledDaily, this.maxDaily, this.volumeMl);
+
+  /// The upper end when the file gives the expected result as a range (kept equal to the low end otherwise).
+  final double? perDoseHi, scheduledDailyHi;
+  const FExample(this.regimenId, this.formId, this.weightKg, this.ageMonths, this.perDose, this.scheduledDaily, this.maxDaily, this.volumeMl,
+      {this.perDoseHi, this.scheduledDailyHi});
+
+  /// Both layouts of the files: flat (weightKg, expectedPerDose, ...) and nested (inputs / expected, in mg).
+  factory FExample.fromJson(Map x) {
+    final inp = x['inputs'] is Map ? x['inputs'] as Map : const {};
+    final exp = x['expected'] is Map ? x['expected'] as Map : const {};
+    final rng = x['doseRange'] is Map ? x['doseRange'] as Map : const {};
+    final perLo = _d(x['expectedPerDose']) ?? _d(exp['singleDoseMinMg']) ?? _d(rng['min']);
+    final perHi = _d(x['expectedPerDose']) ?? _d(exp['singleDoseMaxMg']) ?? _d(rng['max']) ?? perLo;
+    final lb = _d(x['weightLb']);
+    final dayLo = _d(x['expectedScheduledDaily']) ?? _d(exp['totalDailyMinMg']);
+    final dayHi = _d(x['expectedScheduledDaily']) ?? _d(exp['totalDailyMaxMg']) ?? dayLo;
+    return FExample(_s(x['regimenId']), _s(x['formId']), _d(x['weightKg']) ?? _d(inp['weightKg']) ?? (lb == null ? null : lb / 2.2046226218), _d(x['ageMonths']) ?? _d(inp['ageMonths']), perLo, dayLo,
+        _d(x['expectedMaxDaily']), _d(x['expectedVolumeMl']), perDoseHi: perHi, scheduledDailyHi: dayHi);
+  }
 }
 
 class FDrug {
@@ -287,9 +309,7 @@ class FDrug {
       ],
       examples: [
         for (final x in (e['examples'] is List ? e['examples'] as List : const []))
-          if (x is Map)
-            FExample(_s(x['regimenId']), _s(x['formId']), _d(x['weightKg']), _d(x['ageMonths']), _d(x['expectedPerDose']), _d(x['expectedScheduledDaily']),
-                _d(x['expectedMaxDaily']), _d(x['expectedVolumeMl']))
+          if (x is Map) FExample.fromJson(x)
       ],
     );
   }
@@ -333,3 +353,26 @@ List<String> renalSentences(FDrug d, {int max = 6}) {
   }
   return out;
 }
+
+/// A short code of everything the calculator multiplies or compares: the dose, frequency, limits, who it is for and
+/// the products of the regimen. An approval is tied to this code, so when a re-imported file changes any of these
+/// numbers the old approval stops counting.
+String doseFingerprint(FDrug d, FRegimen r) {
+  final forms = [
+    for (final f in d.forms)
+      if (r.component.isEmpty || f.component.isEmpty || f.component == r.component) '${f.id}:${_n(f.strength)}${f.strengthUnit}/${_n(f.per)}${f.perUnit}',
+  ]..sort();
+  final parts = <Object?>[
+    r.id, r.route, r.basis, r.component,
+    r.doseMin, r.doseMax, r.doseUnit, r.dosePer, r.dosePerUnit,
+    r.tpdMin, r.tpdMax, r.intMin, r.intMax, r.once,
+    r.maxSingle, r.maxSingleUnit, r.maxDaily, r.maxDailyUnit, r.maxDailyPerKg, r.maxDailyPerKgUnit,
+    r.ageMin, r.ageMax, r.weightMin, r.weightMax, r.ageMinIncl, r.ageMaxIncl, r.weightMinIncl, r.weightMaxIncl,
+    ...forms,
+  ];
+  return crypto.sha256.convert(utf8.encode(parts.join('|'))).toString().substring(0, 12);
+}
+
+/// verified: the file or the user checked exactly these numbers. underReview: nobody has checked them yet.
+/// invalid: the user's earlier approval no longer matches the numbers (or was given before approvals were tied to them).
+enum DoseStatus { verified, underReview, invalid }

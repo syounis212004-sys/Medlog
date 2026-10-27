@@ -408,15 +408,27 @@ class _DrugDetailScreenState extends State<DrugDetailScreen> {
 
 String _approvalKey(FDrug d, FRegimen r) => '${d.pack}|${r.id}';
 
-bool _approvedLocally(FDrug d, FRegimen r) {
+/// The stored approval of a regimen: {'on': date, 'h': fingerprint of the numbers}. A plain date (older versions) has no
+/// fingerprint and so never counts for the current numbers.
+Map? _approvalOf(FDrug d, FRegimen r) {
   final m = store.settings['formApprove'];
-  return m is Map && m[_approvalKey(d, r)] != null;
+  if (m is! Map) return null;
+  final v = m[_approvalKey(d, r)];
+  if (v == null) return null;
+  return v is Map ? v : {'on': '$v', 'h': ''};
+}
+
+DoseStatus doseStatus(FDrug d, FRegimen r) {
+  if (r.fileApproved) return DoseStatus.verified;
+  final a = _approvalOf(d, r);
+  if (a == null) return DoseStatus.underReview;
+  return a['h'] == doseFingerprint(d, r) ? DoseStatus.verified : DoseStatus.invalid;
 }
 
 Future<void> _setApproval(FDrug d, FRegimen r, bool on) async {
   final m = <String, dynamic>{if (store.settings['formApprove'] is Map) ...Map<String, dynamic>.from(store.settings['formApprove'] as Map)};
   if (on) {
-    m[_approvalKey(d, r)] = DateTime.now().toIso8601String().substring(0, 10);
+    m[_approvalKey(d, r)] = {'on': DateTime.now().toIso8601String().substring(0, 10), 'h': doseFingerprint(d, r)};
   } else {
     m.remove(_approvalKey(d, r));
   }
@@ -629,7 +641,8 @@ class _CalcCardState extends State<_CalcCard> {
 
   double? _num(TextEditingController c) => double.tryParse(c.text.trim().replaceAll(',', '.'));
 
-  bool get _approved => _reg.fileApproved || _approvedLocally(d, _reg);
+  DoseStatus get _status => doseStatus(d, _reg);
+  bool get _approved => _status == DoseStatus.verified;
 
   @override
   Widget build(BuildContext context) {
@@ -776,17 +789,35 @@ class _CalcCardState extends State<_CalcCard> {
         ),
       );
 
-  Widget _approvalBox(ThemeData theme) => Container(
-        padding: const EdgeInsets.all(10),
-        decoration: BoxDecoration(color: theme.colorScheme.errorContainer.withValues(alpha: .35), borderRadius: BorderRadius.circular(12)),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text('This regimen is not approved for calculation yet.', style: const TextStyle(fontWeight: FontWeight.w700)),
-          const SizedBox(height: 4),
-          Text('Compare its numbers with the source and your hospital protocol, then approve it here. The approval stays on this phone only.', style: theme.textTheme.bodySmall),
-          const SizedBox(height: 6),
+  Widget _approvalBox(ThemeData theme) {
+    final stale = _status == DoseStatus.invalid;
+    return Container(
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(color: theme.colorScheme.errorContainer.withValues(alpha: .35), borderRadius: BorderRadius.circular(12)),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Text(stale ? 'Your earlier approval does not cover the current numbers of this regimen.' : 'This regimen is not approved for calculation yet.', style: const TextStyle(fontWeight: FontWeight.w700)),
+        const SizedBox(height: 4),
+        Text(
+            stale
+                ? 'The numbers changed since you approved it (for example after importing a new file), or the approval was given by an older version. Check it again against the source.'
+                : 'Compare its numbers with the source and your hospital protocol, then approve it here. The approval stays on this phone only.',
+            style: theme.textTheme.bodySmall),
+        const SizedBox(height: 6),
+        Wrap(spacing: 8, children: [
           FilledButton.tonalIcon(onPressed: _review, icon: const Icon(Icons.fact_check_outlined), label: Text('Check it against the source')),
+          if (d.regimens.length > 1)
+            OutlinedButton.icon(
+              onPressed: () async {
+                await Navigator.push(context, MaterialPageRoute(builder: (_) => DrugReviewScreen(drug: d)));
+                if (mounted) setState(() {});
+              },
+              icon: const Icon(Icons.checklist),
+              label: Text('Review all regimens of this drug'),
+            ),
         ]),
-      );
+      ]),
+    );
+  }
 
   Future<void> _review() async {
     final r = _reg;
@@ -922,6 +953,118 @@ class _CalcCardState extends State<_CalcCard> {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(color: theme.colorScheme.primaryContainer.withValues(alpha: .35), borderRadius: BorderRadius.circular(12)),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: children),
+    );
+  }
+}
+
+
+/// Lines that put the numbers of a regimen in front of the person who approves it.
+List<String> regimenSummaryLines(FRegimen r) {
+  String range(double? a, double? b, String u) => a == null && b == null ? '—' : (a == b || b == null ? '${DoseCalc.fmt(a ?? b!)} $u' : '${DoseCalc.fmt(a!)}–${DoseCalc.fmt(b)} $u');
+  return [
+    '${tr('For')}: ${[r.group, if (r.ageMin != null) '${tr('age from')} ${DoseCalc.fmt(r.ageMin!)} ${tr('months')}', if (r.ageMax != null) '${tr('age under')} ${DoseCalc.fmt(r.ageMax!)} ${tr('months')}', if (r.weightMin != null) '${tr('weight from')} ${DoseCalc.fmt(r.weightMin!)} kg', if (r.weightMax != null) '${tr('weight under')} ${DoseCalc.fmt(r.weightMax!)} kg'].where((e) => e.isNotEmpty).join(', ')}',
+    '${tr('Route')}: ${r.route.isEmpty ? '—' : r.route}',
+    '${tr('Dose')}: ${range(r.doseMin, r.doseMax, '${r.doseUnit}${r.dosePer.isEmpty ? '' : '/${r.dosePer}'}${r.dosePerUnit.isEmpty ? '' : ' ${tr('per')} ${r.dosePerUnit == 'day' ? tr('day') : tr('dose')}'}')}',
+    '${tr('Frequency')}: ${r.freqText.isEmpty ? '—' : r.freqText}',
+    if (r.maxSingle != null) '${tr('Maximum single dose')}: ${DoseCalc.fmt(r.maxSingle!)} ${r.maxSingleUnit}',
+    if (r.maxDaily != null) '${tr('Maximum per day')}: ${DoseCalc.fmt(r.maxDaily!)} ${r.maxDailyUnit}',
+    if (r.maxDailyPerKg != null) '${tr('Maximum per kg per day')}: ${DoseCalc.fmt(r.maxDailyPerKg!)} ${r.maxDailyPerKgUnit}',
+  ];
+}
+
+/// All regimens of one drug on one page, each with its status. The person compares them with the source and
+/// approves the whole list at once instead of one regimen at a time.
+class DrugReviewScreen extends StatefulWidget {
+  final FDrug drug;
+  const DrugReviewScreen({super.key, required this.drug});
+  @override
+  State<DrugReviewScreen> createState() => _DrugReviewScreenState();
+}
+
+class _DrugReviewScreenState extends State<DrugReviewScreen> {
+  FDrug get d => widget.drug;
+  final Set<String> _pick = {};
+  bool _sure = false;
+
+  List<FRegimen> get _todo => [for (final r in d.regimens) if (doseStatus(d, r) != DoseStatus.verified) r];
+
+  Future<void> _approve() async {
+    for (final r in d.regimens) {
+      if (_pick.contains(r.id)) await _setApproval(d, r, true);
+    }
+    if (mounted) {
+      setState(() {
+        _pick.clear();
+        _sure = false;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final todo = _todo;
+    final src = d.dosingText.isEmpty ? '' : cleanLabelText(d.dosingText.first.text);
+    return Scaffold(
+      appBar: AppBar(title: _en(d.name)),
+      body: ListView(padding: const EdgeInsets.fromLTRB(16, 8, 16, 32), children: [
+        Text('Compare each regimen with the label and your hospital protocol, then approve the ones that match. The approval is tied to these numbers and stays on this phone only.', style: theme.textTheme.bodySmall),
+        const SizedBox(height: 8),
+        if (src.isNotEmpty)
+          AppCard(
+            child: ExpansionTile(
+              title: Text('Label dosing text'),
+              childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+              children: [_en(src.length > 4000 ? '${src.substring(0, 4000)}…' : src)],
+            ),
+          ),
+        for (final r in d.regimens) _tile(theme, r),
+        const SizedBox(height: 8),
+        if (todo.isNotEmpty) ...[
+          Row(children: [
+            TextButton(onPressed: () => setState(() => _pick..clear()..addAll([for (final r in todo) r.id])), child: Text('Select all')),
+            TextButton(onPressed: () => setState(_pick.clear), child: Text('Clear')),
+          ]),
+          CheckboxListTile(
+            contentPadding: EdgeInsets.zero,
+            value: _sure,
+            onChanged: (v) => setState(() => _sure = v == true),
+            title: Text('I compared the selected regimens with the source and my hospital protocol.'),
+          ),
+          FilledButton.icon(
+            onPressed: _sure && _pick.isNotEmpty ? _approve : null,
+            icon: const Icon(Icons.check),
+            label: Text(_pick.length == todo.length ? 'Approve all' : trp('Approve {n} selected', {'n': _pick.length})),
+          ),
+        ] else
+          Padding(padding: const EdgeInsets.only(top: 8), child: Text('All regimens of this drug are approved.', style: TextStyle(color: theme.colorScheme.primary, fontWeight: FontWeight.w700))),
+      ]),
+    );
+  }
+
+  Widget _tile(ThemeData theme, FRegimen r) {
+    final st = doseStatus(d, r);
+    final (label, color) = switch (st) {
+      DoseStatus.verified => ('Verified', Colors.green),
+      DoseStatus.underReview => ('Under review', Colors.orange),
+      DoseStatus.invalid => ('Changed since approval', theme.colorScheme.error),
+    };
+    return AppCard(
+      child: Padding(
+        padding: const EdgeInsets.all(10),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Row(children: [
+            if (st != DoseStatus.verified)
+              Checkbox(
+                value: _pick.contains(r.id),
+                onChanged: (v) => setState(() => v == true ? _pick.add(r.id) : _pick.remove(r.id)),
+              ),
+            Expanded(child: _en(r.label, style: const TextStyle(fontWeight: FontWeight.w700))),
+            Chip(label: Text(label, style: TextStyle(color: color, fontSize: 12)), visualDensity: VisualDensity.compact, side: BorderSide(color: color)),
+          ]),
+          for (final l in regimenSummaryLines(r)) Padding(padding: const EdgeInsets.only(top: 2), child: _en(l, style: theme.textTheme.bodySmall)),
+        ]),
+      ),
     );
   }
 }

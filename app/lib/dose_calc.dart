@@ -101,12 +101,13 @@ class DoseCalc {
         _ageOk(r, p.ageMonths!, block);
       }
     }
-    final needsWeight = r.dosePer == 'kg' || r.weightMin != null || r.weightMax != null || r.maxDailyPerKg != null || r.basis == 'bsa';
+    final needsWeight = r.dosePer == 'kg' || r.dosePer == 'lb' || r.weightMin != null || r.weightMax != null || r.maxDailyPerKg != null || r.basis == 'bsa';
     if (needsWeight && p.weightKg == null) {
       block.add('Enter the weight.');
     } else if (p.weightKg != null && (r.weightMin != null || r.weightMax != null)) {
       _weightOk(r, p.weightKg!, block);
     }
+    if (!const {'', 'kg', 'lb', 'm2', 'dose'}.contains(r.dosePer)) block.add('The dose is stated per “${r.dosePer}”, which this calculator does not support.');
     if (r.basis == 'bsa' && p.heightCm == null) block.add('Enter the height: this regimen is per body surface area.');
     if (r.doseMin == null && r.doseMax == null) block.add('The file gives no dose number for this regimen.');
     if (block.isNotEmpty) return DoseResult(blockers: block);
@@ -118,6 +119,9 @@ class DoseCalc {
     if (r.dosePer == 'kg') {
       factor = p.weightKg!;
       formula += ' × ${_f(p.weightKg!)} kg';
+    } else if (r.dosePer == 'lb') {
+      factor = p.weightKg! * 2.2046226218;
+      formula += ' × ${_f(factor)} lb';
     } else if (r.basis == 'bsa' || r.dosePer == 'm2') {
       factor = bsaMosteller(p.weightKg!, p.heightCm!);
       formula += ' × ${_f(factor)} m² (BSA)';
