@@ -9,11 +9,14 @@ if [ $# -gt 0 ]; then FILES="$@"; else FILES=$(ls test/*_test.dart); fi
 : > test_output/summary.txt
 fail=0
 for f in $FILES; do
-  out=$(timeout 1500 flutter test "$f" 2>&1)
+  out=$(timeout 1500 flutter test --reporter expanded "$f" 2>&1)
+  code=$?
   line=$(echo "$out" | grep -E 'All tests passed|Some tests failed' | tail -1)
-  echo "== $f: ${line:-NO RESULT}" | tee -a test_output/summary.txt
-  if ! echo "$line" | grep -q 'All tests passed'; then
+  [ $code -eq 0 ] && line="${line:-passed (exit 0)}"
+  echo "== $f: ${line:-NO RESULT (exit $code)}" | tee -a test_output/summary.txt
+  if [ $code -ne 0 ]; then
     fail=1
+    [ -z "$line" ] && echo "$out" | tail -15 | tee -a test_output/summary.txt
     echo "$out" | grep -E '\[E\]|Expected|Actual|Exception|Error' | sort -u | head -12 | tee -a test_output/summary.txt
   fi
 done
