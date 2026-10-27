@@ -123,7 +123,7 @@ Map<String, dynamic> bodyOf(AiHttpRequest r) => jsonDecode(r.body!) as Map<Strin
 
 void main() {
   setUpAll(() async {
-    const rb = '/opt/flutter/bin/cache/artifacts/material_fonts';
+    final rb = '${Platform.environment['FLUTTER_ROOT'] ?? '/opt/flutter'}/bin/cache/artifacts/material_fonts';
     await loadFont('MaterialIcons', ['$rb/MaterialIcons-Regular.otf']);
     const fd = 'assets/fonts';
     await loadFont('Cairo', ['$fd/Cairo_400Regular.ttf', '$fd/Cairo_500Medium.ttf', '$fd/Cairo_700Bold.ttf', '$fd/Cairo_800ExtraBold.ttf']);

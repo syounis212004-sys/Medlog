@@ -664,7 +664,7 @@ void main() {
 
   // ------------------------------------------------------------------ widgets
   setUpAll(() async {
-    const rb = '/opt/flutter/bin/cache/artifacts/material_fonts';
+    final rb = '${Platform.environment['FLUTTER_ROOT'] ?? '/opt/flutter'}/bin/cache/artifacts/material_fonts';
     Future<void> lf(String family, List<String> files) async {
       final l = FontLoader(family);
       for (final f in files) {

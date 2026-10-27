@@ -67,7 +67,7 @@ Future<void> pumpReal(WidgetTester t, [int n = 12]) async {
 
 void main() {
   setUpAll(() async {
-    const rb = '/opt/flutter/bin/cache/artifacts/material_fonts';
+    final rb = '${Platform.environment['FLUTTER_ROOT'] ?? '/opt/flutter'}/bin/cache/artifacts/material_fonts';
     await loadFont('MaterialIcons', ['$rb/MaterialIcons-Regular.otf']);
     await loadFont('Roboto', ['$rb/Roboto-Regular.ttf', '$rb/Roboto-Medium.ttf', '$rb/Roboto-Bold.ttf']);
     TestWidgetsFlutterBinding.ensureInitialized();
