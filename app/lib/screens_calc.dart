@@ -68,7 +68,10 @@ class _CalcName extends InheritedWidget {
 class CalculatorsScreen extends StatefulWidget {
   /// When opened from a case, results are added to that case without asking which one.
   final CaseRec? attachTo;
-  const CalculatorsScreen({super.key, this.attachTo});
+
+  /// Opens with this text already in the search box (from the global search).
+  final String initialQuery;
+  const CalculatorsScreen({super.key, this.attachTo, this.initialQuery = ''});
 
   @override
   State<CalculatorsScreen> createState() => _CalculatorsScreenState();
@@ -83,6 +86,8 @@ class _CalculatorsScreenState extends State<CalculatorsScreen> {
   @override
   void initState() {
     super.initState();
+    _q = widget.initialQuery;
+    _qc.text = widget.initialQuery;
     ScoreRepo.load().then((defs) {
       if (!mounted) return;
       setState(() => _scoreEntries = [for (final d in defs) _CalcEntry('sc_${d.id}', d.title, Icons.fact_check_outlined, ScoreCalc(def: d))]);
@@ -598,4 +603,14 @@ class _ChecklistState extends State<_Checklist> {
       ]),
     ]);
   }
+}
+
+
+/// Titles of every calculator and score: for the global search.
+Future<List<String>> calculatorTitles() async {
+  final titles = [for (final c in _kCalcs) c.title];
+  try {
+    titles.addAll([for (final d in await ScoreRepo.load()) d.title]);
+  } catch (_) {}
+  return titles;
 }

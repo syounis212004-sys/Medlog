@@ -275,8 +275,12 @@ void main() {
       await tester.pumpWidget(const MaterialApp(home: SearchScreen(initial: 'pain')));
       await realWait(tester, 900);
       await settle(tester);
+      await tester.tap(find.byIcon(Icons.tune)); // the source filter is in the filters sheet
+      await settle(tester);
       expect(find.widgetWithText(ChoiceChip, 'WikEM'), findsOneWidget);
       await tester.tap(find.widgetWithText(ChoiceChip, 'WikEM'));
+      await settle(tester);
+      Navigator.of(tester.element(find.byType(Scaffold).last)).pop();
       await realWait(tester, 900);
       await settle(tester);
       final badges = find.byType(SourceBadge).evaluate().map((e) => ((e.widget as SourceBadge).source)).toSet();

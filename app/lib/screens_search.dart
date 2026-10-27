@@ -12,6 +12,10 @@ import 'screens_cases.dart';
 import 'screens_extras.dart';
 import 'screens_learn.dart';
 import 'screens_library.dart';
+import 'screens_calc.dart';
+import 'screens_dosing.dart';
+import 'dosing.dart';
+import 'ar_terms.dart';
 import 'library.dart';
 import 'search_index.dart';
 import 'ui.dart';
@@ -134,13 +138,139 @@ class _SearchScreenState extends State<SearchScreen> {
   late final TextEditingController _c = TextEditingController(text: widget.initial);
   String _q = '';
   int _libN = 0;
-  // 0 = All, 1 = Logbook (my own records), 2 = Library
+  // 0 = All, 1 = My records, 2 = Articles, 3 = My books, 4 = Drugs, 5 = Calculators
   int _scope = 0;
+  String? _source; // one library source, from the filter sheet
+  List<String> _calcTitles = const [];
 
   @override
   void initState() {
     super.initState();
     _q = widget.initial;
+    calculatorTitles().then((t) {
+      if (mounted) setState(() => _calcTitles = t);
+    });
+    ArTerms.load();
+  }
+
+  bool get _body => store.settings['libBody'] != false;
+
+  int get _filters => (_source != null ? 1 : 0) + (_body ? 0 : 1);
+
+  Future<void> _openFilters() async {
+    await showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      isScrollControlled: true,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setS) => SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+            child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text('Search filters', style: Theme.of(ctx).textTheme.titleMedium),
+              SwitchListTile(
+                contentPadding: EdgeInsets.zero,
+                title: Text('Search inside the text of articles'),
+                subtitle: Text('Off: titles only. On: also the sentences inside articles and books.'),
+                value: _body,
+                onChanged: (v) async {
+                  store.settings['libBody'] = v;
+                  await store.saveSettings();
+                  setS(() {});
+                  if (mounted) setState(() {});
+                },
+              ),
+              if (library.availableSources().length > 1) ...[
+                const SizedBox(height: 4),
+                Text('Library source', style: Theme.of(ctx).textTheme.labelLarge),
+                const SizedBox(height: 4),
+                SourceFilterChips(
+                  sources: library.availableSources(),
+                  selected: _source,
+                  onChanged: (v) {
+                    setS(() => _source = v);
+                    if (mounted) setState(() {});
+                  },
+                ),
+              ],
+              Align(
+                alignment: AlignmentDirectional.centerEnd,
+                child: TextButton(
+                  onPressed: () {
+                    setS(() => _source = null);
+                    store.settings['libBody'] = true;
+                    store.saveSettings();
+                    if (mounted) setState(() {});
+                  },
+                  child: Text('Reset'),
+                ),
+              ),
+            ]),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _scopeBar() {
+    const labels = ['All', 'My records', 'Articles', 'My books', 'Drugs', 'Calculators'];
+    const icons = [Icons.apps, Icons.folder_copy_outlined, Icons.local_library_outlined, Icons.menu_book_outlined, Icons.medication_outlined, Icons.calculate_outlined];
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(children: [
+        for (var i = 0; i < labels.length; i++)
+          Padding(
+            padding: const EdgeInsetsDirectional.only(end: 6),
+            child: ChoiceChip(
+              avatar: Icon(icons[i], size: 16),
+              label: Text(labels[i]),
+              selected: _scope == i,
+              onSelected: (_) => setState(() => _scope = i),
+            ),
+          ),
+      ]),
+    );
+  }
+
+  List<Widget> _drugs() {
+    final all = dosing.searchFormulary(_q.trim());
+    if (all.isEmpty) return const [];
+    final n = _scope == 4 ? all.length : 4;
+    return [
+      SectionHeader('${tr('Drugs')} (${all.length})'),
+      for (final d in all.take(n))
+        AppCard(
+          child: ListTile(
+            leading: const Icon(Icons.medication_outlined),
+            title: Text(d.name, maxLines: 1, overflow: TextOverflow.ellipsis),
+            subtitle: d.drugClass.isEmpty ? null : Text(d.drugClass, maxLines: 1, overflow: TextOverflow.ellipsis),
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => FDrugScreen(drug: d))),
+          ),
+        ),
+      if (all.length > n)
+        Align(
+          alignment: AlignmentDirectional.centerStart,
+          child: TextButton(onPressed: () => setState(() => _scope = 4), child: Text(trp('All {n} drugs', {'n': all.length}))),
+        ),
+    ];
+  }
+
+  List<Widget> _calcs() {
+    final w = _q.trim().toLowerCase().split(RegExp(r'\s+')).where((e) => e.isNotEmpty).toList();
+    if (w.isEmpty) return const [];
+    final hit = [for (final t in _calcTitles) if (w.every(t.toLowerCase().contains)) t];
+    if (hit.isEmpty) return const [];
+    return [
+      SectionHeader('${tr('Calculators')} (${hit.length})'),
+      for (final t in hit.take(_scope == 5 ? 50 : 4))
+        AppCard(
+          child: ListTile(
+            leading: const Icon(Icons.calculate_outlined),
+            title: Text(t, maxLines: 2, overflow: TextOverflow.ellipsis),
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => CalculatorsScreen(initialQuery: t))),
+          ),
+        ),
+    ];
   }
 
   @override
@@ -153,6 +283,31 @@ class _SearchScreenState extends State<SearchScreen> {
     _c.text = v;
     _c.selection = TextSelection.collapsed(offset: v.length);
     setState(() => _q = v);
+  }
+
+  bool _noResults(List<Hit> hits) {
+    final drugs = _scope == 0 || _scope == 4 ? dosing.searchFormulary(_q.trim()).length : 0;
+    final calcs = _scope == 0 || _scope == 5 ? _calcTitles.where((t) => _q.trim().toLowerCase().split(RegExp(r'\s+')).every(t.toLowerCase().contains)).length : 0;
+    final mine = _scope == 0 || _scope == 1 ? hits.length : 0;
+    final lib = _scope == 0 || _scope == 2 || _scope == 3 ? _libN : 0;
+    return mine + drugs + calcs + lib == 0;
+  }
+
+  /// Nothing found: for an Arabic word the English term the library is written in is offered.
+  Widget _emptyResult() {
+    final en = ArTerms.englishFor(_q);
+    return Column(children: [
+      if (en != null)
+        Padding(
+          padding: const EdgeInsets.only(top: 8),
+          child: ActionChip(
+            avatar: const Icon(Icons.translate, size: 16),
+            label: Text('${tr('Search in English')}: $en'),
+            onPressed: () => _set(en),
+          ),
+        ),
+      const EmptyState(kind: EmptyKind.search, title: 'Nothing found', message: 'Try another word or an abbreviation.'),
+    ]);
   }
 
   @override
@@ -188,6 +343,11 @@ class _SearchScreenState extends State<SearchScreen> {
         actions: [
           if (_q.isNotEmpty)
             IconButton(tooltip: tr('Clear'), icon: const Icon(Icons.close), onPressed: () => _set('')),
+          IconButton(
+            tooltip: tr('Search filters'),
+            icon: Badge(isLabelVisible: _filters > 0, label: Text('$_filters'), child: const Icon(Icons.tune)),
+            onPressed: _openFilters,
+          ),
         ],
       ),
       body: ListView(
@@ -219,25 +379,7 @@ class _SearchScreenState extends State<SearchScreen> {
             ),
           ] else ...[
             SearchAskAiCard(query: _q),
-            Padding(
-              padding: const EdgeInsets.only(top: 4, bottom: 4),
-              child: SizedBox(
-                width: double.infinity,
-                child: SegmentedButton<int>(
-                  showSelectedIcon: false,
-                  style: const ButtonStyle(
-                      minimumSize: WidgetStatePropertyAll(Size(0, 48)),
-                      padding: WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: 6))),
-                  segments: [
-                    ButtonSegment(value: 0, label: Text('All')),
-                    ButtonSegment(value: 1, label: Text('Logbook')),
-                    ButtonSegment(value: 2, label: Text('Library')),
-                  ],
-                  selected: {_scope},
-                  onSelectionChanged: (v) => setState(() => _scope = v.first),
-                ),
-              ),
-            ),
+            Padding(padding: const EdgeInsets.only(top: 4, bottom: 4), child: _scopeBar()),
             Wrap(spacing: 8, runSpacing: 4, crossAxisAlignment: WrapCrossAlignment.center, children: [
               if (library.ready && library.textPacks.isNotEmpty)
                 ActionChip(
@@ -247,9 +389,9 @@ class _SearchScreenState extends State<SearchScreen> {
                 ),
               NlSearchChip(text: _q, onQuery: _set),
             ]),
-            if (_scope != 1) AiTrySuggestions(query: _q, resultCount: _libN, onPick: _set),
-            // my own records first (cases, notes ...), the library after them
-            if (_scope != 2 && hits.isNotEmpty) ...[
+            if (_scope == 0 || _scope == 2 || _scope == 3) AiTrySuggestions(query: _q, resultCount: _libN, onPick: _set),
+            // my own records first (cases, notes ...), then drugs and calculators, the library after them
+            if ((_scope == 0 || _scope == 1) && hits.isNotEmpty) ...[
               Padding(
                 padding: const EdgeInsets.only(top: 4),
                 child: Align(
@@ -271,14 +413,19 @@ class _SearchScreenState extends State<SearchScreen> {
                     FadeSlideIn(index: i, child: HitTile(groups[t]![i].doc)),
                 ],
             ],
-            if (_scope != 1)
-              _LibrarySection(query: _q, onCount: (n) {
-                if (n != _libN) WidgetsBinding.instance.addPostFrameCallback((_) => mounted ? setState(() => _libN = n) : null);
-              }),
-            if ((_scope == 0 && hits.isEmpty && _libN == 0) ||
-                (_scope == 1 && hits.isEmpty) ||
-                (_scope == 2 && _libN == 0))
-              const EmptyState(kind: EmptyKind.search, title: 'Nothing found', message: 'Try another word or an abbreviation.'),
+            if (_scope == 0 || _scope == 4) ..._drugs(),
+            if (_scope == 0 || _scope == 5) ..._calcs(),
+            if (_scope == 0 || _scope == 2 || _scope == 3)
+              _LibrarySection(
+                query: _q,
+                scope: _scope,
+                source: _source,
+                body: _body,
+                onCount: (n) {
+                  if (n != _libN) WidgetsBinding.instance.addPostFrameCallback((_) => mounted ? setState(() => _libN = n) : null);
+                },
+              ),
+            if (_noResults(hits)) _emptyResult(),
           ],
         ],
       ),
@@ -290,8 +437,11 @@ class _SearchScreenState extends State<SearchScreen> {
 /// Articles of the downloaded library that match the search (abbreviations and typos understood).
 class _LibrarySection extends StatefulWidget {
   final String query;
+  final int scope; // 0 all, 2 articles only, 3 my books only
+  final String? source;
+  final bool body;
   final ValueChanged<int> onCount;
-  const _LibrarySection({required this.query, required this.onCount});
+  const _LibrarySection({required this.query, required this.scope, required this.source, required this.body, required this.onCount});
   @override
   State<_LibrarySection> createState() => _LibrarySectionState();
 }
@@ -301,7 +451,7 @@ class _LibrarySectionState extends State<_LibrarySection> {
   String? _fix;
   Timer? _t;
   String _for = '';
-  String? _source;
+  String? get _source => widget.source;
 
   @override
   void initState() {
@@ -312,7 +462,7 @@ class _LibrarySectionState extends State<_LibrarySection> {
   @override
   void didUpdateWidget(_LibrarySection old) {
     super.didUpdateWidget(old);
-    if (old.query != widget.query) _schedule();
+    if (old.query != widget.query || old.scope != widget.scope || old.source != widget.source || old.body != widget.body) _schedule();
   }
 
   @override
@@ -330,7 +480,7 @@ class _LibrarySectionState extends State<_LibrarySection> {
         widget.onCount(0);
         return;
       }
-      var h = await library.searchEx(q, limit: 30, source: _source, body: store.settings['libBody'] != false);
+      var h = await library.searchEx(q, limit: 30, source: _source, body: widget.body);
       String? fix;
       if (h.length < 3) {
         fix = await library.didYouMean(q);
@@ -342,6 +492,8 @@ class _LibrarySectionState extends State<_LibrarySection> {
       if (!mounted) return;
       // the books the user imported come first: they are what the user is looking for in their own library
       h = [...h.where((x) => library.pack(x.packId)?.kind == 'book'), ...h.where((x) => library.pack(x.packId)?.kind != 'book')];
+      if (widget.scope == 2) h = [for (final x in h) if (library.pack(x.packId)?.kind != 'book') x];
+      if (widget.scope == 3) h = [for (final x in h) if (library.pack(x.packId)?.kind == 'book') x];
       setState(() {
         _hits = h;
         _fix = fix;
@@ -353,28 +505,21 @@ class _LibrarySectionState extends State<_LibrarySection> {
 
   @override
   Widget build(BuildContext context) {
-    if (_hits.isEmpty && _source == null) return const SizedBox.shrink();
+    if (_hits.isEmpty) return const SizedBox.shrink();
+    final shown = widget.scope == 0 ? 6 : 30;
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      SectionHeader('${tr('Library')} (${_hits.length})'),
-      SourceFilterChips(
-        sources: library.availableSources(),
-        selected: _source,
-        onChanged: (v) {
-          setState(() => _source = v);
-          _schedule();
-        },
-      ),
+      SectionHeader('${tr(widget.scope == 3 ? 'My books' : 'Library')} (${_hits.length})'),
       if (_fix != null) Padding(padding: const EdgeInsets.only(bottom: 4), child: Text('${tr('Showing results for')}: $_fix', style: Theme.of(context).textTheme.bodySmall)),
-      for (final h in _hits.take(6))
+      for (final h in _hits.take(shown))
         AppCard(
           child: ListTile(
-            leading: const Icon(Icons.local_library_outlined),
+            leading: Icon(library.pack(h.packId)?.kind == 'book' ? Icons.menu_book_outlined : Icons.local_library_outlined),
             title: Text(stripSource(h.title), maxLines: 1, overflow: TextOverflow.ellipsis),
             subtitle: hitSubtitle(h.packId, h.title, h.lead),
             onTap: () => openHit(context, h),
           ),
         ),
-      if (_hits.length > 6)
+      if (_hits.length > shown)
         Align(
           alignment: AlignmentDirectional.centerStart,
           child: TextButton.icon(
