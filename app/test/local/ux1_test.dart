@@ -115,15 +115,15 @@ void seed(String dir, Map<String, dynamic> settings, {bool empty = false}) {
 /// symlink the real packs into <dir>/library (what main.dart's library.init reads)
 void installPacksAt(String dir, List<String> ids) {
   final lib = Directory('$dir/library')..createSync(recursive: true);
-  final cat = jsonDecode(File('../library/catalog.json').readAsStringSync()) as Map;
+  final cat = jsonDecode(File('../../library/catalog.json').readAsStringSync()) as Map;
   final metas = <Map>[];
   for (final e in cat['packs'] as List) {
     final id = e['id'];
     if (!ids.contains(id)) continue;
     for (final ext in ['idx', 'bin']) {
-      Link('${lib.path}/$id.$ext').createSync(File('../library/$id.$ext').absolute.path);
+      Link('${lib.path}/$id.$ext').createSync(File('../../library/$id.$ext').absolute.path);
     }
-    metas.add({...(e as Map), 'bytes': File('../library/$id.bin').lengthSync() + File('../library/$id.idx').lengthSync()});
+    metas.add({...(e as Map), 'bytes': File('../../library/$id.bin').lengthSync() + File('../../library/$id.idx').lengthSync()});
   }
   File('${lib.path}/installed.json').writeAsStringSync(jsonEncode(metas));
 }

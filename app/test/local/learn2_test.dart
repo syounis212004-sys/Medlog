@@ -209,7 +209,7 @@ void main() {
   group('real packs', () {
     setUpAll(() async {
       await initStoreLight(dxs: const ['Heart failure', 'Gout']);
-      final cat = jsonDecode(File('../library/catalog.json').readAsStringSync()) as Map;
+      final cat = jsonDecode(File('../../library/catalog.json').readAsStringSync()) as Map;
       final base = installPacks([for (final e in cat['packs'] as List) if (e['kind'] != 'images') e['id'] as String]);
       await library.init(base);
     });
