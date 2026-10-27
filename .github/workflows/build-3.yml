@@ -1,45 +1,72 @@
 name: Build MedLog APK
 
-# Put this file in your repo at:  .github/workflows/build.yml
-# Put the source ZIP in the repo root with exactly this name:  medlog.zip
-# Every push (or "Run workflow") builds a signed APK and publishes it under "Releases".
+# The Flutter project is in app/ (source, assets, tests, tools).
+# On every push to main: tests + analysis, a signed APK, and a release under "Releases".
+# On a pull request: tests + analysis only.
+# Run workflow (any branch): builds the APK; "publish" = false keeps it as a downloadable artifact only.
 
 on:
   push:
     branches: [main, master]
+  pull_request:
+    branches: [main, master]
   workflow_dispatch:
+    inputs:
+      publish:
+        description: "Publish a release (false = only keep the APK as an artifact)"
+        type: boolean
+        default: true
 
 permissions:
   contents: write
 
 concurrency:
-  group: medlog-build
+  group: medlog-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  FLUTTER_VERSION: "3.47.8"
+
 jobs:
+  test:
+    name: Analyze and test
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+
+      - name: Get packages
+        working-directory: app
+        run: flutter pub get
+
+      - name: Analyze code
+        working-directory: app
+        run: flutter analyze --no-fatal-infos --no-fatal-warnings
+
+      - name: Run tests
+        working-directory: app
+        run: bash tool/run_tests.sh
+
+      - name: Keep the test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-report
+          path: app/test_output/summary.txt
+          retention-days: 7
+
   build:
+    name: Build signed APK
     runs-on: ubuntu-latest
     timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
-
-      - name: Unpack source ZIP
-        run: |
-          if [ ! -f medlog.zip ]; then
-            echo "::error::medlog.zip was not found in the repo root. Upload it next to the .github folder."
-            exit 1
-          fi
-          rm -rf app
-          mkdir app
-          unzip -q medlog.zip -d app
-          P=$(find app -maxdepth 3 -name pubspec.yaml | head -n 1)
-          if [ -z "$P" ]; then
-            echo "::error::pubspec.yaml not found inside medlog.zip"
-            exit 1
-          fi
-          APP_DIR=$(dirname "$P")
-          echo "APP_DIR=$GITHUB_WORKSPACE/$APP_DIR" >> "$GITHUB_ENV"
-          echo "Source folder: $APP_DIR"
 
       - uses: actions/setup-java@v4
         with:
@@ -49,6 +76,7 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
           cache: true
 
       - name: Prepare signing key (stored encrypted, safe for a public repo)
@@ -64,24 +92,14 @@ jobs:
             openssl enc -d -aes-256-cbc -pbkdf2 -iter 200000 -pass env:PASS -in signing/medlog.enc | tar -xz -C "$RUNNER_TEMP/sk" || { echo "::error::Could not decrypt the signing key. SIGNING_PASSPHRASE is different from the one used the first time."; exit 1; }
             echo "Using existing signing key."
           else
-            KP=$(openssl rand -hex 16)
-            keytool -genkeypair -noprompt \
-              -keystore "$RUNNER_TEMP/sk/medlog.jks" -storetype PKCS12 \
-              -alias medlog -keyalg RSA -keysize 2048 -validity 10000 \
-              -storepass "$KP" -keypass "$KP" \
-              -dname "CN=MedLog, O=Personal, C=PS"
-            printf 'storePassword=%s\nkeyPassword=%s\nkeyAlias=medlog\n' "$KP" "$KP" > "$RUNNER_TEMP/sk/key.properties"
-            tar -czf - -C "$RUNNER_TEMP/sk" medlog.jks key.properties | openssl enc -aes-256-cbc -pbkdf2 -iter 200000 -pass env:PASS -out signing/medlog.enc
-            git config user.name "github-actions"
-            git config user.email "github-actions@users.noreply.github.com"
-            git add signing/medlog.enc
-            git commit -m "Add encrypted MedLog signing key (do not delete signing/)"
-            git push
-            echo "Created a new signing key."
+            echo "::error::signing/medlog.enc is missing. Without it the APK would be signed with a NEW key and could not update the installed app. Restore the folder signing/ from the history."
+            exit 1
           fi
 
       - name: Generate Android project and patch it
         run: |
+          APP_DIR="$GITHUB_WORKSPACE/app"
+          echo "APP_DIR=$APP_DIR" >> "$GITHUB_ENV"
           flutter create --platforms=android --org com.medlog --project-name medlog --no-pub "$RUNNER_TEMP/gen"
           rm -rf "$APP_DIR/android"
           cp -r "$RUNNER_TEMP/gen/android" "$APP_DIR/android"
@@ -93,25 +111,49 @@ jobs:
           } > "$APP_DIR/android/key.properties"
 
       - name: Get packages
-        working-directory: ${{ env.APP_DIR }}
+        working-directory: app
         run: flutter pub get
 
-      - name: Check icon names (replaces unknown ones so the build cannot fail on them)
-        run: python3 "$APP_DIR/tool/check_icons.py" "$APP_DIR"
-
-      - name: Analyze code (lists ALL errors at once, fails fast)
-        working-directory: ${{ env.APP_DIR }}
-        run: flutter analyze --no-fatal-infos --no-fatal-warnings
-
       - name: Build release APK
-        working-directory: ${{ env.APP_DIR }}
+        working-directory: app
         run: flutter build apk --release --no-tree-shake-icons --build-number=${{ github.run_number }}
 
       - name: Prepare APK
         run: |
-          VERSION=$(grep -E '^version:' "$APP_DIR/pubspec.yaml" | head -n 1 | awk '{print $2}' | cut -d+ -f1)
+          VERSION=$(grep -E '^version:' app/pubspec.yaml | head -n 1 | awk '{print $2}' | cut -d+ -f1)
           echo "VERSION=$VERSION" >> "$GITHUB_ENV"
-          cp "$APP_DIR/build/app/outputs/flutter-apk/app-release.apk" MedLog.apk
+          cp app/build/app/outputs/flutter-apk/app-release.apk MedLog.apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MedLog-apk
+          path: MedLog.apk
+          retention-days: 3
+
+    outputs:
+      version: ${{ env.VERSION }}
+
+  release:
+    name: Publish release
+    needs: [test, build]
+    if: ${{ github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.publish) }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: MedLog-apk
+
+      - name: Read the version
+        uses: actions/checkout@v4
+        with:
+          path: src
+          sparse-checkout: app/pubspec.yaml
+          sparse-checkout-cone-mode: false
+
+      - name: Version
+        run: |
+          VERSION=$(grep -E '^version:' src/app/pubspec.yaml | head -n 1 | awk '{print $2}' | cut -d+ -f1)
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
 
       - name: Publish to Releases
         uses: softprops/action-gh-release@v2

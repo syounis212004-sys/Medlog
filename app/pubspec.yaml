@@ -1,0 +1,65 @@
+name: medlog
+description: MedLog - personal clinical logbook for the internship year. Offline, file-based.
+publish_to: 'none'
+version: 2.7.0+30
+
+environment:
+  sdk: '>=3.3.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  path_provider: ^2.1.4
+  archive: ^3.6.1
+  share_plus: ^10.1.4
+  file_picker: ^8.1.6
+  image_picker: ^1.1.2
+  flutter_secure_storage: 9.2.4
+  crypto: ^3.0.6
+  cryptography: ^2.7.0
+  url_launcher: ^6.3.1
+  pdf: ^3.11.1
+  webview_flutter: ^4.10.0
+  local_auth: ^2.3.0
+  flutter_local_notifications: ^18.0.1
+  timezone: ^0.10.0
+  flutter_timezone: ^3.0.1
+  quick_actions: ^1.0.8
+  connectivity_plus: ^6.1.0
+  speech_to_text: 7.4.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  path_provider_platform_interface: any
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/data/
+    - assets/library/
+  fonts:
+    - family: Cairo
+      fonts:
+        - asset: assets/fonts/Cairo_400Regular.ttf
+        - asset: assets/fonts/Cairo_500Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Cairo_700Bold.ttf
+          weight: 700
+        - asset: assets/fonts/Cairo_800ExtraBold.ttf
+          weight: 800
+    - family: Tajawal
+      fonts:
+        - asset: assets/fonts/Tajawal_400Regular.ttf
+        - asset: assets/fonts/Tajawal_500Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Tajawal_700Bold.ttf
+          weight: 700
+    # Tinos is metric-compatible with Times New Roman (which cannot be bundled).
+    - family: Tinos
+      fonts:
+        - asset: assets/fonts/Tinos_400Regular.ttf
+        - asset: assets/fonts/Tinos_700Bold.ttf
+          weight: 700
