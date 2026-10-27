@@ -142,3 +142,45 @@ class ErrorLogScreen extends StatelessWidget {
     );
   }
 }
+
+/// In the release app a screen that fails to build shows this card in its place instead of the grey box: what
+/// happened, that it was recorded, and that the rest of the app still works.
+class FriendlyError extends StatelessWidget {
+  const FriendlyError({super.key});
+
+  String _t(String s) {
+    try {
+      return tr(s);
+    } catch (_) {
+      return s;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final rtl = _t('Something went wrong in this part.') != 'Something went wrong in this part.';
+    return Directionality(
+      textDirection: rtl ? TextDirection.rtl : TextDirection.ltr,
+      child: Container(
+        color: const Color(0xFFF7FBF9),
+        alignment: Alignment.center,
+        padding: const EdgeInsets.all(24),
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          const Icon(Icons.healing_outlined, size: 44, color: Color(0xFF00695C)),
+          const SizedBox(height: 12),
+          m.Text(_t('Something went wrong in this part.'),
+              textAlign: TextAlign.center, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Color(0xFF16201B), decoration: TextDecoration.none)),
+          const SizedBox(height: 8),
+          m.Text(_t('It was recorded in the error log (Settings). Go back and open it again; your data is safe.'),
+              textAlign: TextAlign.center, style: const TextStyle(fontSize: 13, color: Color(0xFF455A54), decoration: TextDecoration.none)),
+        ]),
+      ),
+    );
+  }
+}
+
+/// Replaces the grey error box of release builds (debug builds keep the detailed one).
+void installFriendlyErrors() {
+  if (!kReleaseMode) return;
+  ErrorWidget.builder = (details) => const FriendlyError();
+}

@@ -63,6 +63,7 @@ void registerAiMenuEntries() {
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  installFriendlyErrors();
   addProcedure = (c) => editProcedure(c);
   addNote = (c) => editNote(c);
   addQuestion = (c) => editQuestion(c);

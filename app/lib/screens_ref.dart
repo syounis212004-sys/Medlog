@@ -6,6 +6,7 @@ import 'data.dart';
 import 'i18n.dart';
 import 'motion.dart' show EmptyState, EmptyKind;
 import 'ref_data.dart';
+import 'rotation_plan.dart';
 import 'screens_library.dart' show LibraryScreen;
 import 'screens_notebooks.dart' show openUrl;
 import 'ui.dart';
@@ -256,6 +257,7 @@ class _RotationHubScreenState extends State<RotationHubScreen> {
                 ),
               ),
               if (snap.connectionState != ConnectionState.done) const Padding(padding: EdgeInsets.all(24), child: Center(child: CircularProgressIndicator())),
+              _planCard(theme, topics),
               Fold(
                 id: 'rot_topics',
                 title: tr('Core topics'),
@@ -312,6 +314,61 @@ class _RotationHubScreenState extends State<RotationHubScreen> {
               Text('Topic lists come from public curricula and were drafted with an AI assistant. Check them against your own program.', style: theme.textTheme.bodySmall),
             ]);
           },
+        ),
+      ),
+    );
+  }
+
+  /// The weekly plan of the person's rotation in this specialty: this week's topics and a way into the whole plan.
+  Widget _planCard(ThemeData theme, List<Map<String, dynamic>> topics) {
+    final mine = [for (final r in store.rotations) if ('${r['name']}' == _spec && '${r['start']}'.isNotEmpty) r]..sort((a, b) => '${b['start']}'.compareTo('${a['start']}'));
+    if (topics.isEmpty) return const SizedBox.shrink();
+    if (mine.isEmpty) {
+      return Padding(
+        padding: const EdgeInsets.only(top: 8),
+        child: AppCard(child: Padding(padding: const EdgeInsets.all(14), child: Text('Add a rotation of this specialty with its dates to get a weekly study plan.', style: theme.textTheme.bodySmall))),
+      );
+    }
+    final r = store.currentRotation() != null && '${store.currentRotation()!['name']}' == _spec ? store.currentRotation()! : mine.first;
+    final start = DateTime.tryParse('${r['start']}') ?? DateTime.now();
+    final end = DateTime.tryParse('${r['end']}');
+    final weeks = RotationPlan.weeksOf(start, end);
+    final week = RotationPlan.currentWeek(start, weeks, DateTime.now());
+    final plan = RotationPlan.build(topics, weeks, moved: RotationPlanStore.moved('${r['id']}'));
+    final thisWeek = [for (final t in plan) if (t.week == week) t.topic];
+    final done = _done();
+    return Padding(
+      padding: const EdgeInsets.only(top: 8),
+      child: AppCard(
+        child: InkWell(
+          borderRadius: BorderRadius.circular(16),
+          onTap: () => Navigator.push(context, MaterialPageRoute<void>(builder: (_) => RotationPlanScreen(rotation: r))).then((_) => mounted ? setState(() {}) : null),
+          child: Padding(
+            padding: const EdgeInsets.all(14),
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Row(children: [
+                Icon(Icons.event_note_outlined, color: theme.colorScheme.primary),
+                const SizedBox(width: 8),
+                Expanded(child: Text('Weekly study plan', style: theme.textTheme.titleSmall)),
+                Text(trp('Week {a} of {b}', {'a': week, 'b': weeks}), style: theme.textTheme.labelMedium),
+                const Icon(Icons.chevron_right),
+              ]),
+              const SizedBox(height: 6),
+              if (thisWeek.isEmpty)
+                Text('Review and catch up', style: theme.textTheme.bodySmall)
+              else
+                for (final t in thisWeek.take(4))
+                  Padding(
+                    padding: const EdgeInsets.only(top: 2),
+                    child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                      Icon(done.contains(t) ? Icons.check_circle : Icons.radio_button_unchecked, size: 16, color: done.contains(t) ? theme.colorScheme.primary : theme.colorScheme.outline),
+                      const SizedBox(width: 6),
+                      Expanded(child: _ltrText(t)),
+                    ]),
+                  ),
+              if (thisWeek.length > 4) Text(trp('+ {n} more this week', {'n': thisWeek.length - 4}), style: theme.textTheme.bodySmall),
+            ]),
+          ),
         ),
       ),
     );
