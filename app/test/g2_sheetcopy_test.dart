@@ -345,7 +345,7 @@ void main() {
       print('word-for-word check on $n articles');
     });
 
-    test('red flag precision on 40 real articles (review list written to /tmp/h/flags.txt)', () {
+    test('red flag precision on 40 real articles (review list written to test_output/flags.txt)', () {
       final p = realPack('clinical-essentials');
       final out = StringBuffer();
       var articles = 0, flags = 0, withFlags = 0;
@@ -371,7 +371,7 @@ void main() {
           }
         }
       }
-      File('/tmp/h/flags.txt').writeAsStringSync(out.toString());
+      File('test_output/flags.txt').writeAsStringSync(out.toString());
       print('articles $articles, with red flags $withFlags, flagged lines $flags, shape-checked false positives ${bad.length}');
       expect(articles >= 40, true);
       expect(bad, isEmpty);
