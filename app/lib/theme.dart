@@ -150,6 +150,13 @@ ThemeData _buildTheme(
         side: BorderSide(color: cs.outlineVariant),
       ),
     ),
+    // An opened ExpansionTile draws a straight line along its top and bottom edge: inside a rounded card it stuck out
+    // past the corners like a notch. No lines at all; the card's own border is enough.
+    expansionTileTheme: const ExpansionTileThemeData(
+      shape: Border(),
+      collapsedShape: Border(),
+    ),
+    dividerTheme: DividerThemeData(color: cs.outlineVariant.withAlpha(120), space: 1, thickness: 1),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
       // room for the floating label above the text, so it never straddles the box edge

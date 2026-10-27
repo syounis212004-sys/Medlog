@@ -3262,6 +3262,7 @@ class _CaseEditorScreenState extends State<CaseEditorScreen>
                 children: [
                   TabBar(
                     onTap: _rememberTab,
+                    labelPadding: const EdgeInsets.symmetric(horizontal: 2),
                     tabs: [
                       tab(Icons.assignment_ind_outlined, trUi('Info'), [0]),
                       tab(Icons.medical_services_outlined, trUi('Clinical'), [1, 2, 3]),
