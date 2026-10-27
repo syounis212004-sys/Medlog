@@ -15,7 +15,7 @@ import 'package:medlog/review.dart';
 import 'package:medlog/screens_learn.dart';
 import 'package:medlog/screens_quiz.dart';
 
-import 'lib2_util.dart';
+import '../lib2_util.dart';
 
 QuizQ q4(String stem, List<String> opts, {int answer = 0, QKind kind = QKind.management, String expl = 'Source sentence.'}) =>
     QuizQ(kind: kind, stem: stem, options: opts, answer: answer, explanation: expl, packId: 'p', title: 'Gout — WikEM', index: 1);
