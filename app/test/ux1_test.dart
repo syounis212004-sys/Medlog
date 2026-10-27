@@ -121,7 +121,7 @@ void installPacksAt(String dir, List<String> ids) {
     final id = e['id'];
     if (!ids.contains(id)) continue;
     for (final ext in ['idx', 'bin']) {
-      Link('${lib.path}/$id.$ext').createSync('../library/$id.$ext');
+      Link('${lib.path}/$id.$ext').createSync(File('../library/$id.$ext').absolute.path);
     }
     metas.add({...(e as Map), 'bytes': File('../library/$id.bin').lengthSync() + File('../library/$id.idx').lengthSync()});
   }

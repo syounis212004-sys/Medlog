@@ -35,7 +35,7 @@ Directory _installAll([List<String>? only]) {
     final id = e['id'];
     if (only != null && !only.contains(id)) continue;
     for (final ext in ['idx', 'bin']) {
-      Link('${lib.path}/$id.$ext').createSync('../library/$id.$ext');
+      Link('${lib.path}/$id.$ext').createSync(File('../library/$id.$ext').absolute.path);
     }
     metas.add({...(e as Map), 'bytes': File('../library/$id.bin').lengthSync() + File('../library/$id.idx').lengthSync()});
   }
