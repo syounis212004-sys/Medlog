@@ -52,6 +52,7 @@ void main() {
   testWidgets('complaint bar in the History tab', (tester) async {
     await tester.runAsync(() => ChoicesRepo.load());
     await boot(tester, 'en');
+    store.settings['choicesAll'] = true;
     final c = store.cases.values.firstWhere((x) => x.id == 'cA');
     c.d['specialty'] = 'Emergency';
     c.d['cc'] = 'Chest pain';
@@ -69,6 +70,37 @@ void main() {
     await tester.tap(find.widgetWithText(ActionChip, 'More complaints'));
     await settle(tester, 600);
     await shot(tester, 'G11_complaint_sheet');
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('guided mode: one question at a time, auto-advance, skip, back, show all', (tester) async {
+    await tester.runAsync(() => ChoicesRepo.load());
+    await boot(tester, 'en');
+    store.settings['choicesAll'] = false;
+    final c = store.cases.values.firstWhere((x) => x.id == 'cA');
+    c.d['specialty'] = 'Orthopedics';
+    c.d.remove('choices');
+    await push(tester, CaseEditorScreen(rec: c));
+    await tester.tap(find.byIcon(Icons.history_edu_outlined).first);
+    await settle(tester, 700);
+    expect(find.textContaining('Question 1 of'), findsOneWidget);
+    await shot(tester, 'G11_guided_1');
+    await tester.tap(find.text('Choose').first); // a long list opens its sheet
+    await settle(tester, 500);
+    expect(find.text('Elbow'), findsWidgets);
+    await tester.tap(find.text('Elbow').first);
+    await settle(tester, 600);
+    expect(CaseChoices(c).pick('site').v, ['Elbow']);
+    expect(find.textContaining('Question 2 of'), findsOneWidget); // moved on by itself
+    await shot(tester, 'G11_guided_2');
+    await tester.tap(find.text('Skip').first);
+    await settle(tester, 500);
+    expect(find.textContaining('skipped: tap to answer'), findsOneWidget);
+    await tester.tap(find.text('Show all questions').first);
+    await settle(tester, 600);
+    expect(store.settings['choicesAll'], true);
+    expect(find.textContaining('Question 2 of'), findsNothing);
+    await shot(tester, 'G11_guided_all');
     expect(tester.takeException(), isNull);
   });
 }

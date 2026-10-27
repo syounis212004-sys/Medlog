@@ -475,3 +475,49 @@ class ChoicesSync {
     return n;
   }
 }
+
+
+/// What you chose most often in your other cases, to put it first in the long lists. Cases of the same specialty
+/// count; with fewer than three of them every case counts. Nothing is ever pre-selected from it.
+class ChoiceUsage {
+  static Iterable<CaseRec> _cases(CaseRec rec) {
+    final spec = rec.s('specialty');
+    final others = [for (final c in store.cases.values) if (c.id != rec.id) c];
+    final same = [for (final c in others) if (c.s('specialty') == spec) c];
+    return same.length >= 3 ? same : others;
+  }
+
+  static List<String> _top(Map<String, int> counts, int n, int minUses) {
+    final e = [for (final x in counts.entries) if (x.value >= minUses) x]..sort((a, b) => b.value != a.value ? b.value.compareTo(a.value) : a.key.compareTo(b.key));
+    return [for (final x in e.take(n)) x.key];
+  }
+
+  /// Option values of [stepId] chosen most often, limited to values that are still offered in [offered].
+  static List<String> topPicks(CaseRec rec, String stepId, Iterable<String> offered, {int n = 5, int minUses = 2}) {
+    final ok = offered.toSet();
+    final counts = <String, int>{};
+    for (final c in _cases(rec)) {
+      final ch = c.d['choices'];
+      final st = ch is Map && ch['s'] is Map ? (ch['s'] as Map)[stepId] : null;
+      if (st is! Map) continue;
+      for (final v in (st['v'] as List? ?? const [])) {
+        final k = '$v';
+        if (ok.contains(k) && k != 'Not assessed' && k != 'Unable to assess' && k != 'Other') counts[k] = (counts[k] ?? 0) + 1;
+      }
+    }
+    return _top(counts, n, minUses);
+  }
+
+  /// Test names ([tests] true) or plan items most often recorded in the case lists, among [offered].
+  static List<String> topNames(CaseRec rec, Iterable<String> offered, {required bool tests, int n = 5, int minUses = 2}) {
+    final byLower = {for (final o in offered) o.toLowerCase(): o};
+    final counts = <String, int>{};
+    for (final c in _cases(rec)) {
+      for (final e in c.lst(tests ? 'inv' : 'mgmt')) {
+        final k = byLower['${e[tests ? 'name' : 'text']}'.toLowerCase()];
+        if (k != null) counts[k] = (counts[k] ?? 0) + 1;
+      }
+    }
+    return _top(counts, n, minUses);
+  }
+}

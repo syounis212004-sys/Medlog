@@ -5,6 +5,7 @@ import 'choices_engine.dart';
 import 'widgets.dart';
 import 'data.dart';
 import 'i18n.dart';
+import 'motion.dart';
 
 bool _hasArabic(String s) => RegExp(r'[\u0600-\u06FF]').hasMatch(s);
 
@@ -30,6 +31,23 @@ class ChoicesSection extends StatefulWidget {
 }
 
 class _ChoicesSectionState extends State<ChoicesSection> {
+  /// Guided mode: the step on screen when the person went back to an earlier one (null = the first unanswered).
+  int? _focus;
+  final Set<String> _skipped = {};
+
+  bool get _all => store.settings['choicesAll'] == true;
+
+  Future<void> _setAll(bool v) async {
+    store.settings['choicesAll'] = v;
+    await store.saveSettings();
+    if (mounted) {
+      setState(() {
+        _focus = null;
+        _skipped.clear();
+      });
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -66,6 +84,7 @@ class _ChoicesSectionState extends State<ChoicesSection> {
       if (!await _confirmReplace()) return;
       cc.toggle(t, s, options, v, confirmed: true);
     }
+    if (!s.multi) _focus = null; // a single answer moves on to the next question
     _changed();
   }
 
@@ -79,12 +98,14 @@ class _ChoicesSectionState extends State<ChoicesSection> {
         title: s.label,
         options: options,
         selected: cc.pick(s.id).v,
+        frequent: options.length > 10 ? ChoiceUsage.topPicks(widget.rec, s.id, [for (final o in options) o.v]) : const [],
         multi: s.multi,
         onToggle: (v) async {
           if (!cc.toggle(t, s, options, v)) {
             if (!await _confirmReplace()) return cc.pick(s.id).v;
             cc.toggle(t, s, options, v, confirmed: true);
           }
+          if (!s.multi) _focus = null;
           _changed();
           return cc.pick(s.id).v;
         },
@@ -103,7 +124,13 @@ class _ChoicesSectionState extends State<ChoicesSection> {
       context: context,
       isScrollControlled: true,
       showDragHandle: true,
-      builder: (ctx) => _AddSheet(title: s.label, options: list, have: have, action: tests ? 'Add to investigations' : 'Add to the plan'),
+      builder: (ctx) => _AddSheet(
+        title: s.label,
+        options: list,
+        have: have,
+        action: tests ? 'Add to investigations' : 'Add to the plan',
+        frequent: list.length > 10 ? ChoiceUsage.topNames(widget.rec, [for (final o in list) o.v], tests: tests) : const [],
+      ),
     );
     if (picked == null || picked.isEmpty) return;
     final n = tests ? ChoicesSync.addTests(widget.rec, picked) : ChoicesSync.addPlanItems(widget.rec, picked);
@@ -162,7 +189,125 @@ class _ChoicesSectionState extends State<ChoicesSection> {
         subtitle: _en('${t.specialty}  •  $done/${shown.length}', style: theme.textTheme.bodySmall),
         childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
         expandedCrossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+        children: _all ? _allChildren(cc, t, shown, resolved, hidden, theme) : _guidedChildren(cc, t, shown, resolved, theme, done),
+      ),
+    );
+  }
+
+  Widget _groupHeader(ChStep st, ThemeData theme) => Padding(
+        padding: const EdgeInsets.only(top: 16),
+        child: Row(children: [
+          Icon(Icons.assignment_outlined, size: 16, color: theme.colorScheme.primary),
+          const SizedBox(width: 6),
+          Expanded(child: _en(st.group, style: theme.textTheme.titleSmall?.copyWith(color: theme.colorScheme.primary))),
+        ]),
+      );
+
+  /// One question at a time: the first unanswered one (or the one you went back to), with the progress above it.
+  List<Widget> _guidedChildren(CaseChoices cc, ChTemplate t, List<ChStep> shown, Map<String, List<ChOption>> resolved, ThemeData theme, int done) {
+    bool answered(ChStep st) => cc.pick(st.id).v.isNotEmpty || cc.pick(st.id).details.isNotEmpty;
+    var cur = -1;
+    if (_focus != null && _focus! >= 0 && _focus! < shown.length) {
+      cur = _focus!;
+    } else {
+      for (var i = 0; i < shown.length; i++) {
+        if (!answered(shown[i]) && !_skipped.contains(shown[i].id)) {
+          cur = i;
+          break;
+        }
+      }
+    }
+    final out = <Widget>[
+      if (widget.section == 'History') _complaintBar(cc),
+      Padding(
+        padding: const EdgeInsets.only(top: 4, bottom: 4),
+        child: Row(children: [
+          Expanded(child: AnimatedBar(shown.isEmpty ? 0 : done / shown.length, height: 6)),
+          const SizedBox(width: 8),
+          Text(cur >= 0 ? trp('Question {i} of {n}', {'i': cur + 1, 'n': shown.length}) : '$done/${shown.length}', style: theme.textTheme.labelMedium),
+        ]),
+      ),
+    ];
+    if (cur >= 0) {
+      final st = shown[cur];
+      if (st.group.isNotEmpty) out.add(_groupHeader(st, theme));
+      out.add(KeyedSubtree(key: ValueKey('guided_${st.id}'), child: _stepView(cc, t, st, resolved[st.id] ?? st.options)));
+      out.add(Padding(
+        padding: const EdgeInsets.only(top: 8),
+        child: Row(children: [
+          if (cur > 0) TextButton.icon(onPressed: () => setState(() => _focus = cur - 1), icon: const Icon(Icons.chevron_left, size: 18), label: Text('Back')),
+          const Spacer(),
+          if (answered(st))
+            FilledButton.tonal(
+              onPressed: () => setState(() => _focus = cur + 1 < shown.length ? cur + 1 : null),
+              child: Text(cur + 1 < shown.length ? 'Next' : 'Finish'),
+            )
+          else
+            TextButton(
+              onPressed: () => setState(() {
+                _skipped.add(st.id);
+                _focus = null;
+              }),
+              child: Text('Skip'),
+            ),
+        ]),
+      ));
+    } else {
+      out.add(Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: Row(children: [
+          Icon(Icons.check_circle_outline, color: theme.colorScheme.primary),
+          const SizedBox(width: 8),
+          Expanded(child: Text('All questions of this tab are answered or skipped.', style: theme.textTheme.bodyMedium)),
+        ]),
+      ));
+    }
+    final skippedLeft = [for (var i = 0; i < shown.length; i++) if (_skipped.contains(shown[i].id) && !answered(shown[i])) i];
+    if (skippedLeft.isNotEmpty) {
+      out.add(Padding(
+        padding: const EdgeInsets.only(top: 8),
+        child: Text(trp('{n} skipped: tap to answer', {'n': skippedLeft.length}), style: theme.textTheme.labelMedium),
+      ));
+      out.add(Directionality(
+        textDirection: TextDirection.ltr,
+        child: Wrap(spacing: 6, runSpacing: 2, children: [
+          for (final i in skippedLeft)
+            ActionChip(
+              avatar: const Icon(Icons.skip_next, size: 16),
+              label: m.Text(shown[i].label),
+              visualDensity: VisualDensity.compact,
+              onPressed: () => setState(() {
+                _skipped.remove(shown[i].id);
+                _focus = i;
+              }),
+            ),
+        ]),
+      ));
+    }
+    final doneIdx = [for (var i = 0; i < shown.length; i++) if (answered(shown[i]) && i != cur) i];
+    if (doneIdx.isNotEmpty) {
+      out.add(Padding(padding: const EdgeInsets.only(top: 8), child: Text('Answered', style: theme.textTheme.labelMedium)));
+      out.add(Directionality(
+        textDirection: TextDirection.ltr,
+        child: Wrap(spacing: 6, runSpacing: 2, children: [
+          for (final i in doneIdx)
+            ActionChip(
+              label: m.Text('${shown[i].label}: ${cc.pick(shown[i].id).v.take(2).join(', ')}${cc.pick(shown[i].id).v.length > 2 ? '…' : ''}', overflow: TextOverflow.ellipsis),
+              visualDensity: VisualDensity.compact,
+              onPressed: () => setState(() => _focus = i),
+            ),
+        ]),
+      ));
+    }
+    out.add(Align(
+      alignment: AlignmentDirectional.centerStart,
+      child: TextButton.icon(onPressed: () => _setAll(true), icon: const Icon(Icons.view_list, size: 18), label: Text('Show all questions')),
+    ));
+    return out;
+  }
+
+  List<Widget> _allChildren(CaseChoices cc, ChTemplate t, List<ChStep> shown, Map<String, List<ChOption>> resolved, int hidden, ThemeData theme) {
+    return [
           if (widget.section == 'History') _complaintBar(cc),
           for (var i = 0; i < shown.length; i++) ...[
             if (shown[i].group.isNotEmpty && (i == 0 || shown[i - 1].group != shown[i].group))
@@ -184,9 +329,11 @@ class _ChoicesSectionState extends State<ChoicesSection> {
           const SizedBox(height: 8),
           Text('Choices record what you found or decided. An empty step means not documented.',
               style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
-        ],
-      ),
-    );
+          Align(
+            alignment: AlignmentDirectional.centerStart,
+            child: TextButton.icon(onPressed: () => _setAll(false), icon: const Icon(Icons.linear_scale, size: 18), label: Text('One question at a time')),
+          ),
+    ];
   }
 
   /// Complaint templates of the case (chest pain, fever, ...): the ones added, the ones the chief complaint suggests,
@@ -395,7 +542,10 @@ class _PickSheet extends StatefulWidget {
   final List<String> selected;
   final bool multi, closeOnPick;
   final Future<List<String>> Function(String v) onToggle;
-  const _PickSheet({required this.title, required this.options, required this.selected, required this.multi, required this.closeOnPick, required this.onToggle});
+
+  /// Values you use most in your other cases: shown first under their own heading.
+  final List<String> frequent;
+  const _PickSheet({required this.title, required this.options, required this.selected, required this.multi, required this.closeOnPick, required this.onToggle, this.frequent = const []});
   @override
   State<_PickSheet> createState() => _PickSheetState();
 }
@@ -430,26 +580,13 @@ class _PickSheetState extends State<_PickSheet> {
               ),
             Expanded(
               child: ListView(children: [
-                for (final o in list)
-                  widget.multi
-                      ? CheckboxListTile(
-                          dense: true,
-                          value: _sel.contains(o.v),
-                          title: _en(o.v),
-                          onChanged: (_) async {
-                            final r = await widget.onToggle(o.v);
-                            if (mounted) setState(() => _sel = List<String>.from(r));
-                          },
-                        )
-                      : ListTile(
-                          dense: true,
-                          title: _en(o.v),
-                          trailing: _sel.contains(o.v) ? const Icon(Icons.check) : null,
-                          onTap: () async {
-                            await widget.onToggle(o.v);
-                            if (mounted) Navigator.pop(context);
-                          },
-                        ),
+                if (_q.isEmpty && widget.frequent.isNotEmpty) ...[
+                  _heading(context, 'Frequently used'),
+                  for (final o in widget.options)
+                    if (widget.frequent.contains(o.v)) _tile(o),
+                  _heading(context, 'All options'),
+                ],
+                for (final o in list) _tile(o),
               ]),
             ),
           ]),
@@ -457,13 +594,39 @@ class _PickSheetState extends State<_PickSheet> {
       ),
     );
   }
+
+  Widget _tile(ChOption o) => widget.multi
+      ? CheckboxListTile(
+          dense: true,
+          value: _sel.contains(o.v),
+          title: _en(o.v),
+          onChanged: (_) async {
+            final r = await widget.onToggle(o.v);
+            if (mounted) setState(() => _sel = List<String>.from(r));
+          },
+        )
+      : ListTile(
+          dense: true,
+          title: _en(o.v),
+          trailing: _sel.contains(o.v) ? const Icon(Icons.check) : null,
+          onTap: () async {
+            await widget.onToggle(o.v);
+            if (mounted) Navigator.pop(context);
+          },
+        );
 }
+
+Widget _heading(BuildContext context, String t) => Padding(
+      padding: const EdgeInsets.fromLTRB(16, 10, 16, 2),
+      child: Text(t, style: Theme.of(context).textTheme.labelLarge?.copyWith(color: Theme.of(context).colorScheme.primary)),
+    );
 
 class _AddSheet extends StatefulWidget {
   final String title, action;
   final List<ChOption> options;
   final Set<String> have;
-  const _AddSheet({required this.title, required this.options, required this.have, required this.action});
+  final List<String> frequent;
+  const _AddSheet({required this.title, required this.options, required this.have, required this.action, this.frequent = const []});
   @override
   State<_AddSheet> createState() => _AddSheetState();
 }
@@ -498,16 +661,13 @@ class _AddSheetState extends State<_AddSheet> {
               ),
             Expanded(
               child: ListView(children: [
-                for (final o in list)
-                  CheckboxListTile(
-                    dense: true,
-                    value: widget.have.contains(o.v.toLowerCase()) || _sel.contains(o.v),
-                    title: _en(o.v),
-                    subtitle: widget.have.contains(o.v.toLowerCase()) ? Text('Already in the list') : null,
-                    onChanged: widget.have.contains(o.v.toLowerCase())
-                        ? null
-                        : (v) => setState(() => v == true ? _sel.add(o.v) : _sel.remove(o.v)),
-                  ),
+                if (_q.isEmpty && widget.frequent.isNotEmpty) ...[
+                  _heading(context, 'Frequently used'),
+                  for (final o in widget.options)
+                    if (widget.frequent.contains(o.v)) _tile(o),
+                  _heading(context, 'All options'),
+                ],
+                for (final o in list) _tile(o),
               ]),
             ),
           ]),
@@ -515,6 +675,14 @@ class _AddSheetState extends State<_AddSheet> {
       ),
     );
   }
+
+  Widget _tile(ChOption o) => CheckboxListTile(
+        dense: true,
+        value: widget.have.contains(o.v.toLowerCase()) || _sel.contains(o.v),
+        title: _en(o.v),
+        subtitle: widget.have.contains(o.v.toLowerCase()) ? Text('Already in the list') : null,
+        onChanged: widget.have.contains(o.v.toLowerCase()) ? null : (v) => setState(() => v == true ? _sel.add(o.v) : _sel.remove(o.v)),
+      );
 }
 
 class _DetailsToggle extends StatefulWidget {

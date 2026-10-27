@@ -5,6 +5,7 @@ import 'package:flutter/material.dart' as m show Text;
 import 'package:flutter/rendering.dart' show SelectedContent;
 
 import 'data.dart';
+import 'book_text.dart';
 import 'i18n.dart';
 import 'lib_glance.dart';
 import 'lib_sheet.dart';
@@ -123,12 +124,14 @@ class _ArticleScreenState extends State<ArticleScreen> {
       _note.text = noteFor(widget.packId, a.title);
       final p = library.pack(widget.packId);
       if (_book) { _original = true; _forceFull = true; }
+      _scroll.addListener(_onScroll);
       final label = sheetLabel(widget.packId, a.title, source: a.source, packKind: p?.kind ?? '', packTitle: p?.title ?? '');
       _prov = articleProvenance(a, label);
       _single = sheetFor('s|${widget.packId}|${widget.index}', [SheetSrc(label, a)], hideCaptions: store.libCaptions);
       setState(() {
         _a = a;
         _applyMode();
+        _restorePos();
         _loadImages(a.title).then((l) {
           if (mounted) setState(() => _imgList = l);
         });
@@ -266,6 +269,8 @@ class _ArticleScreenState extends State<ArticleScreen> {
 
   @override
   void dispose() {
+    _posTimer?.cancel();
+    _savePos();
     _noteTimer?.cancel();
     _hiTimer?.cancel();
     _scroll.dispose();
@@ -297,6 +302,80 @@ class _ArticleScreenState extends State<ArticleScreen> {
   List<Widget> _tablesList(List<LibTable> l, double scale) {
     if (_quick || !store.libShowTables || l.isEmpty) return const [];
     return [for (final t in l) if (!_inDoseCard.contains(t)) _TableCard(table: t, scale: scale)];
+  }
+
+  Widget _bodyOf(String text, double scale) => _book ? BookBody(text, scale: scale, focus: _hiQuote) : _Body(text, scale: scale, focus: _hiQuote);
+
+  // ---- where you stopped reading in a book: the scroll place and the open sections
+  String get _posKey => '${widget.packId}|${widget.index}';
+  Timer? _posTimer;
+
+  void _savePos() {
+    if (!_book || _a == null || !_scroll.hasClients) return;
+    final m = <String, dynamic>{if (store.settings['bookPos'] is Map) ...Map<String, dynamic>.from(store.settings['bookPos'] as Map)};
+    m[_posKey] = {'p': _scroll.position.pixels.round(), 'o': _open.toList()..sort()};
+    // keep the list short: the 60 most recent chapters
+    if (m.length > 60) m.remove(m.keys.first);
+    store.settings['bookPos'] = m;
+    store.saveSettings();
+  }
+
+  void _onScroll() {
+    if (!_book) return;
+    _posTimer?.cancel();
+    _posTimer = Timer(const Duration(milliseconds: 700), _savePos);
+  }
+
+  void _restorePos() {
+    if (!_book || _hiQuote.isNotEmpty) return;
+    final saved = store.settings['bookPos'];
+    final v = saved is Map ? saved[_posKey] : null;
+    if (v is! Map) return;
+    final px = (v['p'] as num?)?.toDouble() ?? 0;
+    for (final o in (v['o'] as List? ?? const [])) {
+      if (o is int && o >= 0 && o < _secs.length) _open.add(o);
+    }
+    if (px < 40) return;
+    var tries = 0;
+    void go() {
+      if (!mounted || tries++ > 6) return;
+      if (_scroll.hasClients && _scroll.position.maxScrollExtent >= px - 1) {
+        _scroll.jumpTo(px.clamp(0.0, _scroll.position.maxScrollExtent));
+      } else if (_scroll.hasClients && tries > 2) {
+        _scroll.jumpTo(_scroll.position.maxScrollExtent);
+      } else {
+        WidgetsBinding.instance.addPostFrameCallback((_) => go());
+      }
+    }
+    WidgetsBinding.instance.addPostFrameCallback((_) => go());
+  }
+
+  /// The contents of the chapter and a search inside it: tapping a section opens it, scrolls to it and marks the match.
+  Future<void> _openOutline() async {
+    final pick = await showModalBottomSheet<(int, String)>(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      builder: (ctx) => _OutlineSheet(secs: [for (final x in _secs) (x.title, x.raw?.text ?? '')], open: _open),
+    );
+    if (pick == null || !mounted) return;
+    final (i, q) = pick;
+    if (q.isNotEmpty) {
+      _hiTimer?.cancel();
+      setState(() {
+        _hiQuote = normQuote(q);
+        _hiSec = i;
+      });
+      _hiTimer = Timer(const Duration(seconds: 6), () {
+        if (mounted) {
+          setState(() {
+            _hiQuote = '';
+            _hiSec = -1;
+          });
+        }
+      });
+    }
+    _jump(i);
   }
 
   void _jump(int secIndex) {
@@ -384,6 +463,8 @@ class _ArticleScreenState extends State<ArticleScreen> {
       appBar: AppBar(
         title: Text(a?.title ?? '', maxLines: 1, overflow: TextOverflow.ellipsis),
         actions: [
+          if (a != null && _secs.length >= 3 && !_quick)
+            IconButton(tooltip: tr('Contents'), icon: const Icon(Icons.list_alt), onPressed: _openOutline),
           if (a != null)
             IconButton(
               tooltip: tr('Read later'),
@@ -687,7 +768,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
       if (!_quick && sheet != null)
         for (final part in sheet.lead) Padding(padding: const EdgeInsets.only(top: 6), child: SheetPartView(part: part, look: look, tablesFor: (pt) => _tablesList(pt.tables, scale))),
       if (!_quick && sheet == null && rest.isNotEmpty) Padding(padding: const EdgeInsets.only(top: 6), child: _Body(rest, scale: scale)),
-      if (sheet == null && !_quick && definition.isEmpty && lead.text.trim().isNotEmpty) Padding(padding: const EdgeInsets.only(top: 6), child: _Body(lead.text, scale: scale, literal: _book)),
+      if (sheet == null && !_quick && definition.isEmpty && lead.text.trim().isNotEmpty) Padding(padding: const EdgeInsets.only(top: 6), child: _bodyOf(lead.text, scale)),
       if (sheet == null) ..._tablesOf(lead, scale),
       if (!_quick && _secs.isNotEmpty)
         Align(
@@ -727,7 +808,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
                   ),
                 ),
               if (_secs[i].raw != null) ...[
-                _Body(_secs[i].raw!.text, scale: scale, focus: _hiQuote, literal: _book),
+                _bodyOf(_secs[i].raw!.text, scale),
                 ..._tablesOf(_secs[i].raw!, scale),
               ] else
                 SheetSecBody(
@@ -1044,17 +1125,15 @@ class _Para extends StatelessWidget {
 
 /// Article text: paragraphs with space between them, bullets with a hanging indent.
 class _Body extends StatelessWidget {
-  final bool literal;
   final String text;
   final double scale;
   final String focus;
-  const _Body(this.text, {required this.scale, this.focus = '', this.literal = false});
+  const _Body(this.text, {required this.scale, this.focus = ''});
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final base = theme.textTheme.bodyMedium;
     final fs = (base?.fontSize ?? 14) * scale;
-    if (literal) return m.Text(text, textDirection: TextDirection.ltr, textAlign: TextAlign.left, style: base?.copyWith(fontSize: fs, height: 1.6));
     // long paragraphs are cut into shorter blocks (about three sentences each) so they are easier to read
     final paras = <String>[];
     for (final raw in text.split('\n').where((e) => e.trim().isNotEmpty)) {
@@ -1210,6 +1289,71 @@ class _ImageViewerScreenState extends State<ImageViewerScreen> {
           ),
         ),
       ]),
+    );
+  }
+}
+
+
+/// Contents of a chapter with a search over its sections.
+class _OutlineSheet extends StatefulWidget {
+  final List<(String, String)> secs;
+  final Set<int> open;
+  const _OutlineSheet({required this.secs, required this.open});
+  @override
+  State<_OutlineSheet> createState() => _OutlineSheetState();
+}
+
+class _OutlineSheetState extends State<_OutlineSheet> {
+  String _q = '';
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final nq = normQuote(_q);
+    final rows = <(int, String, int)>[]; // index, title, matches
+    for (var i = 0; i < widget.secs.length; i++) {
+      final (title, text) = widget.secs[i];
+      if (nq.isEmpty) {
+        rows.add((i, title, 0));
+        continue;
+      }
+      final hay = normQuote(text);
+      var n = 0;
+      for (var at = hay.indexOf(nq); at >= 0 && n < 99; at = hay.indexOf(nq, at + nq.length)) {
+        n++;
+      }
+      if (n > 0 || normQuote(title).contains(nq)) rows.add((i, title, n));
+    }
+    return SafeArea(
+      child: Padding(
+        padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+        child: SizedBox(
+          height: MediaQuery.of(context).size.height * 0.75,
+          child: Column(children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+              child: TextField(
+                decoration: InputDecoration(isDense: true, prefixIcon: const Icon(Icons.search), labelText: tr('Search in this chapter')),
+                onChanged: (v) => setState(() => _q = v.trim()),
+              ),
+            ),
+            Expanded(
+              child: rows.isEmpty
+                  ? Center(child: Text('No match', style: theme.textTheme.bodyMedium))
+                  : ListView(children: [
+                      for (final (i, title, n) in rows)
+                        ListTile(
+                          dense: true,
+                          leading: Icon(widget.open.contains(i) ? Icons.folder_open : Icons.folder_outlined, size: 20),
+                          title: m.Text(title, textDirection: TextDirection.ltr, textAlign: TextAlign.left, maxLines: 2, overflow: TextOverflow.ellipsis),
+                          trailing: n > 0 ? Chip(label: m.Text('$n'), visualDensity: VisualDensity.compact) : null,
+                          onTap: () => Navigator.pop(context, (i, _q)),
+                        ),
+                    ]),
+            ),
+          ]),
+        ),
+      ),
     );
   }
 }
