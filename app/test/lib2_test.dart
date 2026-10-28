@@ -246,6 +246,8 @@ void main() {
       expect(find.widgetWithText(ChoiceChip, 'WikEM'), findsOneWidget);
       expect(find.widgetWithText(ChoiceChip, 'All'), findsOneWidget);
       expect(find.byType(SourceBadge), findsWidgets);
+      await tester.ensureVisible(find.widgetWithText(ChoiceChip, 'MedlinePlus'));
+      await tester.pump();
       await tester.tap(find.widgetWithText(ChoiceChip, 'MedlinePlus'));
       await realWait(tester, 800);
       await settle(tester);

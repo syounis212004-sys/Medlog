@@ -47,24 +47,24 @@ class AiPrompts {
   static String lengthRule([String? length]) {
     switch (length ?? AiPrefs.answerLength) {
       case 'brief':
-        return 'LENGTH: brief. A short answer of 5-8 lines or bullets with the key decision points only.';
+        return 'LENGTH: brief. A short answer of 6-10 lines or bullets with the key decision points only.';
       case 'full':
         return 'LENGTH: full and detailed. Cover the topic as a complete teaching note; do not shorten sections to save space.';
       default:
-        return 'LENGTH: standard. A focused answer with the main points a ward doctor needs (about one screen), then offer to go deeper.';
+        return 'LENGTH: standard. A clear, well-organised answer that covers the topic properly: a one-line direct answer, then short headed sections (definition or what it is, causes or differential, key history and exam, investigations, management step by step, when to escalate, pitfalls). About 2 to 3 screens. Explain terms in plain words; do not leave bullet points as bare keywords.';
     }
   }
 
   /// Output token budget for a length ('brief' | 'standard' | 'full'); [deepDive] gets the largest budget.
   static int maxTokens({String? length, bool deepDive = false}) {
-    if (deepDive) return 6000;
+    if (deepDive) return 8000;
     switch (length ?? AiPrefs.answerLength) {
       case 'brief':
-        return 900;
+        return 1300;
       case 'full':
-        return 4500;
+        return 6000;
       default:
-        return 2200;
+        return 3800;
     }
   }
 

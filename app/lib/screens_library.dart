@@ -497,11 +497,17 @@ class SourceFilterChips extends StatelessWidget {
     if (sources.length < 2) return const SizedBox.shrink();
     return Padding(
       padding: const EdgeInsets.only(bottom: 4),
-      child: Wrap(spacing: 6, runSpacing: 0, children: [
-        ChoiceChip(label: Text('All'), selected: selected == null, visualDensity: VisualDensity.compact, onSelected: (_) => onChanged(null)),
-        for (final s in sources)
-          ChoiceChip(label: Text(s), selected: selected == s, visualDensity: VisualDensity.compact, onSelected: (_) => onChanged(selected == s ? null : s)),
-      ]),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(children: [
+          ChoiceChip(label: Text('All'), selected: selected == null, visualDensity: VisualDensity.compact, onSelected: (_) => onChanged(null)),
+          for (final s in sources)
+            Padding(
+              padding: const EdgeInsetsDirectional.only(start: 6),
+              child: ChoiceChip(label: Text(s), selected: selected == s, visualDensity: VisualDensity.compact, onSelected: (_) => onChanged(selected == s ? null : s)),
+            ),
+        ]),
+      ),
     );
   }
 }

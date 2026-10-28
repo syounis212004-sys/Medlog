@@ -208,6 +208,117 @@ class _CasesScreenState extends State<CasesScreen> {
     }).toList();
   }
 
+  int get _filterCount => [_status.isNotEmpty, _rotation.isNotEmpty, _starred, _review, _others, _urgent].where((e) => e).length;
+
+  void _clearFilters() => setState(() {
+        _status = '';
+        _rotation = '';
+        _starred = _review = _others = _urgent = false;
+      });
+
+  Widget _filterButton() {
+    final n = _filterCount;
+    return IconButton(
+      key: const Key('cases_filter'),
+      tooltip: tr('Filter'),
+      onPressed: _openFilters,
+      icon: Badge(
+        isLabelVisible: n > 0,
+        label: Text('$n'),
+        child: Icon(n > 0 ? Icons.filter_alt : Icons.filter_alt_outlined),
+      ),
+    );
+  }
+
+  /// One compact line with what is filtered now (nothing at all when no filter is on).
+  Widget _activeFilters() {
+    if (_filterCount == 0) return const SizedBox.shrink();
+    String rot() {
+      for (final r in store.rotations) {
+        if (r['id'].toString() == _rotation) return store.rotationLabel(r);
+      }
+      return '';
+    }
+
+    InputChip chip(String label, VoidCallback off) => InputChip(
+          label: Text(label),
+          visualDensity: VisualDensity.compact,
+          onDeleted: () => setState(off),
+          onPressed: _openFilters,
+        );
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 6),
+      child: _row([
+        if (_starred) chip(tr('Starred'), () => _starred = false),
+        if (_review) chip(tr('To review'), () => _review = false),
+        if (_urgent) chip(tr('Unstable / Critical'), () => _urgent = false),
+        if (_others) chip(tr('From others'), () => _others = false),
+        if (_status.isNotEmpty) chip(trUi(_status), () => _status = ''),
+        if (_rotation.isNotEmpty && rot().isNotEmpty) chip(rot(), () => _rotation = ''),
+        TextButton(onPressed: _clearFilters, child: Text('Clear all')),
+      ]),
+    );
+  }
+
+  void _openFilters() {
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      builder: (ctx) => StatefulBuilder(builder: (ctx, set) {
+        void upd(VoidCallback f) {
+          setState(f);
+          set(() {});
+        }
+
+        Widget group(String title, List<Widget> chips) => Padding(
+              padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
+              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text(title, style: const TextStyle(fontWeight: FontWeight.w700)),
+                const SizedBox(height: 6),
+                Wrap(spacing: 8, runSpacing: 6, children: chips),
+              ]),
+            );
+        return SafeArea(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxHeight: MediaQuery.of(ctx).size.height * 0.8),
+            child: SingleChildScrollView(
+              child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+                group(tr('Show only'), [
+                  FilterChip(label: Text('Starred'), selected: _starred, onSelected: (v) => upd(() => _starred = v)),
+                  FilterChip(label: Text('To review'), selected: _review, onSelected: (v) => upd(() => _review = v)),
+                  FilterChip(label: Text('Unstable / Critical'), selected: _urgent, onSelected: (v) => upd(() => _urgent = v)),
+                  FilterChip(label: Text('From others'), selected: _others, onSelected: (v) => upd(() => _others = v)),
+                ]),
+                group(tr('Status'), [
+                  for (final st in const ['Draft', 'Active', 'Discharged', 'Referred', 'Completed'])
+                    ChoiceChip(label: Text(trUi(st)), selected: _status == st, onSelected: (v) => upd(() => _status = v ? st : '')),
+                ]),
+                if (store.rotations.isNotEmpty)
+                  group(tr('Rotation'), [
+                    for (final r in store.rotations)
+                      ChoiceChip(
+                        label: Text(store.rotationLabel(r)),
+                        selected: _rotation == r['id'].toString(),
+                        onSelected: (v) => upd(() => _rotation = v ? r['id'].toString() : ''),
+                      ),
+                  ]),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
+                  child: Row(children: [
+                    TextButton(onPressed: _filterCount == 0 ? null : () { _clearFilters(); set(() {}); }, child: Text('Clear all')),
+                    const Spacer(),
+                    FilledButton(onPressed: () => Navigator.pop(ctx), child: Text('Done')),
+                  ]),
+                ),
+              ]),
+            ),
+          ),
+        );
+      }),
+    );
+  }
+
   Widget _row(List<Widget> items) {
     // intrinsic height: chips grow with the text size instead of being clipped
     return SingleChildScrollView(
@@ -450,6 +561,7 @@ class _CasesScreenState extends State<CasesScreen> {
                       borderSide: BorderSide.none,
                     ),
                     isDense: true,
+                    suffixIcon: _filterButton(),
                   ),
                   onChanged: (v) {
                     _debounce?.cancel();
@@ -473,50 +585,7 @@ class _CasesScreenState extends State<CasesScreen> {
                   ),
                 ),
               ),
-              _row([
-                FilterChip(
-                  label: const Text('Starred'),
-                  selected: _starred,
-                  onSelected: (v) => setState(() => _starred = v),
-                ),
-                FilterChip(
-                  label: const Text('To review'),
-                  selected: _review,
-                  onSelected: (v) => setState(() => _review = v),
-                ),
-                FilterChip(
-                  label: Text('Unstable / Critical'),
-                  selected: _urgent,
-                  onSelected: (v) => setState(() => _urgent = v),
-                ),
-                FilterChip(
-                  label: const Text('From others'),
-                  selected: _others,
-                  onSelected: (v) => setState(() => _others = v),
-                ),
-                for (final s in const [
-                  'Draft',
-                  'Active',
-                  'Discharged',
-                  'Referred',
-                  'Completed'
-                ])
-                  ChoiceChip(
-                    label: Text(trUi(s)),
-                    selected: _status == s,
-                    onSelected: (v) => setState(() => _status = v ? s : ''),
-                  ),
-              ]),
-              if (store.rotations.isNotEmpty)
-                _row([
-                  for (final r in store.rotations)
-                    ChoiceChip(
-                      label: Text(store.rotationLabel(r)),
-                      selected: _rotation == r['id'],
-                      onSelected: (v) => setState(
-                          () => _rotation = v ? r['id'].toString() : ''),
-                    ),
-                ]),
+              _activeFilters(),
               Expanded(
                 child: items.isEmpty
                     ? (store.cases.isEmpty

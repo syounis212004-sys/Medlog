@@ -347,6 +347,7 @@ class _AskAiChatState extends State<AskAiChat> {
           links: _links[i],
           onNeedLinks: (doc) => _loadLinks(i, doc),
           onRetry: i == _t.msgs.length - 1 ? _retry : null,
+          onFollow: i == _t.msgs.length - 1 && !_busy ? (q) => _send(q) : null,
         );
       },
     );
@@ -523,7 +524,8 @@ class _AssistantCard extends StatefulWidget {
   final List<LibHit>? links;
   final void Function(AiDoc doc) onNeedLinks;
   final VoidCallback? onRetry;
-  const _AssistantCard({super.key, required this.msg, required this.question, required this.topic, required this.links, required this.onNeedLinks, this.onRetry});
+  final void Function(String)? onFollow;
+  const _AssistantCard({super.key, required this.msg, required this.question, required this.topic, required this.links, required this.onNeedLinks, this.onRetry, this.onFollow});
   @override
   State<_AssistantCard> createState() => _AssistantCardState();
 }
@@ -676,6 +678,10 @@ class _AssistantCardState extends State<_AssistantCard> {
           _libraryLinks(cs),
           const SizedBox(height: 6),
           Wrap(spacing: 2, runSpacing: 0, children: [
+            if (widget.onFollow != null) ...[
+              _act(Icons.unfold_more, 'More detail', () => widget.onFollow!('Go deeper on your last answer: add the missing detail, causes, work-up, management steps, escalation points and pitfalls. Keep it organised under short headings.')),
+              _act(Icons.unfold_less, 'Shorter', () => widget.onFollow!('Give a shorter version of your last answer: only the key decision points.')),
+            ],
             _act(Icons.copy_rounded, 'Copy', _copy),
             _act(Icons.note_add_outlined, 'Save as note', _saveNote),
             _act(Icons.folder_open_outlined, 'Save as My file', _saveFile),
