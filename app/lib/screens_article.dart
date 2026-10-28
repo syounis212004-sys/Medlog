@@ -1190,8 +1190,10 @@ class _ImgStrip extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final cs = theme.colorScheme;
-    return SizedBox(
-      height: height + 40,
+    return Directionality(
+      textDirection: TextDirection.ltr,
+      child: SizedBox(
+      height: height + 52,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: images.length,
@@ -1214,15 +1216,15 @@ class _ImgStrip extends StatelessWidget {
                 Directionality(
                   textDirection: TextDirection.ltr,
                   child: im.file.startsWith('book:')
-                      ? m.Text(im.caption.isEmpty ? im.file : im.caption, textDirection: TextDirection.ltr, textAlign: TextAlign.left, maxLines: 6, overflow: TextOverflow.ellipsis, style: theme.textTheme.labelSmall?.copyWith(color: cs.outline))
-                      : Text(im.caption.isEmpty ? im.file : im.caption, maxLines: 6, overflow: TextOverflow.ellipsis, style: theme.textTheme.labelSmall?.copyWith(color: cs.outline)),
+                      ? m.Text(im.caption.isEmpty ? im.file : im.caption, textDirection: TextDirection.ltr, textAlign: TextAlign.left, maxLines: 2, overflow: TextOverflow.ellipsis, style: theme.textTheme.labelSmall?.copyWith(color: cs.outline))
+                      : Text(im.caption.isEmpty ? im.file : im.caption, maxLines: 2, overflow: TextOverflow.ellipsis, style: theme.textTheme.labelSmall?.copyWith(color: cs.outline)),
                 ),
               ]),
             ),
           );
         },
       ),
-    );
+    ));
   }
 }
 
