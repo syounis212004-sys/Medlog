@@ -19,10 +19,6 @@ import 'settings_widgets.dart';
 import 'med_terms.dart';
 import 'screens_ai_library.dart';
 import 'screens_article.dart';
-import 'screens_calc.dart';
-import 'screens_quiz.dart';
-import 'screens_dosing.dart';
-import 'screens_ref.dart';
 import 'sheet_widgets.dart';
 import 'ui.dart';
 import 'widgets.dart';
@@ -102,17 +98,10 @@ class _LibraryScreenState extends State<LibraryScreen> {
   }
 
   /// One row of the study tools card: round icon, title and a one-line hint.
-  Widget _quick(IconData icon, String title, String sub, VoidCallback onTap) {
-    final theme = Theme.of(context);
-    final cs = theme.colorScheme;
-    return ListTile(
-      onTap: onTap,
-      leading: CircleAvatar(radius: 22, backgroundColor: cs.secondaryContainer, child: Icon(icon, color: cs.onSecondaryContainer)),
-      title: Text(title, style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
-      subtitle: Text(sub, maxLines: 1, overflow: TextOverflow.ellipsis),
-      trailing: Icon(Icons.chevron_right, color: cs.outline),
-    );
-  }
+  Widget _shelfTitle(String t) => Padding(
+        padding: const EdgeInsets.fromLTRB(2, 12, 2, 8),
+        child: Text(t, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800)),
+      );
 
   Future<void> _openByTitle(String packId, String title) async {
     final i = await library.indexOfTitle(packId, title);
@@ -139,6 +128,13 @@ class _LibraryScreenState extends State<LibraryScreen> {
             automaticallyImplyLeading: !widget.embedded,
             title: Text('Library'),
             actions: [
+              if (packs.isNotEmpty)
+                IconButton(
+                  key: const Key('lib_ask'),
+                  tooltip: tr('Ask my references'),
+                  icon: const Icon(Icons.question_answer_outlined),
+                  onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => AskReferencesScreen(initialQuestion: _q.text.trim()))),
+                ),
               IconButton(
                 tooltip: tr('Courses and library'),
                 icon: const Icon(Icons.download_for_offline_outlined),
@@ -174,16 +170,6 @@ class _LibraryScreenState extends State<LibraryScreen> {
                 ),
               ),
               const SizedBox(height: 8),
-              if (packs.isNotEmpty)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: FilledButton.tonalIcon(
-                    style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(52), alignment: AlignmentDirectional.centerStart),
-                    onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => AskReferencesScreen(initialQuestion: _q.text.trim()))),
-                    icon: const Icon(Icons.question_answer_outlined),
-                    label: Text('Ask my references'),
-                  ),
-                ),
               if (searching) ...[
                 Align(
                   alignment: AlignmentDirectional.centerStart,
@@ -262,30 +248,6 @@ class _LibraryScreenState extends State<LibraryScreen> {
                     ),
                   ),
               ] else ...[
-                AppCard(
-                  child: Column(children: [
-                    _quick(Icons.quiz_outlined, tr('Test myself'), tr('Questions from the articles'),
-                        () => Navigator.push(context, MaterialPageRoute(builder: (_) => const QuizScreen()))),
-                    const Divider(height: 1, indent: 16, endIndent: 16),
-                    _quick(Icons.calculate_outlined, tr('Calculators'), tr('Ready clinical formulas'),
-                        () => Navigator.push(context, MaterialPageRoute(builder: (_) => const CalculatorsScreen()))),
-                    const Divider(height: 1, indent: 16, endIndent: 16),
-                    _quick(Icons.medication_liquid_outlined, tr('Doses & durations'), tr('From your own files, offline'),
-                        () => Navigator.push(context, MaterialPageRoute(builder: (_) => const DosingScreen()))),
-                    const Divider(height: 1, indent: 16, endIndent: 16),
-                    _quick(Icons.view_agenda_outlined, tr('Presentation cards'), tr('Ask, examine, red flags, first steps'),
-                        () => Navigator.push(context, MaterialPageRoute(builder: (_) => const BedsideCardsScreen()))),
-                    const Divider(height: 1, indent: 16, endIndent: 16),
-                    _quick(Icons.event_note_outlined, tr('Rotation hub'), tr('Topics, procedures and targets for your rotation'),
-                        () => Navigator.push(context, MaterialPageRoute(builder: (_) => const RotationHubScreen()))),
-                    const Divider(height: 1, indent: 16, endIndent: 16),
-                    _quick(Icons.fact_check_outlined, tr('Guidelines'), tr('Where to find the current ones'),
-                        () => Navigator.push(context, MaterialPageRoute(builder: (_) => const GuidelinesScreen()))),
-                    const Divider(height: 1, indent: 16, endIndent: 16),
-                    _quick(Icons.translate, tr('Medical terms'), tr('English → Arabic'),
-                        () => Navigator.push(context, MaterialPageRoute(builder: (_) => const DictionaryScreen()))),
-                  ]),
-                ),
                 const SizedBox(height: 8),
                 FutureBuilder<LibHit?>(
                   future: _today,
@@ -312,7 +274,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                     child: Column(children: [
                       const Icon(Icons.menu_book_outlined, size: 48),
                       const SizedBox(height: 8),
-                      Text('No courses downloaded yet.', textAlign: TextAlign.center),
+                      Text('No courses downloaded yet. Start with the essentials: short summaries that work offline.', textAlign: TextAlign.center),
                       const SizedBox(height: 12),
                       FilledButton.icon(
                         onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PackManagerScreen())),
@@ -321,23 +283,80 @@ class _LibraryScreenState extends State<LibraryScreen> {
                       ),
                     ]),
                   ),
-                if (recents.isNotEmpty)
-                  Fold(
-                    id: 'lib_recent',
-                    title: tr('Continue reading'),
-                    icon: Icons.history,
-                    initiallyOpen: true,
-                    children: [
-                      for (final r in recents.take(6))
-                        ListTile(
-                          dense: true,
-                          contentPadding: EdgeInsets.zero,
-                          leading: const Icon(Icons.article_outlined, size: 20),
-                          title: Text('${r['t']}', maxLines: 1, overflow: TextOverflow.ellipsis),
-                          onTap: () => _openByTitle('${r['p']}', '${r['t']}'),
-                        ),
-                    ],
+                if (recents.isNotEmpty) ...[
+                  _shelfTitle(tr('Continue reading')),
+                  SizedBox(
+                    height: 96,
+                    child: ListView.separated(
+                      key: const Key('lib_shelf'),
+                      scrollDirection: Axis.horizontal,
+                      itemCount: recents.take(8).length,
+                      separatorBuilder: (_, __) => const SizedBox(width: 10),
+                      itemBuilder: (context, i) {
+                        final r = recents[i];
+                        return SizedBox(
+                          width: 200,
+                          child: Material(
+                            color: theme.colorScheme.surfaceContainerLow,
+                            borderRadius: BorderRadius.circular(16),
+                            child: InkWell(
+                              borderRadius: BorderRadius.circular(16),
+                              onTap: () => _openByTitle('${r['p']}', '${r['t']}'),
+                              child: Padding(
+                                padding: const EdgeInsets.all(12),
+                                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                                  Expanded(child: Directionality(textDirection: TextDirection.ltr, child: Text(stripSource('${r['t']}'), maxLines: 3, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w700)))),
+                                  Text(library.pack('${r['p']}')?.title ?? '', maxLines: 1, overflow: TextOverflow.ellipsis, style: theme.textTheme.labelSmall?.copyWith(color: theme.colorScheme.outline)),
+                                ]),
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
                   ),
+                ],
+                if (packs.isNotEmpty) ...[
+                  _shelfTitle(tr('My courses')),
+                  LayoutBuilder(builder: (context, c) {
+                    final cols = c.maxWidth >= 600 ? 3 : 2;
+                    const gap = 10.0;
+                    final w = (c.maxWidth - gap * (cols - 1)) / cols;
+                    final cs = theme.colorScheme;
+                    Widget card(Widget child, VoidCallback onTap, {Key? key}) => SizedBox(
+                          width: w,
+                          height: 112 * MediaQuery.textScalerOf(context).scale(1.0).clamp(1.0, 1.7),
+                          child: Material(
+                            key: key,
+                            color: cs.surfaceContainerLow,
+                            borderRadius: BorderRadius.circular(16),
+                            child: InkWell(borderRadius: BorderRadius.circular(16), onTap: onTap, child: Padding(padding: const EdgeInsets.all(12), child: child)),
+                          ),
+                        );
+                    return Wrap(spacing: gap, runSpacing: gap, children: [
+                      for (final p in packs)
+                        card(
+                          Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                            Icon(p.kind == 'user' ? Icons.folder_outlined : Icons.menu_book_outlined, color: cs.primary),
+                            const Spacer(),
+                            Text(p.title, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w800)),
+                            Text('${p.count} ${tr('articles')}', style: theme.textTheme.labelSmall?.copyWith(color: cs.outline)),
+                          ]),
+                          () => Navigator.push(context, MaterialPageRoute(builder: (_) => PackBrowseScreen(pack: p))),
+                        ),
+                      card(
+                        Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                          Icon(Icons.add_circle_outline, color: cs.primary),
+                          const SizedBox(height: 6),
+                          Text('Add course', textAlign: TextAlign.center),
+                        ]),
+                        () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PackManagerScreen())),
+                        key: const Key('lib_add_course'),
+                      ),
+                    ]);
+                  }),
+                  const SizedBox(height: 8),
+                ],
                 if (later.isNotEmpty)
                   Fold(
                     id: 'lib_readlater',
@@ -400,25 +419,6 @@ class _LibraryScreenState extends State<LibraryScreen> {
                   Text(
                     trp('{n} articles • {size} on this phone', {'n': library.totalCount, 'size': fmtBytes(library.totalBytes)}),
                     style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.outline),
-                  ),
-                if (packs.isNotEmpty)
-                  Fold(
-                    id: 'lib_courses',
-                    title: tr('My courses'),
-                    icon: Icons.school_outlined,
-                    initiallyOpen: true,
-                    children: [
-                      for (final p in packs)
-                        ListTile(
-                          dense: true,
-                          contentPadding: EdgeInsets.zero,
-                          leading: Icon(p.kind == 'user' ? Icons.folder_outlined : Icons.article_outlined),
-                          title: Text(p.title),
-                          subtitle: Text('${p.count} • ${fmtBytes(p.bytes)}${library.imagePackFor(p.id) != null ? ' • ${tr('with images')}' : ''}'),
-                          trailing: const Icon(Icons.chevron_right),
-                          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => PackBrowseScreen(pack: p))),
-                        ),
-                    ],
                   ),
                 Fold(
                   id: 'lib_online',
@@ -912,6 +912,7 @@ class _PackManagerScreenState extends State<PackManagerScreen> {
     if (mounted) setState(() => _all = false);
   }
 
+  String _find = '';
   bool _importingLocalBook = false;
 
   Future<void> _importLocalBook() async {
@@ -953,40 +954,58 @@ class _PackManagerScreenState extends State<PackManagerScreen> {
           final installed = library.pack(e.meta.id);
           final prog = _progress[e.meta.id];
           final upd = library.hasUpdate(e);
+          final cs = theme.colorScheme;
+          Widget action() {
+            if (prog != null) {
+              return SizedBox(width: 28, height: 28, child: CircularProgressIndicator(strokeWidth: 3, value: prog <= 0 ? null : prog));
+            }
+            if (installed == null) {
+              return FilledButton.tonal(
+                key: Key('dl_${e.meta.id}'),
+                style: FilledButton.styleFrom(visualDensity: VisualDensity.compact),
+                onPressed: () => _install(e),
+                child: Text('Download'),
+              );
+            }
+            if (upd) {
+              return FilledButton(
+                style: FilledButton.styleFrom(visualDensity: VisualDensity.compact),
+                onPressed: () => _install(e),
+                child: Text('Update'),
+              );
+            }
+            return Row(mainAxisSize: MainAxisSize.min, children: [
+              Icon(Icons.check_circle, color: Colors.green.shade600, size: 20),
+              const SizedBox(width: 4),
+              Text('Installed', style: theme.textTheme.labelMedium?.copyWith(color: cs.onSurfaceVariant)),
+              IconButton(
+                tooltip: tr('Delete'),
+                visualDensity: VisualDensity.compact,
+                icon: const Icon(Icons.delete_outline, size: 20),
+                onPressed: () async {
+                  if (await confirmDialog(context, 'Delete this course from the phone?')) await library.remove(e.meta.id);
+                },
+              ),
+            ]);
+          }
+
           return ListTile(
-            dense: true,
             contentPadding: EdgeInsets.zero,
-            leading: Icon(installed == null ? Icons.cloud_download_outlined : Icons.check_circle, color: installed == null ? null : Colors.green),
-            title: Text(e.meta.title),
-            subtitle: prog != null
-                ? Padding(padding: const EdgeInsets.only(top: 6), child: LinearProgressIndicator(value: prog <= 0 ? null : prog))
-                : Text('${installed?.count ?? e.meta.count} • ${fmtBytes(e.meta.bytes)}${upd ? ' • ${tr('Update available')}' : ''}'),
-            trailing: prog != null
-                ? null
-                : installed == null
-                    ? IconButton(tooltip: tr('Download'), icon: const Icon(Icons.download), onPressed: () => _install(e))
-                    : upd
-                        ? IconButton(tooltip: tr('Update'), icon: const Icon(Icons.system_update_alt), onPressed: () => _install(e))
-                        : IconButton(
-                            tooltip: tr('Delete'),
-                            icon: const Icon(Icons.delete_outline),
-                            onPressed: () async {
-                              if (await confirmDialog(context, 'Delete this course from the phone?')) await library.remove(e.meta.id);
-                            },
-                          ),
+            title: Text(e.meta.title, style: const TextStyle(fontWeight: FontWeight.w700)),
+            subtitle: Text('${installed?.count ?? e.meta.count} ${tr('articles')} • ${fmtBytes(e.meta.bytes)}'),
+            trailing: action(),
           );
         }
+
+        final essentials = [for (final e in cat ?? <CatalogEntry>[]) if (e.meta.id == kEssentialsPackId) e];
+        final q = _find.trim().toLowerCase();
+        final wikiShown = [for (final e in wiki) if (e.meta.id != kEssentialsPackId && (q.isEmpty || e.meta.title.toLowerCase().contains(q))) e];
 
         return Scaffold(
           appBar: AppBar(title: Text('Courses and library')),
           body: ListView(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
             children: [
-              Text(
-                'Text-only articles that work without internet. Images are not included, so each course is a few megabytes.',
-                style: theme.textTheme.bodySmall,
-              ),
-              const SizedBox(height: 8),
               if (_error != null)
                 AppCard(
                   child: ListTile(
@@ -997,23 +1016,58 @@ class _PackManagerScreenState extends State<PackManagerScreen> {
                 ),
               if (cat == null && _error == null) const Padding(padding: EdgeInsets.all(24), child: Center(child: CircularProgressIndicator())),
               if (cat != null) ...[
-                Align(
-                  alignment: AlignmentDirectional.centerStart,
-                  child: FilledButton.tonalIcon(
-                    onPressed: _all ? null : _downloadAll,
-                    icon: const Icon(Icons.download_for_offline_outlined),
-                    label: Text(trp('Download all ({size})', {'size': fmtBytes(totalMb)})),
+                if (essentials.isNotEmpty)
+                  AppCard(
+                    color: theme.colorScheme.primaryContainer.withAlpha(110),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                        Row(children: [
+                          const Icon(Icons.bolt),
+                          const SizedBox(width: 8),
+                          Expanded(child: Text('Start here', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800))),
+                        ]),
+                        const SizedBox(height: 6),
+                        Text('Short, practical summaries for the ward. Works offline. Download this first.', style: theme.textTheme.bodyMedium),
+                        const SizedBox(height: 8),
+                        row(essentials.first),
+                      ]),
+                    ),
+                  ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(2, 14, 2, 6),
+                  child: Text('Courses by specialty', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800)),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 4),
+                  child: TextField(
+                    key: const Key('dl_find'),
+                    onChanged: (v) => setState(() => _find = v),
+                    decoration: InputDecoration(isDense: true, prefixIcon: const Icon(Icons.search), hintText: tr('Find a course')),
                   ),
                 ),
-                if (other.isNotEmpty) Fold(id: 'pk_other', title: tr('Patient information'), icon: Icons.health_and_safety_outlined, initiallyOpen: true, children: [for (final e in other) row(e)]),
-                Fold(id: 'pk_wiki', title: tr('Courses'), subtitle: tr('Medical articles by specialty'), icon: Icons.school_outlined, initiallyOpen: true, children: [for (final e in wiki) row(e)]),
-                if (images.isNotEmpty)
-                  Fold(
-                    id: 'pk_images',
-                    title: tr('Images (optional)'),
-                    subtitle: tr('Pictures for the articles. Each shows its author and license.'),
-                    icon: Icons.image_outlined,
-                    children: [
+                for (final e in wikiShown) row(e),
+                if (wikiShown.isEmpty) Padding(padding: const EdgeInsets.all(16), child: Text('Nothing found')),
+                Fold(
+                  id: 'pk_more',
+                  title: tr('More downloads'),
+                  subtitle: tr('Everything at once, patient information, pictures'),
+                  icon: Icons.tune,
+                  children: [
+                    Align(
+                      alignment: AlignmentDirectional.centerStart,
+                      child: FilledButton.tonalIcon(
+                        onPressed: _all ? null : _downloadAll,
+                        icon: const Icon(Icons.download_for_offline_outlined),
+                        label: Text(trp('Download all ({size})', {'size': fmtBytes(totalMb)})),
+                      ),
+                    ),
+                    for (final e in other) if (e.meta.id != kEssentialsPackId) row(e),
+                    if (images.isNotEmpty) ...[
+                      Padding(
+                        padding: const EdgeInsets.only(top: 12),
+                        child: Text('Pictures for the articles (optional). Each shows its author and license.', style: theme.textTheme.bodySmall),
+                      ),
                       Align(
                         alignment: AlignmentDirectional.centerStart,
                         child: TextButton.icon(
@@ -1024,9 +1078,15 @@ class _PackManagerScreenState extends State<PackManagerScreen> {
                       ),
                       for (final e in images) row(e),
                     ],
-                  ),
+                  ],
+                ),
               ],
               const SizedBox(height: 8),
+              Fold(
+                id: 'pk_import',
+                title: tr('Import my own files'),
+                icon: Icons.upload_file_outlined,
+                children: [
               AppCard(
                 child: ListTile(
                   leading: const Icon(Icons.folder_open_outlined),
@@ -1042,6 +1102,8 @@ class _PackManagerScreenState extends State<PackManagerScreen> {
                   subtitle: Text('Text or Markdown notes become articles in "My files". They stay on this phone.'),
                   onTap: _importFiles,
                 ),
+              ),
+                ],
               ),
             ],
           ),

@@ -173,17 +173,6 @@ class HomeScreen extends StatelessWidget {
                   icon: const Icon(Icons.search, color: Colors.white),
                 ),
                 IconButton(
-                  tooltip: tr('Portfolio'),
-                  onPressed: () => _push(context, const PortfolioScreen()),
-                  icon: const Icon(Icons.insights_outlined, color: Colors.white),
-                ),
-                IconButton(
-                  tooltip: tr('Calendar'),
-                  onPressed: () => _push(context, const CalendarScreen()),
-                  icon: const Icon(Icons.calendar_month_outlined,
-                      color: Colors.white),
-                ),
-                IconButton(
                   tooltip: tr('Settings'),
                   onPressed: () => _push(context, const SettingsScreen()),
                   icon: const Icon(Icons.settings_outlined, color: Colors.white),

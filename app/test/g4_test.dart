@@ -743,20 +743,23 @@ void main() {
         installFakeAi(enabled: false);
         await pumpApp(tester, size, lang, const LearnScreen());
         expect(tester.takeException(), isNull);
-        final tabs = tester.widgetList<Tab>(find.byType(Tab)).map((t) => t.text).toList();
-        if (lang == 'en') {
-          expect(tabs.take(4).toList(), ['Flashcards', 'Study', 'AI', 'Questions']);
-          expect(tabs.length, 8);
-        }
+        // the hub: three big cards and a short More list instead of eight tabs
+        expect(find.byType(Tab), findsNothing);
+        expect(find.byKey(const ValueKey('learnCards')), findsOneWidget);
+        expect(find.byKey(const ValueKey('learnStudy')), findsOneWidget);
+        await tester.tap(find.byKey(const ValueKey('learnCards')));
+        await settle(tester);
         // landing tab: today's plan + compact bank card
+        expect(find.byKey(const ValueKey('aiBankCard')), findsWidgets);
         await tester.scrollUntilVisible(find.byKey(const ValueKey('todayPlan')), 200, scrollable: find.byType(Scrollable).first);
         expect(find.byKey(const ValueKey('todayPlan')), findsOneWidget);
-        expect(find.byKey(const ValueKey('aiBankCard')), findsWidgets);
         await tester.scrollUntilVisible(find.byKey(const ValueKey('coachStep0')), 200, scrollable: find.byType(Scrollable).first);
         expect(find.byKey(const ValueKey('coachStep0')), findsOneWidget);
         await snap(tester, 'g4_learn_flash_$tag');
-        // Study tab: the card sits ABOVE the planner
-        await tester.tap(find.byType(Tab).at(1));
+        // Study screen: the card sits ABOVE the planner
+        await tester.pageBack();
+        await settle(tester);
+        await tester.tap(find.byKey(const ValueKey('learnStudy')));
         await settle(tester);
         final card = tester.getTopLeft(find.byKey(const ValueKey('aiBankCard')).hitTestable()).dy;
         final planner = tester.getTopLeft(find.text(lang == 'en' ? 'Exam planner' : 'مخطط الامتحان').first).dy;
@@ -764,7 +767,12 @@ void main() {
         expect(find.text(trp('{n} saved questions', {'n': 10})), findsOneWidget);
         expect(find.byKey(const ValueKey('aiBankWeak')), findsOneWidget);
         await snap(tester, 'g4_learn_study_$tag');
-        // AI tab
+        // AI study
+        await tester.pageBack();
+        await settle(tester);
+        await tester.scrollUntilVisible(find.byKey(const ValueKey('tabAi')), 200, scrollable: find.byType(Scrollable).first);
+        await tester.drag(find.byType(ListView).first, const Offset(0, -160));
+        await settle(tester, n: 3);
         await tester.tap(find.byKey(const ValueKey('tabAi')));
         await settle(tester);
         expect(find.byKey(const ValueKey('aiHub')), findsOneWidget);
@@ -948,7 +956,7 @@ void main() {
     });
     installFakeAi(answers: {'quiz_adapt': jsonEncode({'text': 'Cardiology answers were weak this week, so it gets 50% more time.'})});
     await pumpApp(tester, const Size(412, 892), 'en', const LearnScreen());
-    await tester.tap(find.byType(Tab).at(1));
+    await tester.tap(find.byKey(const ValueKey('learnStudy')));
     await settle(tester);
     final fold = find.text('Exam planner');
     await tester.tap(fold.first);

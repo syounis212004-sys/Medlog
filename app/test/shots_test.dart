@@ -172,7 +172,7 @@ void main() {
       await nav(tester, lang == 'ar' ? 'الحالات' : 'Cases');
       await settle(tester);
       await shot(tester, '${lang}_03_cases');
-      await nav(tester, lang == 'ar' ? 'التعلّم' : 'Learn');
+      await nav(tester, lang == 'ar' ? 'أدوات' : 'Tools');
       await settle(tester);
       await shot(tester, '${lang}_04_learn');
       await nav(tester, lang == 'ar' ? 'الرئيسية' : 'Home');
@@ -287,7 +287,7 @@ void tour4() {
     print('store.lang=${store.lang} langCode=$langCode isAr=$isAr');
     print('AFTER SWITCH offenders: ${bad().length}');
     await shot(tester, 'y_after_switch');
-    for (final label in ['Cases', 'Library', 'Learn', 'Home']) {
+    for (final label in ['Cases', 'Library', 'Tools', 'Home']) {
       if (find.byType(AppNavBar).evaluate().isEmpty) {
         tester.state<NavigatorState>(find.byType(Navigator).first).pop();
         await settle(tester);

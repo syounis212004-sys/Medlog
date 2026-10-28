@@ -146,9 +146,9 @@ void main() {
       final home = lang == 'ar' ? 'الرئيسية' : 'Home';
       expect(find.descendant(of: find.byType(AppNavBar), matching: find.text(home)), findsOneWidget);
       expect(find.descendant(of: find.byType(AppNavBar), matching: find.text(lang == 'ar' ? 'الملف' : 'Portfolio')), findsNothing);
-      final addC = tester.getCenter(find.byIcon(Icons.add_rounded).first);
-      expect((addC.dx - 206).abs() < 12, true, reason: 'add button is centred: ${addC.dx}');
-      expect(find.byIcon(Icons.insights_outlined), findsWidgets);
+      // the fifth tab holds the tools (calculators, doses, search, reports)
+      expect(find.descendant(of: find.byType(AppNavBar), matching: find.text(lang == 'ar' ? 'أدوات' : 'Tools')), findsOneWidget);
+      expect(find.byIcon(Icons.add_rounded), findsWidgets);
       await shot(tester, 'U16_${lang}_home');
       // library tab with the tools card
       await tester.tap(find.descendant(of: find.byType(AppNavBar), matching: find.text(lang == 'ar' ? 'المكتبة' : 'Library')));

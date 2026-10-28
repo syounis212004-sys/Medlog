@@ -124,14 +124,20 @@ void main2() {
       await settle(tester, 1500);
       expect(find.byType(ClinStatusChip), findsOneWidget);
       await shot(tester, 'PDF2_list_$lang');
-      await tester.tap(find.byType(FilterChip).at(2));
-      await settle(tester, 600);
+      Future<void> urgent() async {
+        await tester.tap(find.byKey(const Key('cases_filter')));
+        await settle(tester, 400);
+        await tester.tap(find.widgetWithText(FilterChip, tr('Unstable / Critical')));
+        await settle(tester, 300);
+        await tester.tapAt(const Offset(10, 10));
+        await settle(tester, 500);
+      }
+
+      await urgent();
       expect(find.byType(CaseTile), findsOneWidget);
       rec.set('cstatus', 'Stable');
-      await tester.tap(find.byType(FilterChip).at(2));
-      await settle(tester, 300);
-      await tester.tap(find.byType(FilterChip).at(2));
-      await settle(tester, 600);
+      await urgent(); // off
+      await urgent(); // on again: the case is now stable, so nothing matches
       expect(find.byType(CaseTile), findsNothing);
       nav.push(MaterialPageRoute(builder: (_) => CaseEditorScreen(rec: rec, initialTab: 0)));
       await settle(tester, 1500);

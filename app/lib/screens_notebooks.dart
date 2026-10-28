@@ -697,6 +697,22 @@ Future<ExportOptions?> askExportOptions(BuildContext context, {bool withRange = 
                     onSelectionChanged: (v) => setS(() => o.format = v.first),
                   ),
                 ),
+                if (o.format == 'pdf' && !withRange) ...[
+                  label(tr('Detail')),
+                  SizedBox(
+                    width: double.infinity,
+                    child: SegmentedButton<bool>(
+                      key: const Key('export_detail'),
+                      showSelectedIcon: false,
+                      segments: [
+                        ButtonSegment(value: false, label: Text(tr('Full case study'))),
+                        ButtonSegment(value: true, label: Text(tr('Summary'))),
+                      ],
+                      selected: {o.summaryOnly},
+                      onSelectionChanged: (v) => setS(() => o.summaryOnly = v.first),
+                    ),
+                  ),
+                ],
                 if (o.format == 'pdf')
                   SwitchListTile(
                     contentPadding: EdgeInsets.zero,
@@ -754,7 +770,8 @@ Future<void> exportCasesPdf(BuildContext context, List<CaseRec> cases) async {
         title: one ? null : tr('Cases'),
         fileName: one ? 'MedLog_${cases.first.s('code')}' : 'MedLog_cases',
         large: o.large,
-        signOff: o.signOff);
+        signOff: o.signOff,
+        summary: o.summaryOnly);
     await Share.shareXFiles([XFile(f.path)], text: 'MedLog');
   } catch (e) {
     if (context.mounted) snack(context, '${tr('Export failed')}: $e');

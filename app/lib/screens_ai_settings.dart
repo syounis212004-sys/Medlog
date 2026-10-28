@@ -527,6 +527,7 @@ class _AiSettingsBodyState extends State<AiSettingsBody> {
         onChanged: (v) => AiPrefs.sourceMode = v,
       ),
       if (mode == 'web' || mode == 'custom') _DomainEditor(custom: mode == 'custom'),
+      Fold(key: _fk('ls_ai_adv'), id: 'ls_ai_adv', title: tr('Advanced'), subtitle: tr('Web search, region, citations, limits, floating button'), icon: Icons.tune, initiallyOpen: widget.standalone, children: [
       OptSwitch(
         title: "Use the provider's live web search when available",
         help: 'Gemini, Claude and OpenAI can look things up online.',
@@ -612,6 +613,7 @@ class _AiSettingsBodyState extends State<AiSettingsBody> {
             ),
         ]),
       ),
+      ]),
     ];
   }
 

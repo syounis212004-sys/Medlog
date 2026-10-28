@@ -210,7 +210,7 @@ List<Widget> studyHomeSections(BuildContext context, {ValueChanged<int>? onOpenT
       title: 'Open questions',
       icon: Icons.help_outline,
       trailing: TextButton(
-        onPressed: onOpenTab == null ? null : () => onOpenTab(3),
+        onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const LearnScreen())),
         child: Text('${openQuestions.length}'),
       ),
       children: [

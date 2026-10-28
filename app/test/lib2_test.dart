@@ -156,16 +156,19 @@ void main() {
       await tester.pumpWidget(const MaterialApp(home: PackManagerScreen()));
       await realSteps(tester);
       await settle(tester);
-      await tester.scrollUntilVisible(find.text('Images (optional)'), 300, scrollable: find.byType(Scrollable).first);
-      await tester.tap(find.text('Images (optional)'));
+      await tester.scrollUntilVisible(find.text('More downloads'), 300, scrollable: find.byType(Scrollable).first);
+      await tester.tap(find.text('More downloads'));
       await settle(tester);
       final dl = find.textContaining('Download all (');
       expect(dl, findsWidgets);
+      await tester.drag(find.byType(Scrollable).first, const Offset(0, -700));
+      await settle(tester);
       await tester.ensureVisible(dl.last);
+      await settle(tester, 300);
       await tester.tap(dl.last);
       await settle(tester);
       // the usual "download N courses?" question first
-      await tester.tap(find.widgetWithText(FilledButton, 'Download'));
+      await tester.tap(find.descendant(of: find.byType(AlertDialog), matching: find.widgetWithText(FilledButton, 'Download')));
       await realWait(tester);
       expect(find.text('You are on mobile data. Download anyway?'), findsOneWidget);
       await tester.tap(find.text('Cancel'));

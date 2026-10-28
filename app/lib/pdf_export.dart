@@ -889,7 +889,67 @@ void _choiceTable(PdfDoc d, List<List<String>> rows) {
   d.table([tr('Item'), tr('Selection'), tr('Details')], rows, weights: [1.6, 2.6, 1.6]);
 }
 
-void addCase(PdfDoc d, CaseRec c, {bool signOff = false}) {
+/// The case read as a story, one paragraph per stage: who came and why, background, what was found, what was ordered,
+/// what was thought, what was done, how it ended. Choices and the typed fields are woven together.
+List<List<String>> caseStory(CaseRec c) {
+  String s(String k) => c.s(k).trim();
+  final cc = CaseChoices(c);
+  String sel(String section) => [
+        for (final r in cc.lines(section: section))
+          if (r.length > 1 && r[1].trim().isNotEmpty) '${r[0]}: ${r[1]}${r.length > 2 && r[2].trim().isNotEmpty ? ' (${r[2]})' : ''}'
+      ].join('; ');
+  String lab(String l, String v) => v.trim().isEmpty ? '' : '$l: ${v.trim()}';
+  final out = <List<String>>[];
+  void add(String heading, List<String> parts) {
+    final t = parts.where((e) => e.trim().isNotEmpty).map((e) => e.trim()).map((e) => e.endsWith('.') ? e : '$e.').join(' ');
+    if (t.isNotEmpty) out.add([heading, t]);
+  }
+
+  final who = _join([tr(s('ageGroup')), tr(s('sex'))], ' ');
+  final where = _join([tr(s('setting')), tr(s('encounter')), tr(s('specialty'))], ', ');
+  add(tr('Presentation'), [_join([who, where], ' - '), lab(tr('Chief complaint'), s('cc')), lab(tr('History of present illness'), s('hpi')), sel('History')]);
+  add(tr('Background'), [
+    lab(tr('Past medical history'), s('pmh')),
+    lab(tr('Past surgical history'), s('psh')),
+    lab(tr('Drugs'), s('drugs')),
+    lab(tr('Allergies'), s('allergies')),
+    lab(tr('Family history'), s('family')),
+    lab(tr('Social history'), s('social')),
+  ]);
+  final vit = [
+    ['BP', 'v_bp'], ['HR', 'v_hr'], ['Temp', 'v_temp'], ['RR', 'v_rr'], ['SpO2', 'v_spo2'], ['RBS', 'v_rbs'], ['Wt', 'v_wt'],
+  ].where((e) => s(e[1]).isNotEmpty).map((e) => '${e[0]} ${s(e[1])}').join(', ');
+  add(tr('Examination'), [lab(tr('Vital signs'), vit), s('examGeneral'), s('examSystemic'), s('examFocused'), sel('Examination')]);
+  final inv = [
+    for (final i in c.lst('inv'))
+      if ('${i['name'] ?? ''}'.trim().isNotEmpty)
+        '${i['name']}${'${i['result'] ?? ''}'.trim().isEmpty ? ' (${tr('${i['status'] ?? ''}')})' : ': ${i['result']}'}${'${i['interpretation'] ?? ''}'.trim().isEmpty ? '' : ' - ${i['interpretation']}'}'
+  ];
+  add(tr('Investigations'), [inv.join('; '), sel('Investigations')]);
+  add(tr('Assessment'), [
+    lab(tr('Working diagnosis'), s('workingDx')),
+    lab(tr('Final diagnosis'), s('finalDx')),
+    lab(tr('Differential diagnosis'), s('ddx')),
+    lab(tr('Problem list'), s('problems')),
+    lab(tr('Reasoning'), s('reasoning')),
+    sel('Assessment'),
+  ]);
+  final plan = [
+    for (final m in c.lst('mgmt'))
+      if ('${m['text'] ?? ''}'.trim().isNotEmpty) '${m['text']}${'${m['dose'] ?? ''}'.trim().isEmpty ? '' : ' (${m['dose']})'}'
+  ];
+  add(tr('Management'), [plan.join('; '), sel('Management')]);
+  add(tr('Outcome and learning'), [
+    lab(tr('Disposition'), tr(s('disposition'))),
+    lab(tr('Outcome'), s('outcome')),
+    lab(tr('Follow-up recommendations'), s('followUp')),
+    lab(tr('What I learned'), s('learned')),
+    lab(tr('Mistakes / near-misses'), s('mistakes')),
+  ]);
+  return out;
+}
+
+void addCase(PdfDoc d, CaseRec c, {bool signOff = false, bool summary = false, bool withStory = true}) {
   String s(String k) => c.s(k).trim();
   final cc = CaseChoices(c);
   final chHistory = cc.lines(section: 'History'), chExam = cc.lines(section: 'Examination'), chInv = cc.lines(section: 'Investigations');
@@ -911,6 +971,21 @@ void addCase(PdfDoc d, CaseRec c, {bool signOff = false}) {
 
   final flags = flaggedItems(c);
   if (flags.isNotEmpty) d.callout(tr('Red flags'), flags, kind: 'red', icon: 'flag');
+
+  // the case as a story first; the detailed record follows (a summary stops after the key stages)
+  final story = withStory ? caseStory(c) : const <List<String>>[];
+  const keyStages = {'Presentation', 'Assessment', 'Management', 'Outcome and learning'};
+  final shownStory = summary ? [for (final p in story) if (keyStages.contains(_trKey(p[0]))) p] : story;
+  if (shownStory.isNotEmpty) {
+    d.section(summary ? tr('Case summary') : tr('Case presentation'), icon: 'person');
+    for (final p in shownStory) {
+      d.para(p[0], p[1]);
+    }
+  }
+  if (summary) {
+    _signOffBlock(d, c, signOff);
+    return;
+  }
 
   final extra = specialtyFieldsFor(s('specialty')) ?? const <List<String>>[];
   if (['cc', 'hpi', 'pmh', 'psh', 'drugs', 'allergies', 'family', 'social', 'ros'].any((k) => s(k).isNotEmpty) ||
@@ -1085,21 +1160,33 @@ void addCase(PdfDoc d, CaseRec c, {bool signOff = false}) {
     d.para(tr('References'), s('refs'));
   }
 
-  if (signOff) {
-    d.section(tr('Supervisor sign-off'), icon: 'check');
-    if (isSigned(c.d)) {
-      d.para(tr('Supervisor'), signCell(c.d).replaceAll('\n', '  -  '));
-      final lvl = s('supLevel');
-      if (lvl.isNotEmpty) d.para(tr('Level of supervision'), tr(lvl));
-    } else {
-      d.signLines('', [tr('Supervisor name'), tr('Role'), tr('Signature or initials'), tr('Date')]);
-    }
+  _signOffBlock(d, c, signOff);
+}
+
+/// Keys of the story headings are the English titles, so a summary can pick stages in any language.
+String _trKey(String heading) {
+  for (final k in ['Presentation', 'Assessment', 'Management', 'Outcome and learning']) {
+    if (heading == tr(k)) return k;
+  }
+  return heading;
+}
+
+void _signOffBlock(PdfDoc d, CaseRec c, bool signOff) {
+  if (!signOff) return;
+  String s(String k) => c.s(k).trim();
+  d.section(tr('Supervisor sign-off'), icon: 'check');
+  if (isSigned(c.d)) {
+    d.para(tr('Supervisor'), signCell(c.d).replaceAll('\n', '  -  '));
+    final lvl = s('supLevel');
+    if (lvl.isNotEmpty) d.para(tr('Level of supervision'), tr(lvl));
+  } else {
+    d.signLines('', [tr('Supervisor name'), tr('Role'), tr('Signature or initials'), tr('Date')]);
   }
 }
 
 /// One or many cases as a study-sheet document. With several cases a summary page comes first.
 /// [signOff] adds a supervisor column to the summary and a sign-off block to every case.
-PdfDoc casesDoc(List<CaseRec> cases, {String? title, bool large = false, bool signOff = false}) {
+PdfDoc casesDoc(List<CaseRec> cases, {String? title, bool large = false, bool signOff = false, bool summary = false}) {
   final d = PdfDoc(large: large);
   if (cases.length > 1) {
     d.band(title ?? tr('Cases'), subtitle: countLabel(cases.length, 'case'));
@@ -1118,7 +1205,7 @@ PdfDoc casesDoc(List<CaseRec> cases, {String? title, bool large = false, bool si
         weights: signOff ? [1.3, 1.3, 1.4, 2.0, 1.3, 1.9] : [1.5, 1.4, 1.6, 2.4, 1.6], rowInk: ink);
   }
   for (final c in cases) {
-    addCase(d, c, signOff: signOff);
+    addCase(d, c, signOff: signOff, summary: summary, withStory: cases.length == 1 || summary);
   }
   return d;
 }
@@ -1137,6 +1224,9 @@ class ExportOptions {
   String format;
   bool large;
   bool signOff;
+
+  /// false: the whole case (story and every detail); true: only the key stages on one page.
+  bool summaryOnly = false;
 
   /// Optional AI paragraph per rotation (written from the counts only, clearly marked in the PDF).
   bool aiSummary = false;
@@ -1221,8 +1311,8 @@ Future<Uint8List> buildDocPdf(PdfDoc d, String title) async => pdfFromPages(awai
 Future<Uint8List> buildPdf(String title, String body, {bool large = false}) async =>
     buildDocPdf(_textDoc(title, body, large: large), title);
 
-Future<Uint8List> buildCasesPdf(List<CaseRec> cases, {String? title, bool large = false, bool signOff = false}) async =>
-    buildDocPdf(casesDoc(cases, title: title, large: large, signOff: signOff), title ?? 'MedLog');
+Future<Uint8List> buildCasesPdf(List<CaseRec> cases, {String? title, bool large = false, bool signOff = false, bool summary = false}) async =>
+    buildDocPdf(casesDoc(cases, title: title, large: large, signOff: signOff, summary: summary), title ?? 'MedLog');
 
 Future<File> _save(Uint8List bytes, String fileName) async {
   final dir = await getTemporaryDirectory();
@@ -1235,7 +1325,7 @@ Future<File> _save(Uint8List bytes, String fileName) async {
 Future<File> writePdf(String title, String body, {String fileName = 'MedLog', bool large = false}) async =>
     _save(await buildPdf(title, body, large: large), fileName);
 
-Future<File> writeCasesPdf(List<CaseRec> cases, {String? title, String fileName = 'MedLog', bool large = false, bool signOff = false}) async =>
-    _save(await buildCasesPdf(cases, title: title, large: large, signOff: signOff), fileName);
+Future<File> writeCasesPdf(List<CaseRec> cases, {String? title, String fileName = 'MedLog', bool large = false, bool signOff = false, bool summary = false}) async =>
+    _save(await buildCasesPdf(cases, title: title, large: large, signOff: signOff, summary: summary), fileName);
 
 Future<File> writeDocPdf(PdfDoc d, String title, {String fileName = 'MedLog'}) async => _save(await buildDocPdf(d, title), fileName);

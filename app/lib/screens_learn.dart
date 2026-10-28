@@ -27,42 +27,122 @@ import 'widgets.dart';
 class LearnScreen extends StatelessWidget {
   const LearnScreen({super.key});
 
+  void _open(BuildContext context, String title, Widget body) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => AiContextScope(
+          ctx: const AiScreenContext(kind: 'learn', title: 'Learn'),
+          child: Scaffold(appBar: AppBar(title: Text(title)), body: body),
+        ),
+      ),
+    );
+  }
+
+  Widget _big(BuildContext context, IconData icon, String title, String sub, VoidCallback onTap, {Key? key}) {
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    return Material(
+      key: key,
+      color: cs.surfaceContainerLow,
+      borderRadius: BorderRadius.circular(18),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(18),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(14),
+          child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.start, children: [
+            CircleAvatar(radius: 20, backgroundColor: cs.primaryContainer, child: Icon(icon, color: cs.onPrimaryContainer)),
+            const SizedBox(height: 10),
+            mm.Text(title, maxLines: 2, overflow: TextOverflow.ellipsis, style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
+            const SizedBox(height: 2),
+            mm.Text(sub, maxLines: 2, overflow: TextOverflow.ellipsis, style: theme.textTheme.bodySmall?.copyWith(color: cs.onSurfaceVariant)),
+          ]),
+        ),
+      ),
+    );
+  }
+
+  Widget _more(BuildContext context, IconData icon, String title, String sub, VoidCallback onTap, {Key? key}) => ListTile(
+        key: key,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 4),
+        leading: Icon(icon),
+        title: mm.Text(title, style: const TextStyle(fontWeight: FontWeight.w700)),
+        subtitle: mm.Text(sub, maxLines: 1, overflow: TextOverflow.ellipsis),
+        trailing: const Icon(Icons.chevron_right),
+        onTap: onTap,
+      );
+
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return AiContextScope(
       ctx: const AiScreenContext(kind: 'learn', title: 'Learn'),
-      child: DefaultTabController(
-        length: 8,
-        child: Scaffold(
-          appBar: AppBar(
-            title: const Text('Learn'),
-            bottom: TabBar(
-              isScrollable: true,
-              tabAlignment: TabAlignment.start,
-              tabs: [
-                Tab(icon: const Icon(Icons.style_outlined), text: tr('Flashcards'), height: 58),
-                Tab(icon: const Icon(Icons.school_outlined), text: tr('Study'), height: 58),
-                Tab(key: const ValueKey('tabAi'), icon: const Icon(Icons.auto_awesome), text: tr('AI'), height: 58),
-                Tab(icon: const Icon(Icons.help_outline), text: tr('Questions'), height: 58),
-                Tab(icon: const Icon(Icons.healing_outlined), text: tr('Procedures'), height: 58),
-                Tab(icon: const Icon(Icons.image_search_outlined), text: tr('Imaging'), height: 58),
-                Tab(icon: const Icon(Icons.edit_note), text: tr('Notebook'), height: 58),
-                Tab(icon: const Icon(Icons.record_voice_over_outlined), text: tr('Feedback'), height: 58),
+      child: Scaffold(
+        appBar: AppBar(title: const Text('Learn')),
+        body: AnimatedBuilder(
+          animation: store,
+          builder: (context, _) {
+            final st = ReviewEngine.stats();
+            final due = st['due'] ?? 0;
+            return ListView(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 28),
+              children: [
+                AppCard(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Row(children: [
+                      Container(
+                        width: 64,
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        decoration: BoxDecoration(color: theme.colorScheme.primaryContainer, borderRadius: BorderRadius.circular(16)),
+                        child: Center(child: mm.Text('$due', key: const ValueKey('learnDue'), style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w900, color: theme.colorScheme.onPrimaryContainer))),
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                          Text(due == 0 ? 'Nothing due today' : 'Cards due today', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800)),
+                          const SizedBox(height: 6),
+                          FilledButton(
+                            key: const ValueKey('learnStart'),
+                            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ReviewSessionScreen())),
+                            child: Text('Start today\u2019s review'),
+                          ),
+                        ]),
+                      ),
+                    ]),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Column(children: [
+                  IntrinsicHeight(
+                    child: Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                      Expanded(child: _big(context, Icons.style_outlined, tr('Flashcards'), tr('Review and add cards'), () => _open(context, tr('Flashcards'), const FlashcardsTab()), key: const ValueKey('learnCards'))),
+                      const SizedBox(width: 10),
+                      Expanded(child: _big(context, Icons.help_outline, tr('Questions'), tr('Your own question list'), () => _open(context, tr('Questions'), const _QuestionsTab()), key: const ValueKey('learnQuestions'))),
+                    ]),
+                  ),
+                  const SizedBox(height: 10),
+                  IntrinsicHeight(
+                    child: Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                      Expanded(child: _big(context, Icons.quiz_outlined, tr('Test myself'), tr('Questions from the articles'), () => Navigator.push(context, MaterialPageRoute(builder: (_) => const QuizScreen())), key: const ValueKey('learnQuiz'))),
+                      const SizedBox(width: 10),
+                      Expanded(child: _big(context, Icons.school_outlined, tr('Study'), tr('Exam planner and cases to review'), () => _open(context, tr('Study'), const _ReviewTab()), key: const ValueKey('learnStudy'))),
+                    ]),
+                  ),
+                ]),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(4, 18, 4, 4),
+                  child: mm.Text(tr('More'), style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800)),
+                ),
+                _more(context, Icons.auto_awesome, tr('AI study'), tr('Question bank, coach and viva practice'), () => _open(context, tr('AI study'), const AiHubTab()), key: const ValueKey('tabAi')),
+                _more(context, Icons.healing_outlined, tr('Procedures'), tr('Your log and skills passport'), () => _open(context, tr('Procedures'), const SkillsTab())),
+                _more(context, Icons.image_search_outlined, tr('Imaging'), tr('Image review practice'), () => _open(context, tr('Imaging'), const ImagingTab())),
+                _more(context, Icons.edit_note, tr('Notebook'), tr('Your personal notes'), () => _open(context, tr('Notebook'), const _NotebookTab())),
+                _more(context, Icons.record_voice_over_outlined, tr('Feedback'), tr('Feedback you received'), () => _open(context, tr('Feedback'), const FeedbackTab())),
               ],
-            ),
-          ),
-          body: const TabBarView(
-            children: [
-              FlashcardsTab(),
-              _ReviewTab(),
-              AiHubTab(),
-              _QuestionsTab(),
-              SkillsTab(),
-              ImagingTab(),
-              _NotebookTab(),
-              FeedbackTab(),
-            ],
-          ),
+            );
+          },
         ),
       ),
     );

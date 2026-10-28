@@ -371,7 +371,19 @@ class CaseChoices {
   }
 
   /// A step is open once every step it depends on has some selection ("Not assessed" and "Other" count).
-  bool enabled(ChTemplate t, ChStep s) => s.dependsOn.every((d) => pick(d).v.isNotEmpty);
+  bool enabled(ChTemplate t, ChStep s) => s.dependsOn.every((d) => pick(d).v.isNotEmpty) && !skippedByProblem(s.id);
+
+  /// Clinical sense: an injury or a suspected fracture has a time and a mechanism, not a "course" or a gradual onset;
+  /// a follow-up or a post-operative review has no onset. Those questions are not asked (answers already given stay).
+  bool skippedByProblem(String stepId) {
+    if (stepId != 'onset' && stepId != 'course') return false;
+    final problems = pick('problem').v;
+    if (problems.isEmpty) return false;
+    final acute = RegExp(r'injury|fracture|dislocation|laceration|^wound$', caseSensitive: false);
+    if (problems.any(acute.hasMatch)) return true;
+    const review = {'Follow-up', 'Postoperative review', 'Investigation review'};
+    return stepId == 'onset' && problems.every((v) => review.contains(v));
+  }
 
   /// Selected values that are no longer offered (a parent changed): kept and flagged, never removed silently.
   List<String> stale(ChStep s, List<ChOption> options) {

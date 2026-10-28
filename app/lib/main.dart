@@ -22,6 +22,7 @@ import 'screens_extras.dart';
 import 'screens_home.dart';
 import 'library.dart';
 import 'screens_learn.dart';
+import 'screens_tools.dart';
 import 'screens_library.dart';
 import 'screens_notebooks.dart';
 import 'screens_review.dart';
@@ -346,7 +347,7 @@ class _ShellState extends State<Shell> {
         HomeScreen(onOpenTab: _go),
         const CasesScreen(),
         const LibraryScreen(embedded: true),
-        const LearnScreen(),
+        const ToolsScreen(),
       ],
     );
     return LayoutBuilder(builder: (context, c) {
@@ -474,7 +475,7 @@ const List<_NavItem> _kNav = [
   _NavItem(Icons.home_outlined, Icons.home_rounded, 'Home'),
   _NavItem(Icons.folder_shared_outlined, Icons.folder_shared, 'Cases'),
   _NavItem(Icons.local_library_outlined, Icons.local_library, 'Library'),
-  _NavItem(Icons.lightbulb_outlined, Icons.lightbulb, 'Learn'),
+  _NavItem(Icons.apps_outlined, Icons.apps_rounded, 'Tools'),
 ];
 
 /// Bottom bar with a sliding pill, bouncing icons and a raised "add case" button.
@@ -537,7 +538,7 @@ class AppNavBar extends StatelessWidget {
                   fontFamily:
                       Theme.of(context).textTheme.bodyMedium?.fontFamily,
                 ),
-                child: Text(it.label),
+                child: FittedBox(fit: BoxFit.scaleDown, child: Text(it.label, maxLines: 1)),
               ),
             ],
           ),
