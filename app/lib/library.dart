@@ -274,7 +274,7 @@ class _Idx {
         (j['nl'] as List).cast<String>(),
         (j['bk'] as List).cast<String>(),
         (j['v'] as Map).cast<String, int>(),
-        (j['ch'] as List? ?? const []).cast<int>(),
+        [for (final n in (j['ch'] as List? ?? const [])) n is num ? n.toInt() : int.tryParse('$n') ?? 0],
         [for (final c in (j['chapters'] as List? ?? const [])) LibChapter((c['n'] as num).toInt(), '${c['t']}')],
       );
 

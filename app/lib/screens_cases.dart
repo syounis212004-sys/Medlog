@@ -685,9 +685,12 @@ class _CaseEditorScreenState extends State<CaseEditorScreen>
     return Column(children: [
       Padding(
         padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
-        child: Wrap(spacing: 8, runSpacing: 6, children: [
+        child: Row(children: [
           for (var i = 0; i < pages.length; i++)
-            ChoiceChip(
+            Expanded(child: Padding(padding: EdgeInsetsDirectional.only(end: i == pages.length - 1 ? 0 : 6), child: ChoiceChip(
+              visualDensity: VisualDensity.compact,
+              labelPadding: const EdgeInsets.symmetric(horizontal: 2),
+              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
               key: ValueKey('page_${pages[i]}'),
               avatar: Stack(clipBehavior: Clip.none, children: [
                 Icon(_pageChip[pages[i]].$1, size: 18),
@@ -698,14 +701,14 @@ class _CaseEditorScreenState extends State<CaseEditorScreen>
                     child: Container(width: 7, height: 7, decoration: BoxDecoration(color: Colors.green, shape: BoxShape.circle, border: Border.all(color: cs.surface, width: 1))),
                   ),
               ]),
-              label: Text(trUi(_pageChip[pages[i]].$2)),
+              label: FittedBox(fit: BoxFit.scaleDown, child: Text(trUi(_pageChip[pages[i]].$2))),
               selected: _sub[g] == i,
               showCheckmark: false,
               onSelected: (_) {
                 setState(() => _sub[g] = i);
                 _rememberTab(g);
               },
-            ),
+            ))),
         ]),
       ),
       Expanded(child: KeyedSubtree(key: ValueKey('grp_${g}_${_sub[g]}'), child: _pageOf(pages[_sub[g]]))),

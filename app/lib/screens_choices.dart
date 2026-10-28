@@ -189,7 +189,7 @@ class _ChoicesSectionState extends State<ChoicesSection> {
       elevation: 0,
       margin: const EdgeInsets.only(bottom: 12),
       child: ExpansionTile(
-        key: PageStorageKey('choices_${t.id}_${widget.section}'),
+        key: ValueKey('choices_${t.id}_${widget.section}'),
         initiallyExpanded: widget.section == 'History' || widget.section == 'Assessment',
         leading: const Icon(Icons.touch_app_outlined),
         title: Text('Quick choices', style: const TextStyle(fontWeight: FontWeight.w700)),
