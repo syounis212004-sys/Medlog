@@ -114,32 +114,27 @@ class LearnScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 10),
-                Column(children: [
-                  IntrinsicHeight(
-                    child: Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-                      Expanded(child: _big(context, Icons.style_outlined, tr('Flashcards'), tr('Review and add cards'), () => _open(context, tr('Flashcards'), const FlashcardsTab()), key: const ValueKey('learnCards'))),
-                      const SizedBox(width: 10),
-                      Expanded(child: _big(context, Icons.help_outline, tr('Questions'), tr('Your own question list'), () => _open(context, tr('Questions'), const _QuestionsTab()), key: const ValueKey('learnQuestions'))),
-                    ]),
-                  ),
-                  const SizedBox(height: 10),
-                  IntrinsicHeight(
-                    child: Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-                      Expanded(child: _big(context, Icons.quiz_outlined, tr('Test myself'), tr('Questions from the articles'), () => Navigator.push(context, MaterialPageRoute(builder: (_) => const QuizScreen())), key: const ValueKey('learnQuiz'))),
-                      const SizedBox(width: 10),
-                      Expanded(child: _big(context, Icons.school_outlined, tr('Study'), tr('Exam planner and cases to review'), () => _open(context, tr('Study'), const _ReviewTab()), key: const ValueKey('learnStudy'))),
-                    ]),
-                  ),
-                ]),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(4, 18, 4, 4),
-                  child: mm.Text(tr('More'), style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800)),
+                IntrinsicHeight(
+                  child: Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                    Expanded(child: _big(context, Icons.quiz_outlined, tr('Test myself'), tr('Questions from the articles'), () => Navigator.push(context, MaterialPageRoute(builder: (_) => const QuizScreen())), key: const ValueKey('learnQuiz'))),
+                    const SizedBox(width: 10),
+                    Expanded(child: _big(context, Icons.school_outlined, tr('Study'), tr('Exam planner and cases to review'), () => _open(context, tr('Study'), const _ReviewTab()), key: const ValueKey('learnStudy'))),
+                  ]),
                 ),
+                Fold(
+                  id: 'learn_more',
+                  title: tr('More'),
+                  icon: Icons.more_horiz,
+                  children: [
+                    _more(context, Icons.style_outlined, tr('Flashcards'), tr('Review and add cards'), () => _open(context, tr('Flashcards'), const FlashcardsTab()), key: const ValueKey('learnCards')),
+                    _more(context, Icons.help_outline, tr('Questions'), tr('Your own question list'), () => _open(context, tr('Questions'), const _QuestionsTab()), key: const ValueKey('learnQuestions')),
                 _more(context, Icons.auto_awesome, tr('AI study'), tr('Question bank, coach and viva practice'), () => _open(context, tr('AI study'), const AiHubTab()), key: const ValueKey('tabAi')),
                 _more(context, Icons.healing_outlined, tr('Procedures'), tr('Your log and skills passport'), () => _open(context, tr('Procedures'), const SkillsTab())),
                 _more(context, Icons.image_search_outlined, tr('Imaging'), tr('Image review practice'), () => _open(context, tr('Imaging'), const ImagingTab())),
                 _more(context, Icons.edit_note, tr('Notebook'), tr('Your personal notes'), () => _open(context, tr('Notebook'), const _NotebookTab())),
-                _more(context, Icons.record_voice_over_outlined, tr('Feedback'), tr('Feedback you received'), () => _open(context, tr('Feedback'), const FeedbackTab())),
+                    _more(context, Icons.record_voice_over_outlined, tr('Feedback'), tr('Feedback you received'), () => _open(context, tr('Feedback'), const FeedbackTab())),
+                  ],
+                ),
               ],
             );
           },

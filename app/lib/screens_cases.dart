@@ -17,6 +17,7 @@ import 'privacy.dart';
 import 'screens_privacy.dart';
 import 'ai/ai_context.dart';
 import 'screens_ai_cases.dart';
+import 'ai/voice_input.dart' show VoiceInputButton;
 import 'ai/ai_tools.dart' show untaggedCases;
 import 'screens_ai_tools.dart';
 import 'screens_ai_library.dart' show NlSearchChip;
@@ -700,15 +701,34 @@ class _CaseEditorScreenState extends State<CaseEditorScreen>
     [0],
     [1, 2, 3],
     [4, 5],
-    [6, 8],
-    [7],
+    [7, 6, 8],
   ];
-  late final List<int> _sub = [for (var g = 0; g < _groups.length; g++) _groups[g].contains(widget.initialTab) ? _groups[g].indexOf(widget.initialTab) : 0];
+  // the page showing in each tab (a page number, not a position, because some pages come and go)
+  late final List<int> _cur = [for (var g = 0; g < _groups.length; g++) _groups[g].contains(widget.initialTab) ? widget.initialTab : _groups[g].first];
 
   static int _groupOf(int page) => _groups.indexWhere((g) => g.contains(page));
 
+  /// Ward notes (progress) and the timeline matter for a patient who stays; an ER patient who was discharged, or a
+  /// clinic visit, does not need them. They appear when the case is admitted or already has notes.
+  bool _pageShown(int p) {
+    if (p != 6 && p != 8) return true;
+    if (rec.lst('progress').isNotEmpty) return true;
+    final d = rec.s('disposition');
+    return d == 'Admitted' || rec.s('setting') == 'Ward' || rec.s('setting') == 'ICU';
+  }
+
+  /// The pages of a tab that are offered now (the one being looked at always stays).
+  List<int> _pagesOf(int g) => [for (final p in _groups[g]) if (_pageShown(p) || p == _cur[g]) p];
+
+  int? _nextPage(int from) {
+    for (var n = from + 1; n <= 8; n++) {
+      if (_pageShown(n)) return n;
+    }
+    return null;
+  }
+
   void _rememberTab(int g) {
-    store.settings['lastTab'] = _groups[g][_sub[g]];
+    store.settings['lastTab'] = _cur[g];
     store.saveSettings();
   }
 
@@ -716,7 +736,7 @@ class _CaseEditorScreenState extends State<CaseEditorScreen>
   void _goPage(BuildContext ctx, int page) {
     final g = _groupOf(page);
     if (g < 0) return;
-    setState(() => _sub[g] = _groups[g].indexOf(page));
+    setState(() => _cur[g] = page);
     DefaultTabController.of(ctx).animateTo(g);
     store.settings['lastTab'] = page;
     store.saveSettings();
@@ -748,7 +768,7 @@ class _CaseEditorScreenState extends State<CaseEditorScreen>
 
   /// One tab: its page, with the chips that switch between its pages when it has several.
   Widget _group(int g, List<bool> filled) {
-    final pages = _groups[g];
+    final pages = _pagesOf(g);
     if (pages.length == 1) return _pageOf(pages[0]);
     final cs = Theme.of(context).colorScheme;
     return Column(children: [
@@ -771,16 +791,16 @@ class _CaseEditorScreenState extends State<CaseEditorScreen>
                   ),
               ]),
               label: FittedBox(fit: BoxFit.scaleDown, child: Text(trUi(_pageChip[pages[i]].$2))),
-              selected: _sub[g] == i,
+              selected: _cur[g] == pages[i],
               showCheckmark: false,
               onSelected: (_) {
-                setState(() => _sub[g] = i);
+                setState(() => _cur[g] = pages[i]);
                 _rememberTab(g);
               },
             ))),
         ]),
       ),
-      Expanded(child: KeyedSubtree(key: ValueKey('grp_${g}_${_sub[g]}'), child: _pageOf(pages[_sub[g]]))),
+      Expanded(child: KeyedSubtree(key: ValueKey('grp_${g}_${_cur[g]}'), child: _pageOf(pages.contains(_cur[g]) ? _cur[g] : pages.first))),
     ]);
   }
 
@@ -852,7 +872,66 @@ class _CaseEditorScreenState extends State<CaseEditorScreen>
 
   bool _touched = false;
 
+  /// A draft case whose outcome is chosen is not a draft any more: discharged, referred or admitted moves it on.
+  void _autoStatus() {
+    if (rec.s('status') != 'Draft') return;
+    final next = switch (rec.s('disposition')) {
+      'Discharged' => 'Discharged',
+      'Referred' || 'Transferred' => 'Referred',
+      'Admitted' => 'Active',
+      'Deceased' => 'Completed',
+      _ => '',
+    };
+    if (next.isNotEmpty) rec.set('status', next);
+  }
+
+  /// One tap to close the case. The question is optional: a case that taught nothing is finished all the same.
+  Future<void> _finishCase() async {
+    await _flush();
+    if (!mounted) return;
+    if (rec.s('status') == 'Completed') {
+      rec.set('status', 'Active');
+      _changed();
+      snack(context, tr('Case reopened'));
+      return;
+    }
+    final note = TextEditingController(text: rec.s('learned'));
+    final go = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        icon: const Icon(Icons.task_alt_outlined),
+        title: Text('Finish this case?'),
+        content: TextField(
+          key: const Key('finish_learned'),
+          controller: note,
+          minLines: 1,
+          maxLines: 3,
+          textCapitalization: TextCapitalization.sentences,
+          decoration: InputDecoration(labelText: tr('What did you learn? (optional)')),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text('Cancel')),
+          FilledButton(key: const Key('finish_go'), onPressed: () => Navigator.pop(ctx, true), child: Text('Finish')),
+        ],
+      ),
+    );
+    final text = note.text.trim();
+    note.dispose();
+    if (go != true || !mounted) return;
+    if (text.isNotEmpty) {
+      rec.set('learned', text);
+      _tc('learned').text = text;
+    }
+    rec.set('status', 'Completed');
+    _changed();
+    await _flush();
+    if (!mounted) return;
+    snack(context, tr('Case completed'));
+    Navigator.pop(context);
+  }
+
   void _changed({bool rebuild = true}) {
+    _autoStatus();
     if (!_burst) {
       // first change after a pause: keep the state from before it, for Undo
       _burst = true;
@@ -1126,17 +1205,18 @@ class _CaseEditorScreenState extends State<CaseEditorScreen>
       'Learning',
       'Timeline'
     ];
-    if (from >= names.length - 1) return const SizedBox(height: 24);
+    final to = _nextPage(from);
+    if (to == null) return const SizedBox(height: 24);
     return Builder(builder: (ctx) {
       return Padding(
         padding: const EdgeInsets.only(top: 12, bottom: 24),
         child: Align(
           alignment: AlignmentDirectional.centerEnd,
           child: FilledButton.tonalIcon(
-            onPressed: () => _goPage(ctx, from + 1),
+            onPressed: () => _goPage(ctx, to),
             icon: const Icon(Icons.arrow_forward),
             iconAlignment: IconAlignment.end,
-            label: Text('${trUi('Next')}: ${trUi(names[from + 1])}'),
+            label: Text('${trUi('Next')}: ${trUi(names[to])}'),
           ),
         ),
       );
@@ -1170,6 +1250,65 @@ class _CaseEditorScreenState extends State<CaseEditorScreen>
 
   // ------------------------------------------------------------ tabs
 
+  /// Say or type the case in a few lines now; when the internet is there, one tap fills the fields from it.
+  Widget _quickNote() {
+    final cs = Theme.of(context).colorScheme;
+    final c = _tc('quickNote');
+    return AppCard(
+      color: cs.secondaryContainer.withAlpha(90),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(12, 10, 12, 8),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Row(children: [
+            const Icon(Icons.mic_none_outlined, size: 20),
+            const SizedBox(width: 8),
+            Text('Quick note', style: const TextStyle(fontWeight: FontWeight.w800)),
+          ]),
+          const SizedBox(height: 6),
+          TextField(
+            key: const Key('quick_note'),
+            controller: c,
+            minLines: 2,
+            maxLines: 6,
+            textCapitalization: TextCapitalization.sentences,
+            onChanged: (v) {
+              rec.set('quickNote', v);
+              _changed(rebuild: false);
+            },
+            decoration: InputDecoration(
+              hintText: tr('Say or write the case in a few lines. Fill it in later.'),
+              border: const OutlineInputBorder(),
+              isDense: true,
+              suffixIcon: VoiceInputButton(
+                controller: c,
+                onChanged: () {
+                  rec.set('quickNote', c.text);
+                  _changed(rebuild: false);
+                },
+              ),
+            ),
+          ),
+          Align(
+            alignment: AlignmentDirectional.centerStart,
+            child: TextButton.icon(
+              key: const Key('quick_note_fill'),
+              onPressed: () async {
+                await _flush();
+                if (!mounted) return;
+                await openAiCase(context, rec, tab: 2, note: c.text, onChanged: () {
+                  _ctl.forEach((k, t) => t.text = rec.s(k));
+                  _changed();
+                });
+              },
+              icon: const Icon(Icons.auto_fix_high_outlined, size: 18),
+              label: Text('Fill the case from this note'),
+            ),
+          ),
+        ]),
+      ),
+    );
+  }
+
   Widget _info() {
     final tags = rec.tags;
     return ListView(
@@ -1196,6 +1335,7 @@ class _CaseEditorScreenState extends State<CaseEditorScreen>
                     })} '
               '${tr('You can add your own notes. A newer version from the sender replaces this copy.')}',
               icon: Icons.people_alt_outlined),
+        _quickNote(),
         // code + date first: the two things every entry needs
         Builder(builder: (context) {
           final big = MediaQuery.textScalerOf(context).scale(1.0) > 1.15;
@@ -2911,12 +3051,38 @@ class _CaseEditorScreenState extends State<CaseEditorScreen>
 
   bool _reviewSuggested() => rec.s('questions').trim().isNotEmpty || rec.s('initialRight') == 'Wrong' || rec.s('initialRight') == 'Partly';
 
+  /// "Needs no follow-up" or "back in two weeks" is one tap, not a form.
+  Widget _followChips() {
+    const options = ['No follow-up needed', 'Follow-up in 1 week', 'Follow-up in 2 weeks', 'Follow-up in 1 month', 'Clinic follow-up'];
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Text('Follow-up', style: Theme.of(context).textTheme.labelLarge),
+        const SizedBox(height: 4),
+        Wrap(spacing: 8, runSpacing: 4, children: [
+          for (final o in options)
+            ChoiceChip(
+              key: ValueKey('follow_$o'),
+              label: Text(o),
+              selected: rec.s('followUp') == tr(o),
+              onSelected: (v) {
+                rec.set('followUp', v ? tr(o) : '');
+                _tc('followUp').text = rec.s('followUp');
+                _changed();
+              },
+            ),
+        ]),
+      ]),
+    );
+  }
+
   Widget _learn() {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        _banner('This is the most valuable part: what did this case teach you?',
-            icon: Icons.school_outlined),
+        _followChips(),
+        _tf('learned', 'What I learned', lines: 3),
+        _more('Reflection and notes (optional)', [
         _tf('initialDx', 'My first diagnosis (before results)', lines: 2),
         _learnSuggest('initialDx', _initialDxIdeas()),
         _tf('initialWhy', 'Why I thought so', lines: 2),
@@ -2974,13 +3140,13 @@ class _CaseEditorScreenState extends State<CaseEditorScreen>
           ),
         _tf('whatChanged', 'What changed my diagnosis?', lines: 3),
         _learnSuggest('whatChanged', _whatChangedIdeas()),
-        _tf('learned', 'What I learned', lines: 5),
         _tf('mistakes',
             'Mistakes / near-misses (mine or others) — for learning',
             lines: 3),
         _tf('questions', 'Questions I could not answer (to review)', lines: 3),
         _tf('refs', 'References (book, guideline, page, link)', lines: 2),
         _tf('teaching', 'Supervisor teaching points', lines: 3),
+        ]),
         SwitchListTile(
           contentPadding: EdgeInsets.zero,
           title: const Text('Add to review list'),
@@ -2999,7 +3165,10 @@ class _CaseEditorScreenState extends State<CaseEditorScreen>
   // ------------------------------------------------------------ actions
 
   Future<void> _menu(String v) async {
-    if (v == 'fillAll') {
+    if (v == 'star') {
+      rec.set('starred', !rec.starred);
+      _changed();
+    } else if (v == 'fillAll') {
       await _fillNormal(history: true, exam: true);
     } else if (v == 'fillTpl') {
       await _fillFromTemplate();
@@ -3187,7 +3356,7 @@ class _CaseEditorScreenState extends State<CaseEditorScreen>
     return AiContextScope(
       ctx: const AiScreenContext(kind: 'case', title: 'Case'),
       child: DefaultTabController(
-      length: 5,
+      length: 4,
       initialIndex: _groupOf(widget.initialTab.clamp(0, 8)),
       child: PopScope(
         onPopInvokedWithResult: (didPop, _) {
@@ -3252,6 +3421,12 @@ class _CaseEditorScreenState extends State<CaseEditorScreen>
               },
             ),
             actions: [
+              IconButton(
+                key: const ValueKey('case_finish'),
+                tooltip: rec.s('status') == 'Completed' ? tr('Reopen case') : tr('Finish case'),
+                icon: Icon(rec.s('status') == 'Completed' ? Icons.check_circle : Icons.task_alt_outlined),
+                onPressed: _finishCase,
+              ),
               AiChipButton(key: const ValueKey('case_ai_chip'), tooltip: 'AI assistant', onTap: () => _menu('ai')),
               ValueListenableBuilder<int>(
                 valueListenable: _tick,
@@ -3261,18 +3436,11 @@ class _CaseEditorScreenState extends State<CaseEditorScreen>
                   onPressed: _undo.isEmpty ? null : _doUndo,
                 ),
               ),
-              IconButton(
-                tooltip: tr('Starred'),
-                icon: Icon(rec.starred ? Icons.star : Icons.star_border),
-                onPressed: () {
-                  rec.set('starred', !rec.starred);
-                  _changed();
-                },
-              ),
               PopupMenuButton<String>(
                 onSelected: _menu,
-                itemBuilder: (_) => const [
-                  PopupMenuItem(
+                itemBuilder: (_) => [
+                  PopupMenuItem(value: 'star', child: Text(rec.starred ? 'Remove star' : 'Star this case')),
+                  const PopupMenuItem(
                       value: 'fillAll',
                       child: Text('Fill everything normal (empty fields only)')),
                   PopupMenuItem(
@@ -3316,8 +3484,7 @@ class _CaseEditorScreenState extends State<CaseEditorScreen>
                       tab(Icons.assignment_ind_outlined, trUi('Info'), [0]),
                       tab(Icons.medical_services_outlined, trUi('Clinical'), [1, 2, 3]),
                       tab(Icons.fact_check_outlined, trUi('Plan'), [4, 5]),
-                      tab(Icons.update_outlined, trUi('Follow-up'), [6, 8]),
-                      tab(Icons.school_outlined, trUi('Learning'), [7]),
+                      tab(Icons.task_alt_outlined, trUi('Wrap-up'), [6, 7, 8]),
                     ],
                   ),
                   AnimatedBar(done / filled.length, height: 3),

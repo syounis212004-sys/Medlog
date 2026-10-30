@@ -32,6 +32,21 @@ Future<void> _exportMyData(BuildContext context) async {
   }
 }
 
+/// The code inside a pasted message (WhatsApp adds text around it): "MLREQ1..." or "MLA1...".
+String? extractAccessCode(String text, String prefix) {
+  final m = RegExp('$prefix\\.[A-Za-z0-9_\\-\\.]+').firstMatch(text);
+  return m?.group(0);
+}
+
+/// What is in the clipboard now (empty when there is nothing readable).
+Future<String> _clipText() async {
+  try {
+    return (await Clipboard.getData(Clipboard.kTextPlain))?.text ?? '';
+  } catch (_) {
+    return '';
+  }
+}
+
 String fmtDate(DateTime d) {
   String two(int n) => n.toString().padLeft(2, '0');
   return '${d.year}-${two(d.month)}-${two(d.day)}';
@@ -62,7 +77,7 @@ class GateScreen extends StatefulWidget {
   State<GateScreen> createState() => _GateScreenState();
 }
 
-class _GateScreenState extends State<GateScreen> {
+class _GateScreenState extends State<GateScreen> with WidgetsBindingObserver {
   final _name = TextEditingController();
   final _email = TextEditingController();
   final _note = TextEditingController();
@@ -78,14 +93,49 @@ class _GateScreenState extends State<GateScreen> {
     _name.text = '${p?['name'] ?? a?.name ?? ''}';
     _email.text = '${p?['email'] ?? a?.email ?? ''}';
     _note.text = '${p?['note'] ?? ''}';
+    WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance.addPostFrameCallback((_) => _scanClipboard());
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     for (final c in [_name, _email, _note, _paste]) {
       c.dispose();
     }
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) _scanClipboard();
+  }
+
+  String _tried = '';
+
+  /// The approval code was copied from WhatsApp: when the app is opened it is found and used, nothing to paste.
+  Future<void> _scanClipboard() async {
+    if (access.pending == null) return;
+    final code = extractAccessCode(await _clipText(), 'MLA1');
+    if (code == null || code == _tried || !mounted) return;
+    _tried = code;
+    _paste.text = code;
+    await _activate();
+  }
+
+  Future<void> _pasteNow() async {
+    final t = await _clipText();
+    final code = extractAccessCode(t, 'MLA1') ?? t.trim();
+    if (!mounted) return;
+    setState(() => _paste.text = code);
+    if (code.isNotEmpty) await _activate();
+  }
+
+  /// Makes the request code and opens the share sheet at once (WhatsApp, email), so there is nothing to copy.
+  Future<void> _sendRequest() async {
+    await _create();
+    final c = access.pending?['code'] as String?;
+    if (c != null && _msg.isEmpty) await accessShareText(c);
   }
 
   Future<void> _create() async {
@@ -98,7 +148,7 @@ class _GateScreenState extends State<GateScreen> {
   }
 
   Future<void> _activate() async {
-    final r = await access.redeem(_paste.text);
+    final r = await access.redeem(extractAccessCode(_paste.text, 'MLA1') ?? _paste.text);
     if (!mounted) return;
     final m = {
       RedeemResult.ok: '',
@@ -173,9 +223,10 @@ class _GateScreenState extends State<GateScreen> {
                         decoration: InputDecoration(labelText: tr('Note (optional)'), border: const OutlineInputBorder())),
                     const SizedBox(height: 10),
                     FilledButton.icon(
-                        onPressed: _create,
-                        icon: const Icon(Icons.vpn_key_outlined),
-                        label: Text(code == null ? 'Create request code' : 'Update request code')),
+                        key: const Key('gate_send'),
+                        onPressed: _sendRequest,
+                        icon: const Icon(Icons.send_outlined),
+                        label: Text('Send request to the administrator')),
                     if (code != null) ...[
                       const SizedBox(height: 12),
                       Text('Send this code to the administrator by WhatsApp or email:', style: tt.bodySmall),
@@ -190,7 +241,10 @@ class _GateScreenState extends State<GateScreen> {
                         minLines: 2,
                         maxLines: 4,
                         decoration: InputDecoration(
-                            labelText: tr('Approval code'), border: const OutlineInputBorder(), alignLabelWithHint: true)),
+                            labelText: tr('Approval code'),
+                            border: const OutlineInputBorder(),
+                            alignLabelWithHint: true,
+                            suffixIcon: IconButton(key: const Key('gate_paste'), tooltip: tr('Paste'), icon: const Icon(Icons.content_paste), onPressed: _pasteNow))),
                     const SizedBox(height: 10),
                     FilledButton.tonalIcon(
                         onPressed: _activate, icon: const Icon(Icons.check_circle_outline), label: Text('Activate')),
@@ -541,13 +595,25 @@ class _AccessRequestsScreenState extends State<AccessRequestsScreen> {
   String _msg = '';
 
   @override
+  void initState() {
+    super.initState();
+    // a request copied from WhatsApp is already waiting here: read at once
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final code = extractAccessCode(await _clipText(), 'MLREQ1');
+      if (code == null || !mounted || _paste.text.isNotEmpty) return;
+      _paste.text = code;
+      _read();
+    });
+  }
+
+  @override
   void dispose() {
     _paste.dispose();
     super.dispose();
   }
 
   void _read() {
-    final r = AccessRequest.parse(_paste.text);
+    final r = AccessRequest.parse(extractAccessCode(_paste.text, 'MLREQ1') ?? _paste.text);
     setState(() {
       _req = r;
       _code = '';
@@ -558,6 +624,8 @@ class _AccessRequestsScreenState extends State<AccessRequestsScreen> {
   Future<void> _approve() async {
     final c = await access.approve(_req!, _days);
     setState(() => _code = c);
+    // straight to the share sheet: the member only has to copy it
+    await accessShareText(c);
   }
 
   @override

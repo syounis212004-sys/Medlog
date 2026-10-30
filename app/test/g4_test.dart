@@ -745,8 +745,12 @@ void main() {
         expect(tester.takeException(), isNull);
         // the hub: three big cards and a short More list instead of eight tabs
         expect(find.byType(Tab), findsNothing);
-        expect(find.byKey(const ValueKey('learnCards')), findsOneWidget);
+        expect(find.byKey(const ValueKey('learnQuiz')), findsOneWidget);
         expect(find.byKey(const ValueKey('learnStudy')), findsOneWidget);
+        await tester.tap(find.text(lang == 'en' ? 'More' : 'المزيد'));
+        await settle(tester);
+        await tester.ensureVisible(find.byKey(const ValueKey('learnCards')));
+        await settle(tester, n: 3);
         await tester.tap(find.byKey(const ValueKey('learnCards')));
         await settle(tester);
         // landing tab: today's plan + compact bank card
@@ -759,6 +763,8 @@ void main() {
         // Study screen: the card sits ABOVE the planner
         await tester.pageBack();
         await settle(tester);
+        await tester.drag(find.byType(ListView).first, const Offset(0, 900));
+        await settle(tester, n: 3);
         await tester.tap(find.byKey(const ValueKey('learnStudy')));
         await settle(tester);
         final card = tester.getTopLeft(find.byKey(const ValueKey('aiBankCard')).hitTestable()).dy;
@@ -770,8 +776,7 @@ void main() {
         // AI study
         await tester.pageBack();
         await settle(tester);
-        await tester.scrollUntilVisible(find.byKey(const ValueKey('tabAi')), 200, scrollable: find.byType(Scrollable).first);
-        await tester.drag(find.byType(ListView).first, const Offset(0, -160));
+        await tester.ensureVisible(find.byKey(const ValueKey('tabAi')));
         await settle(tester, n: 3);
         await tester.tap(find.byKey(const ValueKey('tabAi')));
         await settle(tester);

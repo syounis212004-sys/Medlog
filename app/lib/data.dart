@@ -22,7 +22,7 @@ typedef J = Map<String, dynamic>;
 
 /// Version of the file format written by this build of the app.
 const int kSchema = 2;
-const String kAppVersion = '3.0.0';
+const String kAppVersion = '3.1.0';
 
 // ---------------------------------------------------------------- constants
 

@@ -334,15 +334,18 @@ void main() {
         // fill the request
         await tester.enterText(find.byType(TextField).at(0), 'Sara Ali');
         await tester.enterText(find.byType(TextField).at(1), 'sara@example.com');
-        await tester.tap(find.byIcon(Icons.vpn_key_outlined));
+        await tester.ensureVisible(find.byKey(const Key('gate_send')));
+        await tester.tap(find.byKey(const Key('gate_send')));
         await tester.pump(const Duration(milliseconds: 200));
         await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 50)));
         await tester.pump(const Duration(milliseconds: 200));
         expect(access.pending, isNotNull);
         await tester.scrollUntilVisible(find.byIcon(Icons.share_outlined), 200, scrollable: find.byType(Scrollable).first);
         await shot(tester, 'access_gate_${lang}_${size.width.toInt()}_code');
+        // the request was shared at once by the send button; the Share button shares it again
+        expect(shared.first, startsWith('MLREQ1.'));
         await tester.tap(find.byIcon(Icons.share_outlined));
-        expect(shared.single, startsWith('MLREQ1.'));
+        expect(shared.last, startsWith('MLREQ1.'));
 
         // escape hatch
         await tester.scrollUntilVisible(find.byIcon(Icons.backup_outlined), 300, scrollable: find.byType(Scrollable).first);

@@ -30,7 +30,10 @@ class AiCaseScreen extends StatefulWidget {
   /// Called after the record was changed by an Apply / Undo / tag / card action (the editor refreshes its fields).
   final VoidCallback? onChanged;
   final int initialTab;
-  const AiCaseScreen({super.key, required this.rec, this.onChanged, this.initialTab = 0});
+
+  /// A note to start the "Fields" tab with (the quick note of the case).
+  final String initialNote;
+  const AiCaseScreen({super.key, required this.rec, this.onChanged, this.initialTab = 0, this.initialNote = ''});
 
   @override
   State<AiCaseScreen> createState() => _AiCaseScreenState();
@@ -84,6 +87,7 @@ class _AiCaseScreenState extends State<AiCaseScreen> {
   @override
   void initState() {
     super.initState();
+    if (widget.initialNote.trim().isNotEmpty) _note.text = widget.initialNote;
     _refresh();
     _loadCached();
   }
@@ -1118,8 +1122,8 @@ class _TeachFooterState extends State<_TeachFooter> {
 }
 
 /// Opens the assistant (from the case editor / detail menu).
-Future<void> openAiCase(BuildContext context, CaseRec rec, {VoidCallback? onChanged, int tab = 0}) =>
-    Navigator.push<void>(context, MaterialPageRoute(builder: (_) => AiCaseScreen(rec: rec, onChanged: onChanged, initialTab: tab)));
+Future<void> openAiCase(BuildContext context, CaseRec rec, {VoidCallback? onChanged, int tab = 0, String note = ''}) =>
+    Navigator.push<void>(context, MaterialPageRoute(builder: (_) => AiCaseScreen(rec: rec, onChanged: onChanged, initialTab: tab, initialNote: note)));
 
 // ================================================================ week / rotation summary (numbers only)
 
