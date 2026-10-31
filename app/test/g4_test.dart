@@ -743,22 +743,19 @@ void main() {
         installFakeAi(enabled: false);
         await pumpApp(tester, size, lang, const LearnScreen());
         expect(tester.takeException(), isNull);
-        // the hub: three big cards and a short More list instead of eight tabs
+        // the hub: four verbs and a short More list instead of eight tabs
         expect(find.byType(Tab), findsNothing);
+        expect(find.byKey(const ValueKey('learnCards')), findsOneWidget);
         expect(find.byKey(const ValueKey('learnQuiz')), findsOneWidget);
         expect(find.byKey(const ValueKey('learnStudy')), findsOneWidget);
-        await tester.tap(find.text(lang == 'en' ? 'More' : 'المزيد'));
-        await settle(tester);
-        await tester.ensureVisible(find.byKey(const ValueKey('learnCards')));
-        await settle(tester, n: 3);
+        expect(find.byKey(const ValueKey('tabAi')), findsOneWidget);
         await tester.tap(find.byKey(const ValueKey('learnCards')));
         await settle(tester);
-        // landing tab: today's plan + compact bank card
-        expect(find.byKey(const ValueKey('aiBankCard')), findsWidgets);
-        await tester.scrollUntilVisible(find.byKey(const ValueKey('todayPlan')), 200, scrollable: find.byType(Scrollable).first);
-        expect(find.byKey(const ValueKey('todayPlan')), findsOneWidget);
-        await tester.scrollUntilVisible(find.byKey(const ValueKey('coachStep0')), 200, scrollable: find.byType(Scrollable).first);
-        expect(find.byKey(const ValueKey('coachStep0')), findsOneWidget);
+        // my cards: the count, a new-card button and the settings; nothing else
+        expect(find.byKey(const ValueKey('flashDue')), findsOneWidget);
+        expect(find.byKey(const Key('flash_new')), findsOneWidget);
+        expect(find.byKey(const Key('flash_settings')), findsOneWidget);
+        expect(find.byKey(const ValueKey('aiBankCard')), findsNothing);
         await snap(tester, 'g4_learn_flash_$tag');
         // Study screen: the card sits ABOVE the planner
         await tester.pageBack();
@@ -814,7 +811,13 @@ void main() {
     installFakeAi(online: false);
     await pumpApp(tester, const Size(412, 892), 'en', const AiHubScreen());
     expect(find.textContaining('You are offline'), findsWidgets);
-    for (final k in ['tileViva', 'tileTeach', 'tilePreShift', 'tileCod', 'tileGCheck', 'tileCompare']) {
+    // the two main tools are up front; the rest is under "Other tools"
+    expect(find.byKey(const ValueKey('tileViva')), findsOneWidget);
+    expect(find.byKey(const ValueKey('tileTeach')), findsOneWidget);
+    await tester.ensureVisible(find.text('Other tools'));
+    await tester.tap(find.text('Other tools'));
+    await settle(tester);
+    for (final k in ['tilePreShift', 'tileCod', 'tileGCheck', 'tileCompare']) {
       await tester.scrollUntilVisible(find.byKey(ValueKey(k)), 200, scrollable: find.byType(Scrollable).first);
       expect(find.byKey(ValueKey(k)), findsOneWidget);
     }

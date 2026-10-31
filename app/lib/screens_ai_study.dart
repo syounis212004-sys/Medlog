@@ -296,24 +296,29 @@ class AiHubTab extends StatelessWidget {
         key: const ValueKey('aiHub'),
         padding: const EdgeInsets.fromLTRB(12, 8, 12, 24),
         children: [
-          const AiBankEntryCard(),
           AiBuilder(builder: (context, enabled, online) {
             if (enabled && online) return const SizedBox.shrink();
             return _Card(child: _AiNote(enabled ? 'You are offline. Saved questions, saved sessions and the self-viva work without internet.' : 'AI is off. Everything here has a local version that works without AI: your plan, the self-viva, saved questions. Turn AI on in Settings for examiner, teaching and checks.'));
           }),
-          const SizedBox(height: 4),
-          const TodayPlanCard(),
-          const SectionHeader('Practise with an examiner'),
-          _tile(context, Icons.record_voice_over_outlined, 'Viva / OSCE examiner', 'Cases built from guidelines, scored against a hidden checklist. Offline: saved sessions and self-viva.', const VivaScreen(), key: const ValueKey('tileViva')),
-          _tile(context, Icons.psychology_alt_outlined, 'Teach me a topic', 'The AI asks first, then explains step by step with checks.', const TeachScreen(), key: const ValueKey('tileTeach')),
-          _tile(context, Icons.bolt_outlined, 'Pre-shift quiz', '5 quick questions about your current rotation.', const PreShiftScreen(), key: const ValueKey('tilePreShift')),
-          _tile(context, Icons.today_outlined, 'Case of the day', 'A fictional learning case from your library, discussed step by step.', const CaseOfDayScreen(), key: const ValueKey('tileCod')),
-          _tile(context, Icons.rate_review_outlined, 'Written answers', 'Type an answer to a saved question and get graded against its source.', const WrittenPickerScreen(), key: const ValueKey('tileWritten')),
-          const SectionHeader('Check and compare'),
-          _tile(context, Icons.fact_check_outlined, 'Guideline check', 'Is my reference still current? What changed?', const GuidelineCheckScreen(), key: const ValueKey('tileGCheck')),
-          _tile(context, Icons.compare_arrows, 'Compare guidelines', 'ESC vs AHA (or any two) for a topic, as a table.', const CompareScreen(), key: const ValueKey('tileCompare')),
-          const SectionHeader('My weak spots'),
-          const _WeakMemory(),
+          // the three that matter most
+          _tile(context, Icons.psychology_alt_outlined, 'Teach me a topic', 'The AI asks first, then explains step by step.', const TeachScreen(), key: const ValueKey('tileTeach')),
+          _tile(context, Icons.record_voice_over_outlined, 'Viva / OSCE examiner', 'Practise with an examiner who scores you.', const VivaScreen(), key: const ValueKey('tileViva')),
+          const AiBankEntryCard(),
+          Fold(
+            id: 'ai_more_tools',
+            title: tr('Other tools'),
+            icon: Icons.more_horiz,
+            children: [
+              const TodayPlanCard(),
+              _tile(context, Icons.bolt_outlined, 'Pre-shift quiz', '5 quick questions about your current rotation.', const PreShiftScreen(), key: const ValueKey('tilePreShift')),
+              _tile(context, Icons.today_outlined, 'Case of the day', 'A fictional learning case from your library.', const CaseOfDayScreen(), key: const ValueKey('tileCod')),
+              _tile(context, Icons.rate_review_outlined, 'Written answers', 'Type an answer and get graded against its source.', const WrittenPickerScreen(), key: const ValueKey('tileWritten')),
+              _tile(context, Icons.fact_check_outlined, 'Guideline check', 'Is my reference still current?', const GuidelineCheckScreen(), key: const ValueKey('tileGCheck')),
+              _tile(context, Icons.compare_arrows, 'Compare guidelines', 'Two guidelines for a topic, as a table.', const CompareScreen(), key: const ValueKey('tileCompare')),
+              const SectionHeader('My weak spots'),
+              const _WeakMemory(),
+            ],
+          ),
           const SizedBox(height: 8),
           Text('AI only suggests. It never changes your records, and every statement shows its source.', style: theme.textTheme.bodySmall),
         ],

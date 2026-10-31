@@ -22,6 +22,7 @@ import 'screens_ai_study.dart';
 import 'screens_quiz.dart' show QuizScreen;
 import 'screens_skills.dart';
 import 'ui.dart';
+import 'app_icons.dart';
 import 'widgets.dart';
 
 class LearnScreen extends StatelessWidget {
@@ -114,11 +115,20 @@ class LearnScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 10),
+                // four verbs: review, practise, plan, ask
                 IntrinsicHeight(
                   child: Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-                    Expanded(child: _big(context, Icons.quiz_outlined, tr('Test myself'), tr('Questions from the articles'), () => Navigator.push(context, MaterialPageRoute(builder: (_) => const QuizScreen())), key: const ValueKey('learnQuiz'))),
+                    Expanded(child: _big(context, AppIcons.flashcards, tr('Review'), tr('My cards'), () => _open(context, tr('Flashcards'), const FlashcardsTab()), key: const ValueKey('learnCards'))),
                     const SizedBox(width: 10),
-                    Expanded(child: _big(context, Icons.school_outlined, tr('Study'), tr('Exam planner and cases to review'), () => _open(context, tr('Study'), const _ReviewTab()), key: const ValueKey('learnStudy'))),
+                    Expanded(child: _big(context, AppIcons.quiz, tr('Practise'), tr('Test myself'), () => Navigator.push(context, MaterialPageRoute(builder: (_) => const QuizScreen())), key: const ValueKey('learnQuiz'))),
+                  ]),
+                ),
+                const SizedBox(height: 10),
+                IntrinsicHeight(
+                  child: Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                    Expanded(child: _big(context, AppIcons.plan, tr('Study plan'), tr('From my books, by date'), () => _open(context, tr('Study plan'), const _ReviewTab()), key: const ValueKey('learnStudy'))),
+                    const SizedBox(width: 10),
+                    Expanded(child: _big(context, AppIcons.ai, tr('Ask AI'), tr('Teach me, viva, question bank'), () => _open(context, tr('AI study'), const AiHubTab()), key: const ValueKey('tabAi'))),
                   ]),
                 ),
                 Fold(
@@ -126,12 +136,10 @@ class LearnScreen extends StatelessWidget {
                   title: tr('More'),
                   icon: Icons.more_horiz,
                   children: [
-                    _more(context, Icons.style_outlined, tr('Flashcards'), tr('Review and add cards'), () => _open(context, tr('Flashcards'), const FlashcardsTab()), key: const ValueKey('learnCards')),
-                    _more(context, Icons.help_outline, tr('Questions'), tr('Your own question list'), () => _open(context, tr('Questions'), const _QuestionsTab()), key: const ValueKey('learnQuestions')),
-                _more(context, Icons.auto_awesome, tr('AI study'), tr('Question bank, coach and viva practice'), () => _open(context, tr('AI study'), const AiHubTab()), key: const ValueKey('tabAi')),
-                _more(context, Icons.healing_outlined, tr('Procedures'), tr('Your log and skills passport'), () => _open(context, tr('Procedures'), const SkillsTab())),
-                _more(context, Icons.image_search_outlined, tr('Imaging'), tr('Image review practice'), () => _open(context, tr('Imaging'), const ImagingTab())),
-                _more(context, Icons.edit_note, tr('Notebook'), tr('Your personal notes'), () => _open(context, tr('Notebook'), const _NotebookTab())),
+                    _more(context, AppIcons.questions, tr('Questions'), tr('Your own question list'), () => _open(context, tr('Questions'), const _QuestionsTab()), key: const ValueKey('learnQuestions')),
+                    _more(context, Icons.healing_outlined, tr('Procedures'), tr('Your log and skills passport'), () => _open(context, tr('Procedures'), const SkillsTab())),
+                    _more(context, Icons.image_search_outlined, tr('Imaging'), tr('Image review practice'), () => _open(context, tr('Imaging'), const ImagingTab())),
+                    _more(context, Icons.edit_note, tr('Notebook'), tr('Your personal notes'), () => _open(context, tr('Notebook'), const _NotebookTab())),
                     _more(context, Icons.record_voice_over_outlined, tr('Feedback'), tr('Feedback you received'), () => _open(context, tr('Feedback'), const FeedbackTab())),
                   ],
                 ),
@@ -166,6 +174,97 @@ class _FlashcardsTabState extends State<FlashcardsTab> {
     if (mounted) setState(() {});
   }
 
+  /// A card is made here by me, with the front and the back in my own words.
+  Future<void> _newCard() async {
+    final res = await showFormSheet(
+      context,
+      title: 'New card',
+      specs: const [
+        FieldSpec('front', 'Question (front)', type: FT.multi),
+        FieldSpec('back', 'Answer (back)', type: FT.multi),
+      ],
+      initial: <String, dynamic>{'id': newId('lc'), 'source': 'My card'},
+    );
+    if (res == null || '${res['front'] ?? ''}'.trim().isEmpty) return;
+    await store.upsertExtra('libcards', res);
+    if (mounted) setState(() {});
+  }
+
+  Future<void> _settings() async {
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, set) => SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+            child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+              SwitchListTile(
+                key: const Key('flash_auto'),
+                contentPadding: EdgeInsets.zero,
+                title: Text('Make cards from my cases, notes and questions'),
+                subtitle: Text('Off: only the cards I make myself. On: every case, note, question and pearl becomes a card.'),
+                value: reviewAuto,
+                onChanged: (v) async {
+                  store.settings['reviewAuto'] = v;
+                  await store.saveSettings();
+                  set(() {});
+                  if (mounted) setState(() {});
+                },
+              ),
+              SwitchListTile(
+                contentPadding: EdgeInsets.zero,
+                title: Text('Add missed questions to review cards'),
+                subtitle: Text('Every wrong answer in a self-test becomes a card, and comes back sooner.'),
+                value: quizAutoCards(),
+                onChanged: (v) async {
+                  await setQuizAutoCards(v);
+                  set(() {});
+                  if (mounted) setState(() {});
+                },
+              ),
+              const SizedBox(height: 4),
+              Text('Study universe', style: Theme.of(ctx).textTheme.labelLarge),
+              const SizedBox(height: 4),
+              Wrap(spacing: 8, children: [
+                ChoiceChip(
+                    label: Text('Core 250 (recommended)'),
+                    selected: studyUniverse() == kUniverseCore,
+                    onSelected: (_) async {
+                      await setStudyUniverse(kUniverseCore);
+                      set(() {});
+                    }),
+                ChoiceChip(
+                    label: Text('All installed articles'),
+                    selected: studyUniverse() == kUniverseAll,
+                    onSelected: (_) async {
+                      await setStudyUniverse(kUniverseAll);
+                      set(() {});
+                    }),
+              ]),
+              Padding(padding: const EdgeInsets.only(top: 4), child: Text('Used by Test myself and by the exam planner.', style: Theme.of(ctx).textTheme.bodySmall)),
+              if (reviewHidden.isNotEmpty)
+                ListTile(
+                  key: const Key('flash_removed'),
+                  contentPadding: EdgeInsets.zero,
+                  leading: const Icon(Icons.restore_from_trash_outlined),
+                  title: Text(trp('Removed cards ({n})', {'n': reviewHidden.length})),
+                  subtitle: Text('Bring them all back'),
+                  onTap: () async {
+                    store.settings['reviewHidden'] = <String>[];
+                    await store.saveSettings();
+                    set(() {});
+                    if (mounted) setState(() {});
+                  },
+                ),
+            ]),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -174,11 +273,10 @@ class _FlashcardsTabState extends State<FlashcardsTab> {
       builder: (context, _) {
         final st = ReviewEngine.stats();
         final due = st['due'] ?? 0;
-        final libCards = store.listOf('libcards').length;
+        final total = st['items'] ?? 0;
         return ListView(
           padding: const EdgeInsets.fromLTRB(12, 8, 12, 24),
           children: [
-            const AiBankEntryCard(compact: true),
             AppCard(
               child: Padding(
                 padding: const EdgeInsets.all(16),
@@ -193,54 +291,22 @@ class _FlashcardsTabState extends State<FlashcardsTab> {
                     const SizedBox(width: 14),
                     Expanded(
                       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                        Text(due == 0 ? 'Nothing due today' : 'Cards due today', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800)),
-                        Text(trp('{a} cards in total, {b} learned', {'a': st['items'] ?? 0, 'b': st['learned'] ?? 0}), style: theme.textTheme.bodySmall),
+                        Text(total == 0 ? 'No cards yet' : (due == 0 ? 'Nothing due today' : 'Cards due today'), style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800)),
+                        Text(total == 0 ? tr('Make a card from an article or from here.') : trp('{a} cards in total, {b} learned', {'a': total, 'b': st['learned'] ?? 0}), style: theme.textTheme.bodySmall),
                       ]),
                     ),
                   ]),
                   const SizedBox(height: 12),
-                  FilledButton.icon(onPressed: () => _start(), icon: const Icon(Icons.play_arrow), label: Text('Start today\u2019s review')),
-                  if (libCards > 0)
-                    TextButton.icon(onPressed: () => _start(kinds: {ReviewKind.library}), icon: const Icon(Icons.local_library_outlined, size: 18), label: Text(trp('Only library cards ({n})', {'n': libCards}))),
+                  if (total > 0) FilledButton.icon(onPressed: () => _start(), icon: const Icon(Icons.play_arrow), label: Text('Start today\u2019s review')),
                 ]),
               ),
             ),
             const SizedBox(height: 8),
-            SwitchListTile(
-              contentPadding: EdgeInsets.zero,
-              title: Text('Add missed questions to review cards'),
-              subtitle: Text('Every wrong answer in a self-test becomes a card, and comes back sooner.'),
-              value: quizAutoCards(),
-              onChanged: (v) async {
-                await setQuizAutoCards(v);
-                if (mounted) setState(() {});
-              },
-            ),
-            const SizedBox(height: 4),
-            Text('Study universe', style: theme.textTheme.labelLarge),
-            const SizedBox(height: 4),
-            Wrap(spacing: 8, children: [
-              ChoiceChip(
-                  label: Text('Core 250 (recommended)'),
-                  selected: studyUniverse() == kUniverseCore,
-                  onSelected: (_) async {
-                    await setStudyUniverse(kUniverseCore);
-                    if (mounted) setState(() {});
-                  }),
-              ChoiceChip(
-                  label: Text('All installed articles'),
-                  selected: studyUniverse() == kUniverseAll,
-                  onSelected: (_) async {
-                    await setStudyUniverse(kUniverseAll);
-                    if (mounted) setState(() {});
-                  }),
+            Row(children: [
+              Expanded(child: OutlinedButton.icon(key: const Key('flash_new'), onPressed: _newCard, icon: const Icon(Icons.add), label: Text('New card'))),
+              const SizedBox(width: 8),
+              OutlinedButton.icon(key: const Key('flash_settings'), onPressed: _settings, icon: const Icon(Icons.tune), label: Text('Settings')),
             ]),
-            Padding(
-              padding: const EdgeInsets.only(top: 4),
-              child: Text('Used by Test myself and by the exam planner.', style: theme.textTheme.bodySmall),
-            ),
-            const SizedBox(height: 8),
-            const TodayPlanCard(),
           ],
         );
       },
@@ -248,7 +314,6 @@ class _FlashcardsTabState extends State<FlashcardsTab> {
   }
 }
 
-// ================================================================ procedures
 
 const List<String> kProcedureNames = [
   'IV cannulation', 'Blood sampling', 'ABG', 'Suturing', 'Wound dressing',
@@ -565,7 +630,7 @@ Future<void> editQuestion(BuildContext context, [J? q]) async {
       FieldSpec('reference', 'Reference (book, guideline, link)'),
       FieldSpec('caseCode', 'Related case code (optional)'),
     ],
-    initial: q ?? <String, dynamic>{'id': newId('q'), 'date': todayStr(), 'status': 'Open'},
+    initial: q ?? <String, dynamic>{'id': newId('q'), 'date': todayStr(), 'status': 'Open', 'rotationId': store.currentRotation()?['id']?.toString() ?? ''},
     canDelete: q != null,
   );
   if (res == null) return;
@@ -587,14 +652,26 @@ class _QuestionsTab extends StatefulWidget {
 
 class _QuestionsTabState extends State<_QuestionsTab> {
   bool _openOnly = true;
+  bool _thisRotation = true;
+
+  /// A question belongs to the rotation it was written in; older ones are placed by their date.
+  bool _inRotation(J q, J rot) {
+    final rid = (q['rotationId'] ?? '').toString();
+    if (rid.isNotEmpty) return rid == rot['id'].toString();
+    final d = (q['date'] ?? '').toString();
+    final a = (rot['start'] ?? '').toString(), b = (rot['end'] ?? '').toString();
+    return d.isNotEmpty && a.isNotEmpty && d.compareTo(a) >= 0 && (b.isEmpty || d.compareTo(b) <= 0);
+  }
 
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: store,
       builder: (context, _) {
+        final rot = store.currentRotation();
         final list = store.inbox
             .where((q) => !_openOnly || (q['status'] ?? 'Open') != 'Answered')
+            .where((q) => !_thisRotation || rot == null || _inRotation(q, rot))
             .toList()
           ..sort((a, b) =>
               (b['date'] ?? '').toString().compareTo((a['date'] ?? '').toString()));
@@ -613,6 +690,14 @@ class _QuestionsTabState extends State<_QuestionsTab> {
                   ),
                 ],
               ),
+              if (rot != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 6),
+                  child: Wrap(spacing: 8, children: [
+                    ChoiceChip(key: const Key('q_this'), label: Text('This rotation'), selected: _thisRotation, onSelected: (_) => setState(() => _thisRotation = true)),
+                    ChoiceChip(key: const Key('q_all'), label: Text('All rotations'), selected: !_thisRotation, onSelected: (_) => setState(() => _thisRotation = false)),
+                  ]),
+                ),
               if (list.isEmpty)
                 const EmptyState(
                   kind: EmptyKind.learn,
@@ -830,15 +915,39 @@ class _PlannerBodyState extends State<_PlannerBody> {
       ],
       Text(studyUniverse() == kUniverseCore ? 'Courses to revise (optional)' : 'Courses to revise', style: theme.textTheme.labelLarge),
       const SizedBox(height: 4),
-      Wrap(spacing: 6, runSpacing: 0, children: [
-        for (final p in packs)
-          FilterChip(
-            label: mm.Text(p.title),
-            selected: _packs.contains(p.id),
-            visualDensity: VisualDensity.compact,
-            onSelected: (v) => setState(() => v ? _packs.add(p.id) : _packs.remove(p.id)),
-          ),
-      ]),
+      Builder(builder: (context) {
+        final mine = [for (final p in packs) if (p.kind == 'book' || p.kind == 'user') p];
+        final others = [for (final p in packs) if (p.kind != 'book' && p.kind != 'user') p];
+        Widget tile(PackMeta p) => CheckboxListTile(
+              key: ValueKey('plan_pack_${p.id}'),
+              dense: true,
+              visualDensity: VisualDensity.compact,
+              contentPadding: EdgeInsets.zero,
+              controlAffinity: ListTileControlAffinity.leading,
+              title: mm.Text(p.title, maxLines: 2, overflow: TextOverflow.ellipsis),
+              value: _packs.contains(p.id),
+              onChanged: (v) => setState(() => v == true ? _packs.add(p.id) : _packs.remove(p.id)),
+            );
+        return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          if (mine.isNotEmpty) ...[
+            Row(children: [
+              Expanded(child: Text('My books', style: theme.textTheme.labelMedium)),
+              TextButton(onPressed: () => setState(() => _packs.addAll(mine.map((e) => e.id))), child: Text('Select all')),
+            ]),
+            for (final p in mine) tile(p),
+          ],
+          if (others.isNotEmpty)
+            Fold(
+              id: 'plan_courses',
+              title: trp('Courses ({n})', {'n': others.length}),
+              icon: Icons.school_outlined,
+              children: [
+                Align(alignment: AlignmentDirectional.centerEnd, child: TextButton(onPressed: () => setState(() => _packs.clear()), child: Text('Clear all'))),
+                for (final p in others) tile(p),
+              ],
+            ),
+        ]);
+      }),
       const SizedBox(height: 10),
       Row(children: [
         FilledButton.icon(

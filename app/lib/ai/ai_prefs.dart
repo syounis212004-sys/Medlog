@@ -49,7 +49,7 @@ class AiPrefs {
 
   static set customDomains(List<String> v) => _set('aiCustomDomains', v);
 
-  static bool get fabEnabled => _get<bool>('aiFab', true);
+  static bool get fabEnabled => _get<bool>('aiFab', false);
   static set fabEnabled(bool v) => _set('aiFab', v);
 
   /// 'start' | 'end' (side of the screen where the floating Ask-AI button rests by default)

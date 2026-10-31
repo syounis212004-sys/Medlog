@@ -23,6 +23,7 @@ import 'screens_home.dart';
 import 'library.dart';
 import 'screens_learn.dart';
 import 'screens_tools.dart';
+import 'sparks.dart';
 import 'screens_library.dart';
 import 'screens_notebooks.dart';
 import 'screens_review.dart';
@@ -62,8 +63,9 @@ void registerAiMenuEntries() {
   ];
 }
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Sparks.load();
   installFriendlyErrors();
   addProcedure = (c) => editProcedure(c);
   addNote = (c) => editNote(c);
@@ -473,8 +475,8 @@ class _NavItem {
 
 const List<_NavItem> _kNav = [
   _NavItem(Icons.home_outlined, Icons.home_rounded, 'Home'),
-  _NavItem(Icons.folder_shared_outlined, Icons.folder_shared, 'Cases'),
-  _NavItem(Icons.local_library_outlined, Icons.local_library, 'Library'),
+  _NavItem(Icons.folder_open_outlined, Icons.folder_open, 'Cases'),
+  _NavItem(Icons.menu_book_outlined, Icons.menu_book, 'Library'),
   _NavItem(Icons.apps_outlined, Icons.apps_rounded, 'Tools'),
 ];
 

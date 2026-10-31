@@ -141,8 +141,10 @@ void main() {
   testWidgets('menu: fill everything normal', (tester) async {
     await boot(tester, 'en');
     final rec = store.cases['c0']!;
-    await tester.tap(find.byType(PopupMenuButton<String>));
+    await tester.tap(find.byKey(const ValueKey('case_menu')));
     await settle(tester, 600);
+    await tester.tap(find.byKey(const ValueKey('menu_more')));
+    await settle(tester, 400);
     await tester.tap(find.text('Fill everything normal (empty fields only)'));
     await settle(tester, 600);
     await tester.tap(find.descendant(

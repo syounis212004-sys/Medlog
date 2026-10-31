@@ -167,14 +167,22 @@ class AiPrompts {
   }
 
   /// Free question (chat). Intern-doctor answer sized by AiPrefs.answerLength.
-  static String ask({String? mode, List<String>? domains, String? lang, String contextNote = ''}) => base(
+  static String ask({String? mode, List<String>? domains, String? lang, String contextNote = '', String? length}) => base(
         task: 'Answer the trainee\'s clinical or study question like a good intern/resident would: lead with the direct answer, then the practical approach '
             '(what to do first, what to check, when to escalate, what not to miss), then the reasoning. If the question is vague, answer the most likely meaning and say what you assumed. '
+            'When the question names a disease, a drug, a procedure or a clinical topic, give the COMPLETE answer in one go, never a teaser: definition, epidemiology, causes and risk factors, '
+            'presentation, diagnosis and investigations, management step by step, and for every drug its dose, route, duration, adverse reactions, contraindications and key interactions, '
+            'then complications, prognosis, follow-up, red flags and when to escalate. Say plainly that doses must be checked against the local protocol or the drug reference. '
+            'Be brief ONLY when the trainee asks for it. '
             'Continue the conversation naturally when earlier messages are given.${contextNote.isEmpty ? '' : ' $contextNote'}',
         mode: mode ?? AiPrefs.sourceMode,
         domains: domains ?? AiSources.allowedFor(mode ?? AiPrefs.sourceMode),
         lang: lang,
+        length: length,
       );
+
+  /// True when the trainee asked for a short answer ("briefly", "in short", "summary", "باختصار").
+  static bool wantsBrief(String q) => RegExp(r'\b(brief(ly)?|short(ly)?|in short|summar(y|ise|ize)|tl;?dr|quick(ly)?|one line|few words)\b|باختصار|مختصر|ملخص|بسرعة', caseSensitive: false).hasMatch(q);
 
   static String explain({String? mode, List<String>? domains, String? lang}) => base(
         task: 'Explain the topic or text simply, as to a colleague who is new to it: start with the one-sentence idea, then mechanism, then how it shows up clinically, '

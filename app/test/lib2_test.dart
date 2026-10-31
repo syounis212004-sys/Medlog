@@ -486,7 +486,12 @@ void main() {
       await settle(tester);
       await tester.tap(find.text('OK'));
       await settle(tester);
-      await tester.tap(find.widgetWithText(FilterChip, 'Orthopedics'));
+      await tester.ensureVisible(find.textContaining('Courses ('));
+      await tester.tap(find.textContaining('Courses ('));
+      await settle(tester);
+      await tester.ensureVisible(find.widgetWithText(CheckboxListTile, 'Orthopedics'));
+      await settle(tester, 300);
+      await tester.tap(find.widgetWithText(CheckboxListTile, 'Orthopedics'));
       await settle(tester);
       await tester.tap(find.widgetWithText(FilledButton, 'Build my plan'));
       expect(await pumpUntil(tester, () => find.byKey(const ValueKey('planDaysLeft')).evaluate().isNotEmpty), true);

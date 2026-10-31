@@ -22,6 +22,7 @@ import 'screens_home.dart';
 import 'screens_privacy.dart';
 import 'ai/ai_store.dart' show AiStore;
 import 'screens_access.dart' show AccessSettingsSection;
+import 'rotation_plan.dart';
 import 'theme.dart';
 import 'ui.dart';
 import 'widgets.dart';
@@ -53,6 +54,24 @@ Future<void> editRotation(BuildContext context, [J? r]) async {
     await store.removeFrom(store.rotations, 'rotations.json', r!['id'].toString());
   } else {
     await store.upsert(store.rotations, 'rotations.json', res);
+    // a new rotation: one question, one tap to a study plan for it
+    if (r == null && context.mounted && '${res['end'] ?? ''}'.isNotEmpty) {
+      final go = await showDialog<bool>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          icon: const Icon(Icons.event_note_outlined),
+          title: Text('Build a study plan for this rotation?'),
+          content: Text('A weekly plan from your books, between its start and end dates.'),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text('Not now')),
+            FilledButton(key: const Key('rot_plan_go'), onPressed: () => Navigator.pop(ctx, true), child: Text('Build plan')),
+          ],
+        ),
+      );
+      if (go == true && context.mounted) {
+        await Navigator.push(context, MaterialPageRoute<void>(builder: (_) => RotationPlanScreen(rotation: res)));
+      }
+    }
   }
 }
 

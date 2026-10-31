@@ -241,7 +241,7 @@ class AiChatRunner {
   }
 
   /// The system prompt of an action. [topic] is the context title (or the question).
-  static String systemFor(String action, String topic, String mode, {String contextNote = ''}) {
+  static String systemFor(String action, String topic, String mode, {String contextNote = '', String? length}) {
     switch (action) {
       case 'deepdive':
         return AiPrompts.deepDive(topic, mode: mode);
@@ -250,7 +250,7 @@ class AiChatRunner {
       case 'guidelines':
         return AiPrompts.guidelineCheck(topic, mode: mode);
       default:
-        return AiPrompts.ask(mode: mode, contextNote: contextNote);
+        return AiPrompts.ask(mode: mode, contextNote: contextNote, length: length);
     }
   }
 
@@ -323,7 +323,10 @@ class AiChatRunner {
 
     final deep = action == 'deepdive';
     final sysMode = (useMode == 'libmodel' || useMode == 'library' || useMode == 'model') ? useMode : mode;
-    final system = systemFor(action, topic.isEmpty ? q : topic, sysMode, contextNote: notes.join(' '));
+    // a clinical question gets the whole answer; short only when asked for
+    final plain = action.isEmpty || action == 'anything';
+    final length = plain ? (AiPrompts.wantsBrief(q) ? 'brief' : 'full') : null;
+    final system = systemFor(action, topic.isEmpty ? q : topic, sysMode, contextNote: notes.join(' '), length: length);
     final sb = StringBuffer();
     if (quizStem.isNotEmpty) sb.writeln('Practice question: $quizStem\n${quizOpts.isEmpty ? '' : 'Options: $quizOpts\n'}');
     sb.writeln('Question: $q');
@@ -344,7 +347,7 @@ class AiChatRunner {
       prompt: sb.toString().trim(),
       level: lvl,
       expectJson: true,
-      maxTokens: AiPrompts.maxTokens(deepDive: deep),
+      maxTokens: AiPrompts.maxTokens(deepDive: deep, length: length),
       temperature: 0.2,
       previewFields: preview,
       history: history,

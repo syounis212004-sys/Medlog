@@ -1,5 +1,4 @@
 import 'data.dart';
-import 'privacy.dart';
 import 'review.dart';
 
 /// "Today's focus": a short list of what is worth doing now, found by looking at
@@ -104,12 +103,6 @@ List<FocusItem> buildFocus() {
         !_okUnknown(c, 'finalDx')) {
       out.add(FocusItem('dx:${c.id}', FocusAction.openCase, c.id, 4, 0, 'dx', c.s('code'), c.title, 55));
     }
-    if (!c.id.startsWith('demo_') && scanCase(c).isNotEmpty) {
-      out.add(FocusItem('priv:${c.id}', FocusAction.privacyCheck, c.id, 0, 0, 'privacy', c.s('code'), '${scanCase(c).length}', 50));
-    }
-    if (!draft && age >= 3 && c.s('hpi').trim().isNotEmpty && c.s('learned').trim().isEmpty) {
-      out.add(FocusItem('learn:${c.id}', FocusAction.openCase, c.id, 7, 0, 'learn', c.s('code'), c.title, 40));
-    }
     if (c.s('questions').trim().isNotEmpty && age >= 2) {
       out.add(FocusItem('cq:${c.id}', FocusAction.openCase, c.id, 7, 0, 'question', c.s('code'), c.s('questions'), 35));
     }
@@ -137,29 +130,6 @@ List<FocusItem> buildFocus() {
       out.add(FocusItem('proc:$name', FocusAction.openProcedures, name, 0, 0, 'proc', name, 'Observed only', 38));
     }
   });
-
-  // ---- one pearl a day (afternoon reminder)
-  if (DateTime.now().hour >= 14 && !store.listOf('pearls').any((p) => p['date'] == today)) {
-    out.add(const FocusItem('pearl', FocusAction.addPearl, '', 0, 0, 'pearl', 'One pearl a day', '', 20));
-  }
-
-  // ---- references to refresh (Stage E fills the list)
-  for (final e in store.listOf('evidence')) {
-    final reviewed = (e['reviewed'] ?? e['saved'] ?? '').toString();
-    final year = int.tryParse((e['year'] ?? '').toString());
-    final old = year != null && DateTime.now().year - year >= 5;
-    if (reviewed.isNotEmpty && daysSince(reviewed) >= 365 || old) {
-      out.add(FocusItem('ev:${e['id']}', FocusAction.openEvidence, '${e['id']}', 0, 0, 'evidence',
-          '${e['title'] ?? ''}', old ? 'Old reference' : 'Not reviewed for a year', 30));
-    }
-  }
-
-  // ---- replay suggestion: an older case you have not replayed lately
-  final cand = replayCandidates();
-  if (cand.isNotEmpty && daysSince(cand.first.s('date')) >= 14) {
-    final c = cand.first;
-    out.add(FocusItem('replay:${c.id}', FocusAction.replayCase, c.id, 0, 0, 'replay', c.s('code'), c.title, 28));
-  }
 
   out.sort((a, b) => b.weight.compareTo(a.weight));
   return out;

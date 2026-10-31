@@ -9,6 +9,7 @@ import 'focus.dart';
 import 'i18n.dart';
 import 'motion.dart';
 import 'review.dart';
+import 'widgets.dart';
 import 'screens_cases.dart';
 import 'screens_extras.dart';
 import 'screens_learn.dart';
@@ -55,6 +56,18 @@ class _ReviewSessionScreenState extends State<ReviewSessionScreen> {
     });
   }
 
+  /// The card goes for good (it can be brought back from "Removed cards").
+  Future<void> _remove() async {
+    final it = _cur!;
+    await hideReviewCard(it.key);
+    if (!mounted) return;
+    setState(() {
+      _queue.removeAt(0);
+      _show = false;
+    });
+    snack(context, tr('Card removed'));
+  }
+
   String _label(int g) {
     final it = _cur!;
     final d = ReviewEngine.daysFor(it, g);
@@ -91,6 +104,8 @@ class _ReviewSessionScreenState extends State<ReviewSessionScreen> {
       appBar: AppBar(
         title: Text('Review'),
         actions: [
+          if (it != null)
+            IconButton(key: const Key('review_remove'), tooltip: tr('Remove this card'), icon: const Icon(Icons.delete_outline), onPressed: _remove),
           if (_start > 0)
             Padding(
               padding: const EdgeInsetsDirectional.only(end: 16),

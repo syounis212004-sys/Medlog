@@ -244,3 +244,19 @@ if line in gtxt:
 else:
     gp.write_text(gtxt.rstrip("\n") + "\n" + line + "\n")
     print("gradle.properties: added", line)
+
+# ---------------------------------------------------------------- 7. App icon
+# The launcher icon (adaptive + legacy) is shipped as ready resources under tool/icons/res and copied over the default one.
+import shutil
+
+icons = tool / "icons" / "res"
+res_dir = android / "app" / "src" / "main" / "res"
+if icons.exists() and res_dir.exists():
+    for f in icons.rglob("*"):
+        if f.is_file():
+            dest = res_dir / f.relative_to(icons)
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(f, dest)
+    print("App icon resources copied:", res_dir)
+else:
+    print("App icon resources not found, default icon kept")

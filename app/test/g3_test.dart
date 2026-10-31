@@ -643,6 +643,7 @@ void main() {
         installFakeAi(online: true, answers: {'Hip': kDoc});
         AiEngine.fakeSources = const [AiSource(title: 'nice.org.uk', url: 'https://vertexaisearch.cloud.google.com/x', host: 'nice.org.uk')];
         AiPrefs.answerLang = 'en';
+        AiPrefs.fabEnabled = true;
         AiPrefs.fabY = 0.78;
         AiPrefs.fabSide = 'start';
         AiPrefs.sourceMode = 'web';

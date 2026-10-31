@@ -5,6 +5,7 @@ import 'package:flutter/material.dart' hide Text;
 import 'package:flutter/scheduler.dart';
 
 import 'i18n.dart';
+import 'sparks.dart';
 import 'theme.dart';
 
 /// Global switch for decorative motion (Settings > Animations). Also honoured:
@@ -468,7 +469,7 @@ class _RingsPainter extends CustomPainter {
 
 // ---------------------------------------------------------------- logo + splash
 
-/// App mark: gradient tile, medical cross and a heartbeat line.
+/// App mark: the app icon (an open book with a heartbeat line), the same picture everywhere.
 class MedLogMark extends StatelessWidget {
   final double size;
   const MedLogMark({super.key, this.size = 96});
@@ -478,18 +479,19 @@ class MedLogMark extends StatelessWidget {
     return Container(
       width: size,
       height: size,
+      clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
-        gradient: paletteGradient(context),
-        borderRadius: BorderRadius.circular(size * 0.3),
+        color: const Color(0xFF526242),
+        borderRadius: BorderRadius.circular(size * 0.24),
         boxShadow: [
-          BoxShadow(
-            color: Theme.of(context).colorScheme.primary.withAlpha(90),
-            blurRadius: size * 0.3,
-            offset: Offset(0, size * 0.1),
-          ),
+          BoxShadow(color: const Color(0xFF526242).withAlpha(70), blurRadius: size * 0.25, offset: Offset(0, size * 0.08)),
         ],
       ),
-      child: CustomPaint(painter: _MarkPainter()),
+      child: Image.asset(
+        'assets/brand/logo.png',
+        fit: BoxFit.cover,
+        errorBuilder: (_, __, ___) => CustomPaint(painter: _MarkPainter()),
+      ),
     );
   }
 }
@@ -535,8 +537,9 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
   late final AnimationController _c =
-      AnimationController(vsync: this, duration: const Duration(milliseconds: 2600));
+      AnimationController(vsync: this, duration: const Duration(milliseconds: 3400));
   bool _fired = false;
+  final Spark? _spark = Sparks.random();
 
   @override
   void initState() {
@@ -616,19 +619,37 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                       child: Text('Your clinical logbook',
                           style: TextStyle(color: cs.onSurfaceVariant, fontSize: 15)),
                     ),
-                    const SizedBox(height: 36),
+                    const SizedBox(height: 30),
                     SizedBox(
-                      height: 56,
-                      child: Directionality(
-                        textDirection: TextDirection.ltr,
-                        child: ClipRect(
-                          clipper: _RevealClipper(line),
-                          child: CustomPaint(
-                            size: const Size(double.infinity, 56),
-                            painter: _EcgPainter(1, cs.primary, 4, 2.4, false),
-                          ),
-                        ),
-                      ),
+                      height: 92,
+                      child: _spark == null
+                          ? Directionality(
+                              textDirection: TextDirection.ltr,
+                              child: ClipRect(
+                                clipper: _RevealClipper(line),
+                                child: CustomPaint(
+                                  size: const Size(double.infinity, 56),
+                                  painter: _EcgPainter(1, cs.primary, 4, 2.4, false),
+                                ),
+                              ),
+                            )
+                          : Directionality(
+                              textDirection: TextDirection.rtl,
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 28),
+                                child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                                  // the two halves of the verse come in one after the other
+                                  for (var i = 0; i < _spark.lines.length; i++)
+                                    Opacity(
+                                      opacity: iv(0.45 + 0.17 * i, 0.70 + 0.17 * i),
+                                      child: Transform.translate(
+                                        offset: Offset(0, 12 * (1 - iv(0.45 + 0.17 * i, 0.70 + 0.17 * i))),
+                                        child: Text(_spark.lines[i], textAlign: TextAlign.center, style: TextStyle(fontSize: 19, height: 1.8, fontWeight: FontWeight.w600, color: cs.onSurface)),
+                                      ),
+                                    ),
+                                ]),
+                              ),
+                            ),
                     ),
                     const Spacer(flex: 3),
                     Opacity(

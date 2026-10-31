@@ -213,7 +213,8 @@ ThemeData _buildTheme(
       labelStyle: const TextStyle(fontWeight: FontWeight.w700),
     ),
     listTileTheme: const ListTileThemeData(
-      contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 2),
+      contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+      minVerticalPadding: 6,
     ),
   );
   // Times-style letters look smaller than Roboto at the same size: enlarge slightly

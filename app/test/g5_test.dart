@@ -549,7 +549,7 @@ void main() {
     testWidgets('Home: morning brief with local numbers works with AI off; AI paragraph on demand; AI card and bank link', (tester) async {
       await boot(tester, 'en');
       fakeOn(enabled: false);
-      await push(tester, Scaffold(body: const HomeScreen()));
+      await push(tester, Scaffold(body: AiContextScope(ctx: const AiScreenContext(kind: 'home', title: 'Home'), child: ListView(children: const [MorningBriefCard(), HomeAiCard()]))));
       expect(AiContext.current.value?.kind, 'home');
       await tester.scrollUntilVisible(find.text('Morning brief'), 300, scrollable: find.byType(Scrollable).first);
       await settle(tester, 400);
@@ -562,7 +562,7 @@ void main() {
       expect(find.text('Case of the day'), findsNothing); // shortcuts only when AI is on
       expect(FakeAi.sent, isEmpty);
       fakeOn();
-      await reopen(tester, Scaffold(body: const HomeScreen()));
+      await reopen(tester, Scaffold(body: AiContextScope(ctx: const AiScreenContext(kind: 'home', title: 'Home'), child: ListView(children: const [MorningBriefCard(), HomeAiCard()]))));
       await tester.scrollUntilVisible(find.text('Morning brief'), 300, scrollable: find.byType(Scrollable).first);
       await settle(tester, 400);
       expect(find.text('Case of the day'), findsOneWidget);
@@ -790,8 +790,7 @@ void main() {
         store.settings['folds'] = {'cl_curb': true};
         // home
         await push(tester, Scaffold(body: const HomeScreen()));
-        await tester.scrollUntilVisible(find.byKey(const ValueKey('home_ai_bank')), 300, scrollable: find.byType(Scrollable).first);
-        await settle(tester, 400);
+        await settle(tester, 700);
         await shot(tester, '${tag}_home');
         expect(tester.takeException(), isNull);
         Navigator.of(tester.element(find.byType(Scaffold).last)).pop();

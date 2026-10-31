@@ -30,7 +30,40 @@ String _clip(String s, int n) {
 
 String _lines(List<String> l) => l.where((e) => e.trim().isNotEmpty).join('\n');
 
-List<ReviewItem> buildReviewItems() {
+/// Cards are made by the user: a library card you added, or a case you put on the review list. Cards made from every
+/// case, note, question and pearl automatically are an option in the settings, off by default.
+bool get reviewAuto => store.settings['reviewAuto'] == true;
+
+Set<String> get reviewHidden => {for (final k in (store.settings['reviewHidden'] as List? ?? const [])) '$k'};
+
+/// A card you removed does not come back.
+Future<void> hideReviewCard(String key) async {
+  store.settings['reviewHidden'] = {...reviewHidden, key}.toList();
+  await store.saveSettings();
+}
+
+Future<void> restoreReviewCard(String key) async {
+  store.settings['reviewHidden'] = [for (final k in reviewHidden) if (k != key) k];
+  await store.saveSettings();
+}
+
+List<ReviewItem> buildReviewItems({bool includeHidden = false}) {
+  final all = _buildAllReviewItems();
+  final hidden = reviewHidden;
+  return [
+    for (final it in all)
+      if ((includeHidden || !hidden.contains(it.key)) && (reviewAuto || it.kind == ReviewKind.library || _explicitCase(it)))
+        it
+  ];
+}
+
+bool _explicitCase(ReviewItem it) {
+  if (!it.key.startsWith('c:')) return false;
+  final c = store.cases[it.refId];
+  return c != null && c.review;
+}
+
+List<ReviewItem> _buildAllReviewItems() {
   final out = <ReviewItem>[];
   for (final c in store.cases.values) {
     final dx = c.s('finalDx').trim().isNotEmpty ? c.s('finalDx') : c.s('workingDx');

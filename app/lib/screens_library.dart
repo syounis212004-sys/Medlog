@@ -317,45 +317,44 @@ class _LibraryScreenState extends State<LibraryScreen> {
                   ),
                 ],
                 if (packs.isNotEmpty) ...[
-                  _shelfTitle(tr('My courses')),
-                  LayoutBuilder(builder: (context, c) {
-                    final cols = c.maxWidth >= 600 ? 3 : 2;
-                    const gap = 10.0;
-                    final w = (c.maxWidth - gap * (cols - 1)) / cols;
+                  Builder(builder: (context) {
                     final cs = theme.colorScheme;
-                    Widget card(Widget child, VoidCallback onTap, {Key? key}) => SizedBox(
-                          width: w,
-                          height: 112 * MediaQuery.textScalerOf(context).scale(1.0).clamp(1.0, 1.7),
-                          child: Material(
-                            key: key,
-                            color: cs.surfaceContainerLow,
-                            borderRadius: BorderRadius.circular(16),
-                            child: InkWell(borderRadius: BorderRadius.circular(16), onTap: onTap, child: Padding(padding: const EdgeInsets.all(12), child: child)),
-                          ),
+                    final mine = [for (final p in packs) if (p.kind == 'book' || p.kind == 'user') p];
+                    final courses = [for (final p in packs) if (p.kind != 'book' && p.kind != 'user') p];
+                    Widget row(PackMeta p) => ListTile(
+                          dense: true,
+                          visualDensity: VisualDensity.compact,
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 4),
+                          leading: Icon(p.kind == 'user' ? Icons.folder_outlined : Icons.menu_book_outlined, color: cs.primary),
+                          title: Text(p.title, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w700)),
+                          subtitle: Text('${p.count} ${tr('articles')}'),
+                          trailing: const Icon(Icons.chevron_right, size: 20),
+                          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => PackBrowseScreen(pack: p))),
                         );
-                    return Wrap(spacing: gap, runSpacing: gap, children: [
-                      for (final p in packs)
-                        card(
-                          Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                            Icon(p.kind == 'user' ? Icons.folder_outlined : Icons.menu_book_outlined, color: cs.primary),
-                            const Spacer(),
-                            Text(p.title, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w800)),
-                            Text('${p.count} ${tr('articles')}', style: theme.textTheme.labelSmall?.copyWith(color: cs.outline)),
-                          ]),
-                          () => Navigator.push(context, MaterialPageRoute(builder: (_) => PackBrowseScreen(pack: p))),
+                    return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                      if (mine.isNotEmpty) ...[
+                        _shelfTitle(tr('My books')),
+                        AppCard(child: Column(children: [for (var i = 0; i < mine.length; i++) ...[if (i > 0) const Divider(height: 1, indent: 12, endIndent: 12), row(mine[i])]])),
+                      ],
+                      if (courses.isNotEmpty)
+                        Fold(
+                          id: 'lib_courses_all',
+                          title: trp('Courses ({n})', {'n': courses.length}),
+                          subtitle: tr('Specialties and references'),
+                          icon: Icons.school_outlined,
+                          children: [for (final p in courses) row(p)],
                         ),
-                      card(
-                        Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-                          Icon(Icons.add_circle_outline, color: cs.primary),
-                          const SizedBox(height: 6),
-                          Text('Add course', textAlign: TextAlign.center),
-                        ]),
-                        () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PackManagerScreen())),
-                        key: const Key('lib_add_course'),
+                      Align(
+                        alignment: AlignmentDirectional.centerStart,
+                        child: TextButton.icon(
+                          key: const Key('lib_add_course'),
+                          onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PackManagerScreen())),
+                          icon: const Icon(Icons.add_circle_outline),
+                          label: Text('Add course'),
+                        ),
                       ),
                     ]);
                   }),
-                  const SizedBox(height: 8),
                 ],
                 if (later.isNotEmpty)
                   Fold(

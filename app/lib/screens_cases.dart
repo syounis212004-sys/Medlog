@@ -16,6 +16,7 @@ import 'pdf_export.dart' show kClinStatuses, clinStatusOf, clinStatusColor, clin
 import 'privacy.dart';
 import 'screens_privacy.dart';
 import 'ai/ai_context.dart';
+import 'app_icons.dart';
 import 'screens_ai_cases.dart';
 import 'ai/voice_input.dart' show VoiceInputButton;
 import 'ai/ai_tools.dart' show untaggedCases;
@@ -833,10 +834,10 @@ class _CaseEditorScreenState extends State<CaseEditorScreen>
       child: SafeArea(
         top: false,
         child: Row(children: [
-          tool(Icons.menu_book_outlined, trUi('Library'), () => open(() => LibraryScreen(initialQuery: topic)), key: 'tool_library'),
-          tool(Icons.calculate_outlined, trUi('Calculators'), () => open(() => CalculatorsScreen(attachTo: rec)), key: 'tool_calcs'),
-          tool(Icons.medication_outlined, trUi('Doses'), () => open(() => DosingScreen(patient: DoseContext.fromCase(rec))), key: 'tool_doses'),
-          tool(Icons.search_outlined, trUi('Search'), () => open(() => SearchScreen(initial: topic)), key: 'tool_search'),
+          tool(AppIcons.library, trUi('Library'), () => open(() => LibraryScreen(initialQuery: topic)), key: 'tool_library'),
+          tool(AppIcons.calculator, trUi('Calculators'), () => open(() => CalculatorsScreen(attachTo: rec)), key: 'tool_calcs'),
+          tool(AppIcons.doses, trUi('Doses'), () => open(() => DosingScreen(patient: DoseContext.fromCase(rec))), key: 'tool_doses'),
+          tool(AppIcons.search, trUi('Search'), () => open(() => SearchScreen(initial: topic)), key: 'tool_search'),
         ]),
       ),
     );
@@ -871,6 +872,72 @@ class _CaseEditorScreenState extends State<CaseEditorScreen>
       _ctl.putIfAbsent(key, () => TextEditingController(text: rec.s(key)));
 
   bool _touched = false;
+
+  /// The case menu: a few things up front, the rarely used ones under "More", and Delete alone at the bottom.
+  Future<void> _showMenu() async {
+    Widget tile(BuildContext ctx, IconData icon, String label, String v, {Color? color}) => ListTile(
+          key: ValueKey('menu_$v'),
+          leading: Icon(icon, color: color),
+          title: Text(label, style: TextStyle(color: color)),
+          onTap: () {
+            Navigator.pop(ctx);
+            _menu(v);
+          },
+        );
+    final v = await showModalBottomSheet<String>(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      builder: (ctx) => SafeArea(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(maxHeight: MediaQuery.of(ctx).size.height * 0.85),
+          child: ListView(shrinkWrap: true, children: [
+            tile(ctx, rec.starred ? Icons.star : Icons.star_outline, rec.starred ? tr('Remove star') : tr('Star this case'), 'star'),
+            tile(ctx, Icons.picture_as_pdf_outlined, tr('Export as PDF'), 'pdf'),
+            ListTile(
+              key: const ValueKey('menu_share'),
+              leading: const Icon(Icons.ios_share_outlined),
+              title: Text('Share'),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => Navigator.pop(ctx, 'share_menu'),
+            ),
+            tile(ctx, Icons.auto_awesome_outlined, tr('AI assistant'), 'ai'),
+            tile(ctx, Icons.menu_book_outlined, tr('Read about this in the library'), 'library'),
+            ExpansionTile(
+              key: const ValueKey('menu_more'),
+              leading: const Icon(Icons.more_horiz),
+              title: Text('More'),
+              children: [
+                tile(ctx, Icons.auto_fix_high_outlined, tr('Fill everything normal (empty fields only)'), 'fillAll'),
+                tile(ctx, Icons.dashboard_customize_outlined, tr('Quick fill from specialty template'), 'fillTpl'),
+                tile(ctx, Icons.shield_outlined, tr('Privacy check'), 'privacy'),
+                tile(ctx, Icons.link, tr('Similar & related'), 'similar'),
+                tile(ctx, Icons.compare_arrows, tr('Compare with another case'), 'compare'),
+                tile(ctx, Icons.replay, tr('Replay this case'), 'replay'),
+                tile(ctx, Icons.record_voice_over_outlined, tr('Practice presenting'), 'practice'),
+              ],
+            ),
+            const Divider(height: 8),
+            tile(ctx, Icons.delete_outline, tr('Delete case'), 'delete', color: Theme.of(ctx).colorScheme.error),
+          ]),
+        ),
+      ),
+    );
+    if (v == 'share_menu' && mounted) {
+      final w = await showModalBottomSheet<String>(
+        context: context,
+        showDragHandle: true,
+        builder: (ctx) => SafeArea(
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+            ListTile(leading: const Icon(Icons.present_to_all_outlined), title: Text('Share case presentation'), onTap: () => Navigator.pop(ctx, 'present')),
+            ListTile(leading: const Icon(Icons.text_snippet_outlined), title: Text('Share as text (no initials)'), onTap: () => Navigator.pop(ctx, 'share')),
+            ListTile(leading: const Icon(Icons.lock_outline), title: Text('Share to colleague (encrypted)'), onTap: () => Navigator.pop(ctx, 'pack')),
+          ]),
+        ),
+      );
+      if (w != null && mounted) await _menu(w);
+    }
+  }
 
   /// A draft case whose outcome is chosen is not a draft any more: discharged, referred or admitted moves it on.
   void _autoStatus() {
@@ -3436,41 +3503,11 @@ class _CaseEditorScreenState extends State<CaseEditorScreen>
                   onPressed: _undo.isEmpty ? null : _doUndo,
                 ),
               ),
-              PopupMenuButton<String>(
-                onSelected: _menu,
-                itemBuilder: (_) => [
-                  PopupMenuItem(value: 'star', child: Text(rec.starred ? 'Remove star' : 'Star this case')),
-                  const PopupMenuItem(
-                      value: 'fillAll',
-                      child: Text('Fill everything normal (empty fields only)')),
-                  PopupMenuItem(
-                      value: 'fillTpl',
-                      child: Text('Quick fill from specialty template')),
-                  PopupMenuItem(value: 'calcs', child: Text('Calculators for this case')),
-                  PopupMenuItem(value: 'doses', child: Text('Drug doses for this patient')),
-                  PopupMenuItem(value: 'privacy', child: Text('Privacy check')),
-                  PopupMenuItem(value: 'ai', child: Text('AI assistant')),
-                  PopupMenuItem(
-                      value: 'similar', child: Text('Similar & related')),
-                  PopupMenuItem(
-                      value: 'compare',
-                      child: Text('Compare with another case')),
-                  PopupMenuItem(
-                      value: 'replay', child: Text('Replay this case')),
-                  PopupMenuItem(
-                      value: 'practice', child: Text('Practice presenting')),
-                  PopupMenuItem(value: 'library', child: Text('Read about this in the library')),
-                  PopupMenuItem(value: 'pdf', child: Text('Export as PDF')),
-                  PopupMenuItem(
-                      value: 'present', child: Text('Share case presentation')),
-                  PopupMenuItem(
-                      value: 'share',
-                      child: Text('Share as text (no initials)')),
-                  PopupMenuItem(
-                      value: 'pack',
-                      child: Text('Share to colleague (encrypted)')),
-                  PopupMenuItem(value: 'delete', child: Text('Delete case')),
-                ],
+              IconButton(
+                key: const ValueKey('case_menu'),
+                tooltip: tr('More'),
+                icon: const Icon(Icons.more_vert),
+                onPressed: _showMenu,
               ),
             ],
             bottom: PreferredSize(

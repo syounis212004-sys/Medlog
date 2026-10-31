@@ -42,6 +42,33 @@ class _AskReferencesScreenState extends State<AskReferencesScreen> {
   List<LibHit> _local = const [];
   List<String> _try = const [];
   String _asking = '';
+  List<LibHit> _live = const [];
+  Timer? _debounce;
+  String _scope = '';
+
+  /// While typing, the best places in my own books come up at once; no button needed.
+  void _typing(String v) {
+    _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 350), () async {
+      final t = v.trim();
+      if (t.length < 3 || !library.ready || library.textPacks.isEmpty || widget.packId != null) {
+        if (mounted) setState(() => _live = const []);
+        return;
+      }
+      List<LibHit> hits = const [];
+      try {
+        final kw = AiLibrary.localKeywords(t);
+        hits = await library.searchEx(kw.isEmpty ? t : kw, body: true, concise: true, limit: 24);
+      } catch (_) {}
+      if (mounted && _q.text.trim() == t) setState(() => _live = hits);
+    });
+  }
+
+  List<LibHit> get _liveShown {
+    if (_scope.isEmpty) return _live;
+    final books = {for (final p in library.textPacks) if (p.kind == 'book' || p.kind == 'user') p.id};
+    return [for (final h in _live) if ((_scope == 'books') == books.contains(h.packId)) h];
+  }
 
   @override
   void initState() {
@@ -51,6 +78,7 @@ class _AskReferencesScreenState extends State<AskReferencesScreen> {
 
   @override
   void dispose() {
+    _debounce?.cancel();
     _q.dispose();
     super.dispose();
   }
@@ -121,6 +149,7 @@ class _AskReferencesScreenState extends State<AskReferencesScreen> {
             maxLines: 4,
             textInputAction: TextInputAction.search,
             onSubmitted: (_) => _ask(),
+            onChanged: _typing,
             decoration: InputDecoration(
               labelText: tr('Your question'),
               hintText: tr('e.g. How is DKA managed?'),
@@ -142,11 +171,18 @@ class _AskReferencesScreenState extends State<AskReferencesScreen> {
               Expanded(child: Text(msg, style: theme.textTheme.bodySmall?.copyWith(color: cs.outline))),
             ]);
           }),
-          const SizedBox(height: 12),
+          const SizedBox(height: 10),
+          if (widget.packId == null && library.ready && library.textPacks.isNotEmpty)
+            Wrap(spacing: 8, children: [
+              ChoiceChip(key: const Key('scope_all'), label: Text('Everything'), selected: _scope.isEmpty, onSelected: (_) => setState(() => _scope = '')),
+              ChoiceChip(key: const Key('scope_books'), label: Text('My books'), selected: _scope == 'books', onSelected: (_) => setState(() => _scope = 'books')),
+              ChoiceChip(key: const Key('scope_courses'), label: Text('Courses'), selected: _scope == 'courses', onSelected: (_) => setState(() => _scope = 'courses')),
+            ]),
+          const SizedBox(height: 8),
           FilledButton.icon(
             onPressed: _busy ? null : _ask,
-            icon: const Icon(Icons.search),
-            label: Text('Search my references'),
+            icon: const Icon(Icons.question_answer_outlined),
+            label: Text('Answer from my references'),
           ),
           AiBuilder(builder: (context, enabled, online) {
             if (!enabled) return const SizedBox.shrink();
@@ -166,6 +202,10 @@ class _AskReferencesScreenState extends State<AskReferencesScreen> {
               padding: const EdgeInsets.only(top: 16),
               child: Text('No courses are downloaded yet. Install a course in Courses and library first.', style: theme.textTheme.bodyMedium),
             ),
+          if (!_asked && _liveShown.isNotEmpty) ...[
+            SectionHeader(tr('In my books')),
+            for (final h in _liveShown.take(12)) _hitTile(context, h),
+          ],
           if (_asked && !_busy) ..._result(context),
         ],
       ),

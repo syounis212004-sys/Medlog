@@ -519,12 +519,11 @@ class _ArticleScreenState extends State<ArticleScreen> {
                 }
               },
               itemBuilder: (_) => [
-                PopupMenuItem(value: 'ask', child: Text('Ask about this article')),
-                if (Ai.enabled || store.listOf('ailibcache').any((e) => e['title'] == a.title)) PopupMenuItem(value: 'aitools', child: Text('AI study tools')),
-                PopupMenuItem(value: 'quiz', child: Text('Test myself on this topic')),
-                PopupMenuItem(value: 'card', child: Text('Add to review cards')),
-                PopupMenuItem(value: 'ref', child: Text('Save to my references')),
-                if (a.url.startsWith('https://en.wikipedia.org/')) PopupMenuItem(value: 'online', child: Text('Open the full online page')),
+                PopupMenuItem(value: 'ask', child: Row(children: [const Icon(Icons.auto_awesome_outlined, size: 20), const SizedBox(width: 12), Text('Ask about this article')])),
+                PopupMenuItem(value: 'quiz', child: Row(children: [const Icon(Icons.quiz_outlined, size: 20), const SizedBox(width: 12), Text('Test myself on this topic')])),
+                PopupMenuItem(value: 'card', child: Row(children: [const Icon(Icons.style_outlined, size: 20), const SizedBox(width: 12), Text('Make a review card')])),
+                PopupMenuItem(value: 'ref', child: Row(children: [const Icon(Icons.bookmark_add_outlined, size: 20), const SizedBox(width: 12), Text('Save to my references')])),
+                if (a.url.startsWith('https://en.wikipedia.org/')) PopupMenuItem(value: 'online', child: Row(children: [const Icon(Icons.public, size: 20), const SizedBox(width: 12), Text('Open the full online page')])),
               ],
             ),
         ],
