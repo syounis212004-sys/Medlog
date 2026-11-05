@@ -1,0 +1,46 @@
+{
+  "4.5.0": {
+    "en": [
+      "Update from inside the app: a notice when a new version is out, what changed, then download and install in one tap",
+      "The downloaded file is checked against the published checksum before it is installed"
+    ],
+    "ar": [
+      "تحديث من داخل التطبيق: إشعار عند صدور إصدار جديد مع قائمة التحسينات، ثم تنزيل وتثبيت بضغطة واحدة",
+      "يُفحص الملف المنزَّل بالبصمة المنشورة قبل تثبيته"
+    ]
+  },
+  "4.4.1": {
+    "en": [
+      "The access gate is on from the first launch, even without internet"
+    ],
+    "ar": [
+      "بوابة الموافقة تعمل من أول تشغيل حتى بدون إنترنت"
+    ]
+  },
+  "4.4.0": {
+    "en": [
+      "Photo of the result on every investigation, kept under the test",
+      "Plan items with drug, route, dose, frequency and duration; in hospital or take-home",
+      "Background card at the top of History: chronic diseases, home medicines, allergies",
+      "Book reader: first section keeps its name, lists cut by a table are rejoined, repeated sections joined, tables fit the screen"
+    ],
+    "ar": [
+      "صورة النتيجة على كل فحص وتبقى تحته",
+      "بنود الخطة بالدواء والطريق والجرعة والتكرار والمدة، في المستشفى أو للبيت",
+      "بطاقة الخلفية أعلى التاريخ المرضي: الأمراض المزمنة وأدوية البيت والحساسية",
+      "قارئ الكتاب: القسم الأول بعنوانه، القوائم التي قطعها جدول تعود لمكانها، الأقسام المكررة تُدمج، والجداول تناسب الشاشة"
+    ]
+  },
+  "4.3.0": {
+    "en": [
+      "Infection / Sepsis category in Emergency",
+      "23 new complaint templates (infections and common complaints); several complaints per patient",
+      "Clearer add-complaint button and whole-word suggestions"
+    ],
+    "ar": [
+      "فئة العدوى والإنتان في الطوارئ",
+      "23 قالب شكوى جديداً (عدوى وشكاوى شائعة) وعدة شكاوى للمريض الواحد",
+      "زر إضافة شكوى أوضح واقتراحات بالكلمة الكاملة"
+    ]
+  }
+}
