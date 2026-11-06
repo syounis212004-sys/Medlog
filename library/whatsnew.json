@@ -1,4 +1,12 @@
 {
+  "4.5.1": {
+    "en": [
+      "Updates are easy to find: Settings now has \"Check for updates\" with the version and the switch for the automatic notice, and the same card stays in Notebooks and tools"
+    ],
+    "ar": [
+      "أصبح التحديث أسهل وصولاً: في الإعدادات الآن «Check for updates» مع رقم الإصدار ومفتاح الإشعار التلقائي، وتبقى البطاقة نفسها في Notebooks and tools"
+    ]
+  },
   "4.5.0": {
     "en": [
       "Update from inside the app: a notice when a new version is out, what changed, then download and install in one tap",
