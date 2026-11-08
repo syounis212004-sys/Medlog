@@ -103,6 +103,18 @@ jobs:
         working-directory: ${{ env.APP_DIR }}
         run: flutter analyze --no-fatal-infos --no-fatal-warnings
 
+      - name: Gradle from a mirror (github.com release downloads returned HTTP 504 for hours); checked by SHA-256
+        working-directory: ${{ env.APP_DIR }}
+        run: |
+          f=android/gradle/wrapper/gradle-wrapper.properties
+          cat "$f"
+          if grep -q 'gradle-9.3.1-all.zip' "$f"; then
+            sed -i -E '/^distributionUrl=/d;/^distributionSha256Sum=/d' "$f"
+            echo 'distributionUrl=https\://mirrors.cloud.tencent.com/gradle/gradle-9.3.1-all.zip' >> "$f"
+            echo 'distributionSha256Sum=17f277867f6914d61b1aa02efab1ba7bb439ad652ca485cd8ca6842fccec6e43' >> "$f"
+          fi
+          cat "$f"
+
       - name: Build release APK
         working-directory: ${{ env.APP_DIR }}
         run: |
