@@ -1,4 +1,20 @@
 {
+  "5.1.0": {
+    "en": [
+      "New opening animation: the SharqMed ribbon and the rising sun, then the designer credit (tap to skip)",
+      "The welcome card now fills the width of the screen and is a little shorter, so the name is no longer cut",
+      "The Ask AI button is a small rounded square with the star icon instead of a long pill",
+      "The old logo is gone from the Ask AI chat: it uses the same gold star badge",
+      "The launcher icon background is now the same deep teal of the app logo"
+    ],
+    "ar": [
+      "حركة افتتاح جديدة: شريط SharqMed وشروق الشمس ثم اسم المصمم (اضغط للتخطي)",
+      "بطاقة الترحيب تملأ عرض الشاشة وأقصر قليلاً فلا يُقطع الاسم",
+      "زر اسأل الذكاء الاصطناعي صار مربعاً صغيراً بزوايا مدوّرة وأيقونة النجمة بدل المستطيل الطويل",
+      "اختفى الشعار القديم من محادثة الذكاء الاصطناعي، وصار فيها شارة النجمة الذهبية نفسها",
+      "خلفية أيقونة التطبيق صارت بنفس لون خلفية شعار التطبيق (الأخضر الداكن)"
+    ]
+  },
   "5.0.0": {
     "en": [
       "New name and look: SharqMed, with the Eastern Dawn colours as the default theme (you can switch to the other themes in Settings), a new app icon and logo",
