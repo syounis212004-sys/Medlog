@@ -105,7 +105,14 @@ jobs:
 
       - name: Build release APK
         working-directory: ${{ env.APP_DIR }}
-        run: flutter build apk --release --no-tree-shake-icons --build-number=${{ github.run_number }}
+        run: |
+          # the Gradle download can fail for a moment on GitHub's side (HTTP 5xx): try again a few times
+          for i in 1 2 3 4; do
+            flutter build apk --release --no-tree-shake-icons --build-number=${{ github.run_number }} && exit 0
+            echo "build attempt $i failed; waiting before the next one"
+            sleep $((i * 30))
+          done
+          exit 1
 
       - name: Prepare APK
         run: |
