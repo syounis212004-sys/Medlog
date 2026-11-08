@@ -1,4 +1,24 @@
 {
+  "5.0.0": {
+    "en": [
+      "New name and look: SharqMed, with the Eastern Dawn colours as the default theme (you can switch to the other themes in Settings), a new app icon and logo",
+      "New welcome card: four pictures for the time of the day, and a new gold Ask AI button",
+      "Search inside an article: a find bar with previous and next",
+      "Library search shows the real name of the book each result comes from",
+      "My plan can take several books at once, and AI study (topics, teaching, viva, question bank, pre-shift quiz, case of the day) follows the books and chapters of your plan",
+      "Mock exam: written by the AI from the books you choose, from your plan, or from a name or topic you type",
+      "Answer options now flow side by side instead of standing one under another"
+    ],
+    "ar": [
+      "اسم ومظهر جديدان: SharqMed بألوان فجر الشرق كثيم افتراضي (ويمكنك التبديل إلى الثيمات الأخرى من الإعدادات)، وأيقونة وشعار جديدان",
+      "بطاقة ترحيب جديدة بأربع صور حسب وقت اليوم، وزر «اسأل الذكاء الاصطناعي» الذهبي الجديد",
+      "البحث داخل المقال: شريط بحث مع السابق والتالي",
+      "نتائج بحث المكتبة تُظهر اسم الكتاب الحقيقي الذي جاءت منه",
+      "خطتي تقبل عدة كتب معاً، ودراسة الذكاء الاصطناعي (المواضيع والتعليم والفيفا وبنك الأسئلة واختبار ما قبل المناوبة وحالة اليوم) تتبع كتب خطتك وفصولها",
+      "الامتحان التجريبي: يكتبه الذكاء الاصطناعي من الكتب التي تختارها أو من خطتك أو من اسم أو موضوع تكتبه",
+      "خيارات الإجابة تنساب الآن بجانب بعضها بدل أن تقف واحدة تحت الأخرى"
+    ]
+  },
   "4.5.1": {
     "en": [
       "Updates are easy to find: Settings now has \"Check for updates\" with the version and the switch for the automatic notice, and the same card stays in Notebooks and tools"
