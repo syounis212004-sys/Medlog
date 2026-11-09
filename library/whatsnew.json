@@ -1,4 +1,18 @@
 {
+  "5.3.0": {
+    "en": [
+      "One icon family across the whole app (Phosphor): every screen now uses the same style, with Health Icons for organs and rotations, and animated icons in the confirmation and warning messages and in the bottom bar",
+      "Colours that carry a meaning (success, warning, danger, information, starred) are now one set for the whole app, checked for contrast in all nine palettes in light and dark",
+      "Text is never smaller than 12, the two small pop-up menus became the same bottom menu used everywhere, icon buttons have names for screen readers, and the bottom bar is announced as buttons",
+      "Errors while reading or saving your data are no longer swallowed silently: they are recorded in the error log (Settings) so a problem can be reported"
+    ],
+    "ar": [
+      "عائلة أيقونات واحدة في التطبيق كله (Phosphor): كل الشاشات بنفس الأسلوب، مع أيقونات Health Icons للأعضاء والمساقات، وأيقونات متحركة في رسائل التأكيد والتحذير وفي الشريط السفلي",
+      "الألوان ذات المعنى (نجاح، تحذير، خطر، معلومة، نجمة) صارت مجموعة واحدة للتطبيق، ومفحوصة التباين في الألوان التسعة فاتح وداكن",
+      "لا نص أصغر من 12، والقائمتان المنبثقتان الصغيرتان صارتا القائمة السفلية نفسها المستخدمة في كل مكان، وأزرار الأيقونات لها أسماء لقارئ الشاشة، والشريط السفلي يُقرأ كأزرار",
+      "أخطاء قراءة بياناتك أو حفظها لم تعد تُبتلع بصمت: تُسجَّل في سجل الأخطاء (الإعدادات) ليمكن الإبلاغ عن المشكلة"
+    ]
+  },
   "5.2.0": {
     "en": [
       "A new engine for case PDFs: real text you can select and search (not a picture of the page), always in English, and ordered like a clinical record: patient data, chief complaint, history of presenting illness, past medical and surgical history, drugs and allergies, family and social history, examination, investigations, assessment, management, progress, outcome and learning points",
