@@ -1,0 +1,9 @@
+feature,area,priority,original,clone,notes
+Specialty and rotation templates,logging,should,yes,yes,"Medlog quick templates per specialty and rotation fields (5.2.0)"
+Progress by body system with coverage bars and a 'what is missing' view,analytics,must,yes,no,"Best new idea. Medlog has specialty diversity only"
+Real-time sync across devices,platform,could,yes,no,"Needs account + server; conflicts with local-only policy. Owner decision"
+Cases organised by rotation / specialty / date with search and filter,search,must,yes,yes,"Medlog unified search and filters"
+Export a single case,export,should,yes,yes,"Medlog case PDF"
+Full PDF of all cases with images,export,should,yes,yes,"Medlog PDF engine; confirm images are included"
+Rotation list incl. Psychiatry / Neurology / Radiology / Family Medicine,specialty,could,yes,partial,"Check Medlog rotation list for gaps"
+Account sign-up and free trial then paid,monetisation,skip,yes,no,"Medlog is account-free"
