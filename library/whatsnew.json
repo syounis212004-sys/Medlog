@@ -1,4 +1,20 @@
 {
+  "5.2.0": {
+    "en": [
+      "A new engine for case PDFs: real text you can select and search (not a picture of the page), always in English, and ordered like a clinical record: patient data, chief complaint, history of presenting illness, past medical and surgical history, drugs and allergies, family and social history, examination, investigations, assessment, management, progress, outcome and learning points",
+      "The order follows the rotation (16 rotations, from published clerkship forms): for example the primary survey comes before the history in Emergency, and birth, growth and vaccines come after the history in Pediatrics",
+      "Three formats when you export a case: Full case, Meeting (one page: summary, narrowed differential, analysis, plan, question for self-study) and Summary",
+      "Nothing is printed twice and empty sections are left out; allergies are always stated; vital signs have units; the plan is a table with dose, route, frequency and duration, with take-home medicines apart; photos of results sit under their test",
+      "New fields in the case editor for Emergency, ICU, Cardiology, ENT, Eye, Skin, Urology, Anesthesia, Orthopedics, Neurology, Psychiatry, Surgery, Pediatrics and OB/GYN, and the examination ones appear in the Examination tab"
+    ],
+    "ar": [
+      "محرك جديد لتقارير PDF للحالات: نص حقيقي يمكن تحديده والبحث فيه (وليس صورة للصفحة)، بالإنجليزية دائماً، ومرتب كسجل سريري: بيانات المريض، الشكوى، تاريخ المرض الحالي، التاريخ المرضي والجراحي، الأدوية والحساسية، التاريخ العائلي والاجتماعي، الفحص، الفحوصات، التقييم، الخطة، المتابعة، النتيجة ونقاط التعلم",
+      "الترتيب يتبع المساق (16 مساقاً، من نماذج تدريب منشورة): مثلاً المسح الأولي قبل التاريخ في الطوارئ، والولادة والنمو والتطعيمات بعد التاريخ في الأطفال",
+      "ثلاث صيغ عند تصدير الحالة: حالة كاملة، وعرض ميتنج (صفحة واحدة: ملخص، تفاضلي مضيّق، تحليل، خطة، سؤال للدراسة)، وملخص",
+      "لا شيء يُطبع مرتين، والأقسام الفارغة تُحذف، والحساسية مذكورة دائماً، والعلامات الحيوية بوحداتها، والخطة جدول بالجرعة والطريق والتكرار والمدة مع أدوية البيت منفصلة، وصور النتائج تحت فحصها",
+      "حقول جديدة في محرر الحالة للطوارئ والعناية والقلب والأنف والأذن والعيون والجلدية والمسالك والتخدير والعظام والأعصاب والنفسية والجراحة والأطفال والنسائية، وحقول الفحص تظهر في تبويب الفحص"
+    ]
+  },
   "5.1.1": {
     "en": [
       "Search inside a book: the search box of a book now looks in the text of every chapter and topic, not only in the titles, and shows the sentence and the chapter it found",
