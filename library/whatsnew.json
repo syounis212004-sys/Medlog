@@ -1,4 +1,14 @@
 {
+  "5.1.1": {
+    "en": [
+      "Search inside a book: the search box of a book now looks in the text of every chapter and topic, not only in the titles, and shows the sentence and the chapter it found",
+      "A clear message when nothing is found, instead of an empty page"
+    ],
+    "ar": [
+      "البحث داخل الكتاب: مربع بحث الكتاب صار يبحث في نص كل فصل وموضوع وليس العناوين فقط، ويعرض الجملة والفصل اللذين وجدها",
+      "رسالة واضحة عند عدم وجود نتائج بدل صفحة فارغة"
+    ]
+  },
   "5.1.0": {
     "en": [
       "New opening animation: the SharqMed ribbon and the rising sun, then the designer credit (tap to skip)",
