@@ -1,4 +1,16 @@
 {
+  "5.4.2": {
+    "en": [
+      "In the case PDF, the answers of the quick questions are now written as sentences, automatically: \"The onset was sudden. The site is foot. Associated symptoms include redness, warmth and swelling.\" instead of a list of choices",
+      "Each added complaint has its own short paragraph under its name; examination findings are one line each; \"not assessed\" and \"none reported\" are written in words",
+      "Details you type beside a choice are kept inside the sentence, and a choice of \"Other\" is replaced by what you wrote"
+    ],
+    "ar": [
+      "في تقرير PDF للحالة، إجابات الأسئلة السريعة تُكتب الآن جملاً بشكل آلي: \"The onset was sudden. The site is foot. Associated symptoms include redness, warmth and swelling.\" بدل قائمة الخيارات",
+      "لكل شكوى مضافة فقرة قصيرة تحت اسمها، ونتائج الفحص سطر لكل واحدة، وعبارتا \"لم يُقيَّم\" و\"لا شيء مبلَّغ\" تُكتبان بكلمات",
+      "التفاصيل التي تكتبها بجانب الاختيار تبقى داخل الجملة، واختيار \"Other\" يُستبدل بما كتبته"
+    ]
+  },
   "5.4.1": {
     "en": [
       "Case PDF is easier to read: a short summary box at the top (who, why, abnormal vital signs, diagnosis, disposition)",
