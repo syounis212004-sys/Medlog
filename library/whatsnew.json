@@ -1,4 +1,18 @@
 {
+  "5.6.0": {
+    "en": [
+      "Signing in no longer needs copying and pasting codes: press \"Send request to the administrator\" and the app waits; when the administrator approves, it opens by itself",
+      "The administrator sees the waiting requests in a list (Administrator tools > Access requests), taps one and presses Approve; the approval reaches the member's phone automatically",
+      "The request and the approval pass through a free public relay (ntfy.sh): only name, email, note and the signed approval, never patient data. An approval cannot be forged or used on another phone, because it is signed by the administrator key and tied to the phone it was made for",
+      "Without internet the old way is still there, folded under \"No internet, or you received a code?\""
+    ],
+    "ar": [
+      "تسجيل الدخول لم يعد يحتاج نسخ ولصق أكواد: اضغط \"أرسل الطلب للمسؤول\" ويبقى التطبيق بانتظار الموافقة، وعندما يوافق المسؤول يفتح التطبيق وحده",
+      "يرى المسؤول الطلبات المنتظرة في قائمة (أدوات المسؤول > طلبات الدخول)، يضغط على طلب ثم \"موافقة\"، وتصل الموافقة إلى هاتف العضو تلقائياً",
+      "الطلب والموافقة يمران عبر وسيط عام مجاني (ntfy.sh): الاسم والبريد والملاحظة والموافقة الموقَّعة فقط، ولا بيانات مرضى أبداً. لا يمكن تزوير الموافقة ولا استعمالها على هاتف آخر لأنها موقَّعة بمفتاح المسؤول ومربوطة بالهاتف الذي صُنعت له",
+      "بدون إنترنت تبقى الطريقة القديمة موجودة، مطوية تحت \"لا يوجد إنترنت، أو وصلك كود؟\""
+    ]
+  },
   "5.5.0": {
     "en": [
       "The case PDF is now written like a clinical report: paragraphs of full sentences instead of tables of choices",
