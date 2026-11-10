@@ -2,16 +2,18 @@
   "5.4.0": {
     "en": [
       "The case screen has a new look: the Info page is grouped into clear cards (Patient, Where, Status and my role), and History, Exam and Investigations are chosen with one sliding selector instead of three separate chips",
+      "Questions inside a case sit in their own panel with the question number in a badge and a thicker progress bar; the next question fades in",
       "Text fields across the app are lighter: a clean box with a thin line that turns to the main colour when you type, with the label always inside",
       "Motion: pages inside a case fade in when you switch, cards on Home, Learn, Tools and the case list give slightly under the finger, sections open with a turning arrow, and finishing a case shows a short check animation (all of it off when animations are off)",
-      "The back and close arrows and the section arrows now come from the same icon family as the rest of the app, and choices are fully rounded",
+      "Icons are heavier and sturdier across the app (bold weight of the same family), list icons take the main colour, the back, close and section arrows come from the same family, and choices are fully rounded",
       "The case header no longer cuts its text in Arabic, and the welcome card stays readable while its picture loads"
     ],
     "ar": [
       "شكل جديد لشاشة الحالة: صفحة المعلومات مقسّمة إلى بطاقات واضحة (المريض، المكان والتخصص، الحالة ودوري)، واختيار التاريخ المرضي والفحص والفحوصات صار بمحدِّد واحد منزلق بدل ثلاث رقاقات منفصلة",
+      "الأسئلة داخل الحالة صارت في إطار خاص مع رقم السؤال في شارة وشريط تقدّم أوضح، والسؤال التالي يظهر بتلاشٍ ناعم",
       "حقول الكتابة في كل التطبيق صارت أخف: صندوق نظيف بخط رفيع يتحول للون الرئيسي عند الكتابة، والعنوان دائماً داخله",
       "الحركة: صفحات الحالة تظهر بتلاشٍ ناعم عند التبديل، وبطاقات الرئيسية والتعلّم والأدوات وقائمة الحالات تنضغط قليلاً تحت الإصبع، والأقسام تُفتح بسهم يدور، وعند إنهاء الحالة تظهر حركة علامة صح قصيرة (كلها تتوقف عند إيقاف الحركات)",
-      "أسهم الرجوع والإغلاق وأسهم الأقسام صارت من عائلة الأيقونات نفسها، والخيارات مستديرة بالكامل",
+      "الأيقونات صارت أثقل وأمتن في كل التطبيق (الوزن العريض من العائلة نفسها)، وأيقونات القوائم باللون الرئيسي، وأسهم الرجوع والإغلاق والأقسام من العائلة نفسها، والخيارات مستديرة بالكامل",
       "عنوان شاشة الحالة لم يعد يُقطع بالعربية، وبطاقة الترحيب تبقى مقروءة أثناء تحميل صورتها"
     ]
   },
