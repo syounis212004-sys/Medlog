@@ -1,4 +1,20 @@
 {
+  "5.5.0": {
+    "en": [
+      "The case PDF is now written like a clinical report: paragraphs of full sentences instead of tables of choices",
+      "History of presenting illness opens with the chief complaint and its duration (\"The patient presented to the emergency department with a 12-hour history of abdominal pain.\"), names the place only when you recorded it, then tells onset, course, site, associated symptoms, modifying factors and red flags as running text",
+      "Examination: vital signs in one sentence with units, normal systems together, abnormal ones with what you noted, and \"not examined\" and \"unknown\" kept apart from \"normal\"",
+      "Investigations: \"requested\", \"pending\", \"resulted\" and \"considered\" keep their own meaning, and a requested test says that no result was available; assessment, plan (suggested, ordered, given, stopped) and disposition are sentences too",
+      "Nothing is invented: an empty field says nothing, a denial is written only when you wrote it. Tables remain only for serial results (lab trends, diagnosis changes) and for long drug lists"
+    ],
+    "ar": [
+      "تقرير PDF للحالة صار يُكتب كتقرير سريري: فقرات بجمل كاملة بدل جداول الخيارات",
+      "تاريخ المرض الحالي يبدأ بالشكوى الرئيسية ومدتها (\"The patient presented to the emergency department with a 12-hour history of abdominal pain.\") ويذكر المكان فقط إذا سجّلته، ثم يروي البداية والتطور والموضع والأعراض المصاحبة والعوامل المعدِّلة وعلامات الخطر كنص متصل",
+      "الفحص: العلامات الحيوية في جملة واحدة بوحداتها، والأجهزة الطبيعية معاً، وغير الطبيعية مع ما لاحظته، و\"لم يُفحص\" و\"غير معروف\" منفصلان عن \"طبيعي\"",
+      "الاستقصاءات: \"مطلوب\" و\"معلّق\" و\"صدرت نتيجته\" و\"قيد الدراسة\" كل منها بمعناه، والفحص المطلوب يُذكر معه أن النتيجة لم تتوفر؛ والتقييم والخطة (مقترح، مطلوب، أُعطي، أُوقف) والمآل جمل أيضاً",
+      "لا شيء يُخترع: الحقل الفارغ لا يُكتب عنه، والنفي يُكتب فقط إذا كتبته أنت. تبقى الجداول فقط للنتائج المتسلسلة (اتجاه المختبر، تغيّر التشخيص) وقوائم الأدوية الطويلة"
+    ]
+  },
   "5.4.2": {
     "en": [
       "In the case PDF, the answers of the quick questions are now written as sentences, automatically: \"The onset was sudden. The site is foot. Associated symptoms include redness, warmth and swelling.\" instead of a list of choices",
