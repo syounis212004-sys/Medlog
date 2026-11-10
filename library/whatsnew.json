@@ -1,4 +1,20 @@
 {
+  "5.4.1": {
+    "en": [
+      "Case PDF is easier to read: a short summary box at the top (who, why, abnormal vital signs, diagnosis, disposition)",
+      "Answers of the quick questions are grouped under their complaint instead of repeating its name on every line, and a column with nothing in it is no longer printed",
+      "Examination: systems marked normal are one line (\"Normal: General, CVS, ...\"); only abnormal systems get a table row, and an abnormal system with no note says so",
+      "A result that is only a photo says \"See photo below\", and a single photo is printed larger so the writing can be read",
+      "Allergies, short tables and a heading with its content no longer split between two pages"
+    ],
+    "ar": [
+      "تقرير PDF للحالة أسهل في القراءة: صندوق ملخص قصير في الأعلى (من هو المريض، لماذا جاء، العلامات الحيوية غير الطبيعية، التشخيص، المآل)",
+      "إجابات الأسئلة السريعة صارت مجمّعة تحت اسم الشكوى بدل تكرار اسمها في كل سطر، والعمود الفارغ لم يعد يُطبع",
+      "الفحص: الأجهزة الطبيعية في سطر واحد (\"Normal: General, CVS, ...\") والأجهزة غير الطبيعية فقط في جدول، والجهاز غير الطبيعي بلا وصف يُذكر ذلك",
+      "النتيجة التي هي صورة فقط تُكتب \"See photo below\"، والصورة الواحدة تُطبع أكبر ليُقرأ المكتوب عليها",
+      "الحساسية والجداول القصيرة والعنوان مع محتواه لم تعد تنقسم بين صفحتين"
+    ]
+  },
   "5.4.0": {
     "en": [
       "The case screen has a new look: the Info page is grouped into clear cards (Patient, Where, Status and my role), and History, Exam and Investigations are chosen with one sliding selector instead of three separate chips",
