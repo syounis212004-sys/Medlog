@@ -1,206 +1,226 @@
 {
-  "5.6.0": {
-    "en": [
-      "Signing in no longer needs copying and pasting codes: press \"Send request to the administrator\" and the app waits; when the administrator approves, it opens by itself",
-      "The administrator sees the waiting requests in a list (Administrator tools > Access requests), taps one and presses Approve; the approval reaches the member's phone automatically",
-      "The request and the approval pass through a free public relay (ntfy.sh): only name, email, note and the signed approval, never patient data. An approval cannot be forged or used on another phone, because it is signed by the administrator key and tied to the phone it was made for",
-      "Without internet the old way is still there, folded under \"No internet, or you received a code?\""
-    ],
-    "ar": [
-      "تسجيل الدخول لم يعد يحتاج نسخ ولصق أكواد: اضغط \"أرسل الطلب للمسؤول\" ويبقى التطبيق بانتظار الموافقة، وعندما يوافق المسؤول يفتح التطبيق وحده",
-      "يرى المسؤول الطلبات المنتظرة في قائمة (أدوات المسؤول > طلبات الدخول)، يضغط على طلب ثم \"موافقة\"، وتصل الموافقة إلى هاتف العضو تلقائياً",
-      "الطلب والموافقة يمران عبر وسيط عام مجاني (ntfy.sh): الاسم والبريد والملاحظة والموافقة الموقَّعة فقط، ولا بيانات مرضى أبداً. لا يمكن تزوير الموافقة ولا استعمالها على هاتف آخر لأنها موقَّعة بمفتاح المسؤول ومربوطة بالهاتف الذي صُنعت له",
-      "بدون إنترنت تبقى الطريقة القديمة موجودة، مطوية تحت \"لا يوجد إنترنت، أو وصلك كود؟\""
-    ]
-  },
-  "5.5.0": {
-    "en": [
-      "The case PDF is now written like a clinical report: paragraphs of full sentences instead of tables of choices",
-      "History of presenting illness opens with the chief complaint and its duration (\"The patient presented to the emergency department with a 12-hour history of abdominal pain.\"), names the place only when you recorded it, then tells onset, course, site, associated symptoms, modifying factors and red flags as running text",
-      "Examination: vital signs in one sentence with units, normal systems together, abnormal ones with what you noted, and \"not examined\" and \"unknown\" kept apart from \"normal\"",
-      "Investigations: \"requested\", \"pending\", \"resulted\" and \"considered\" keep their own meaning, and a requested test says that no result was available; assessment, plan (suggested, ordered, given, stopped) and disposition are sentences too",
-      "Nothing is invented: an empty field says nothing, a denial is written only when you wrote it. Tables remain only for serial results (lab trends, diagnosis changes) and for long drug lists"
-    ],
-    "ar": [
-      "تقرير PDF للحالة صار يُكتب كتقرير سريري: فقرات بجمل كاملة بدل جداول الخيارات",
-      "تاريخ المرض الحالي يبدأ بالشكوى الرئيسية ومدتها (\"The patient presented to the emergency department with a 12-hour history of abdominal pain.\") ويذكر المكان فقط إذا سجّلته، ثم يروي البداية والتطور والموضع والأعراض المصاحبة والعوامل المعدِّلة وعلامات الخطر كنص متصل",
-      "الفحص: العلامات الحيوية في جملة واحدة بوحداتها، والأجهزة الطبيعية معاً، وغير الطبيعية مع ما لاحظته، و\"لم يُفحص\" و\"غير معروف\" منفصلان عن \"طبيعي\"",
-      "الاستقصاءات: \"مطلوب\" و\"معلّق\" و\"صدرت نتيجته\" و\"قيد الدراسة\" كل منها بمعناه، والفحص المطلوب يُذكر معه أن النتيجة لم تتوفر؛ والتقييم والخطة (مقترح، مطلوب، أُعطي، أُوقف) والمآل جمل أيضاً",
-      "لا شيء يُخترع: الحقل الفارغ لا يُكتب عنه، والنفي يُكتب فقط إذا كتبته أنت. تبقى الجداول فقط للنتائج المتسلسلة (اتجاه المختبر، تغيّر التشخيص) وقوائم الأدوية الطويلة"
-    ]
-  },
-  "5.4.2": {
-    "en": [
-      "In the case PDF, the answers of the quick questions are now written as sentences, automatically: \"The onset was sudden. The site is foot. Associated symptoms include redness, warmth and swelling.\" instead of a list of choices",
-      "Each added complaint has its own short paragraph under its name; examination findings are one line each; \"not assessed\" and \"none reported\" are written in words",
-      "Details you type beside a choice are kept inside the sentence, and a choice of \"Other\" is replaced by what you wrote"
-    ],
-    "ar": [
-      "في تقرير PDF للحالة، إجابات الأسئلة السريعة تُكتب الآن جملاً بشكل آلي: \"The onset was sudden. The site is foot. Associated symptoms include redness, warmth and swelling.\" بدل قائمة الخيارات",
-      "لكل شكوى مضافة فقرة قصيرة تحت اسمها، ونتائج الفحص سطر لكل واحدة، وعبارتا \"لم يُقيَّم\" و\"لا شيء مبلَّغ\" تُكتبان بكلمات",
-      "التفاصيل التي تكتبها بجانب الاختيار تبقى داخل الجملة، واختيار \"Other\" يُستبدل بما كتبته"
-    ]
-  },
-  "5.4.1": {
-    "en": [
-      "Case PDF is easier to read: a short summary box at the top (who, why, abnormal vital signs, diagnosis, disposition)",
-      "Answers of the quick questions are grouped under their complaint instead of repeating its name on every line, and a column with nothing in it is no longer printed",
-      "Examination: systems marked normal are one line (\"Normal: General, CVS, ...\"); only abnormal systems get a table row, and an abnormal system with no note says so",
-      "A result that is only a photo says \"See photo below\", and a single photo is printed larger so the writing can be read",
-      "Allergies, short tables and a heading with its content no longer split between two pages"
-    ],
-    "ar": [
-      "تقرير PDF للحالة أسهل في القراءة: صندوق ملخص قصير في الأعلى (من هو المريض، لماذا جاء، العلامات الحيوية غير الطبيعية، التشخيص، المآل)",
-      "إجابات الأسئلة السريعة صارت مجمّعة تحت اسم الشكوى بدل تكرار اسمها في كل سطر، والعمود الفارغ لم يعد يُطبع",
-      "الفحص: الأجهزة الطبيعية في سطر واحد (\"Normal: General, CVS, ...\") والأجهزة غير الطبيعية فقط في جدول، والجهاز غير الطبيعي بلا وصف يُذكر ذلك",
-      "النتيجة التي هي صورة فقط تُكتب \"See photo below\"، والصورة الواحدة تُطبع أكبر ليُقرأ المكتوب عليها",
-      "الحساسية والجداول القصيرة والعنوان مع محتواه لم تعد تنقسم بين صفحتين"
-    ]
-  },
-  "5.4.0": {
-    "en": [
-      "The case screen has a new look: the Info page is grouped into clear cards (Patient, Where, Status and my role), and History, Exam and Investigations are chosen with one sliding selector instead of three separate chips",
-      "Questions inside a case sit in their own panel with the question number in a badge and a thicker progress bar; the next question fades in",
-      "Text fields across the app are lighter: a clean box with a thin line that turns to the main colour when you type, with the label always inside",
-      "Motion: pages inside a case fade in when you switch, cards on Home, Learn, Tools and the case list give slightly under the finger, sections open with a turning arrow, and finishing a case shows a short check animation (all of it off when animations are off)",
-      "Icons are heavier and sturdier across the app (bold weight of the same family), list icons take the main colour, the back, close and section arrows come from the same family, and choices are fully rounded",
-      "The case header no longer cuts its text in Arabic, and the welcome card stays readable while its picture loads"
-    ],
-    "ar": [
-      "شكل جديد لشاشة الحالة: صفحة المعلومات مقسّمة إلى بطاقات واضحة (المريض، المكان والتخصص، الحالة ودوري)، واختيار التاريخ المرضي والفحص والفحوصات صار بمحدِّد واحد منزلق بدل ثلاث رقاقات منفصلة",
-      "الأسئلة داخل الحالة صارت في إطار خاص مع رقم السؤال في شارة وشريط تقدّم أوضح، والسؤال التالي يظهر بتلاشٍ ناعم",
-      "حقول الكتابة في كل التطبيق صارت أخف: صندوق نظيف بخط رفيع يتحول للون الرئيسي عند الكتابة، والعنوان دائماً داخله",
-      "الحركة: صفحات الحالة تظهر بتلاشٍ ناعم عند التبديل، وبطاقات الرئيسية والتعلّم والأدوات وقائمة الحالات تنضغط قليلاً تحت الإصبع، والأقسام تُفتح بسهم يدور، وعند إنهاء الحالة تظهر حركة علامة صح قصيرة (كلها تتوقف عند إيقاف الحركات)",
-      "الأيقونات صارت أثقل وأمتن في كل التطبيق (الوزن العريض من العائلة نفسها)، وأيقونات القوائم باللون الرئيسي، وأسهم الرجوع والإغلاق والأقسام من العائلة نفسها، والخيارات مستديرة بالكامل",
-      "عنوان شاشة الحالة لم يعد يُقطع بالعربية، وبطاقة الترحيب تبقى مقروءة أثناء تحميل صورتها"
-    ]
-  },
-  "5.3.0": {
-    "en": [
-      "One icon family across the whole app (Phosphor): every screen now uses the same style, with Health Icons for organs and rotations, and animated icons in the confirmation and warning messages and in the bottom bar",
-      "Colours that carry a meaning (success, warning, danger, information, starred) are now one set for the whole app, checked for contrast in all nine palettes in light and dark",
-      "Text is never smaller than 12, the two small pop-up menus became the same bottom menu used everywhere, icon buttons have names for screen readers, and the bottom bar is announced as buttons",
-      "Errors while reading or saving your data are no longer swallowed silently: they are recorded in the error log (Settings) so a problem can be reported"
-    ],
-    "ar": [
-      "عائلة أيقونات واحدة في التطبيق كله (Phosphor): كل الشاشات بنفس الأسلوب، مع أيقونات Health Icons للأعضاء والمساقات، وأيقونات متحركة في رسائل التأكيد والتحذير وفي الشريط السفلي",
-      "الألوان ذات المعنى (نجاح، تحذير، خطر، معلومة، نجمة) صارت مجموعة واحدة للتطبيق، ومفحوصة التباين في الألوان التسعة فاتح وداكن",
-      "لا نص أصغر من 12، والقائمتان المنبثقتان الصغيرتان صارتا القائمة السفلية نفسها المستخدمة في كل مكان، وأزرار الأيقونات لها أسماء لقارئ الشاشة، والشريط السفلي يُقرأ كأزرار",
-      "أخطاء قراءة بياناتك أو حفظها لم تعد تُبتلع بصمت: تُسجَّل في سجل الأخطاء (الإعدادات) ليمكن الإبلاغ عن المشكلة"
-    ]
-  },
-  "5.2.0": {
-    "en": [
-      "A new engine for case PDFs: real text you can select and search (not a picture of the page), always in English, and ordered like a clinical record: patient data, chief complaint, history of presenting illness, past medical and surgical history, drugs and allergies, family and social history, examination, investigations, assessment, management, progress, outcome and learning points",
-      "The order follows the rotation (16 rotations, from published clerkship forms): for example the primary survey comes before the history in Emergency, and birth, growth and vaccines come after the history in Pediatrics",
-      "Three formats when you export a case: Full case, Meeting (one page: summary, narrowed differential, analysis, plan, question for self-study) and Summary",
-      "Nothing is printed twice and empty sections are left out; allergies are always stated; vital signs have units; the plan is a table with dose, route, frequency and duration, with take-home medicines apart; photos of results sit under their test",
-      "New fields in the case editor for Emergency, ICU, Cardiology, ENT, Eye, Skin, Urology, Anesthesia, Orthopedics, Neurology, Psychiatry, Surgery, Pediatrics and OB/GYN, and the examination ones appear in the Examination tab"
-    ],
-    "ar": [
-      "محرك جديد لتقارير PDF للحالات: نص حقيقي يمكن تحديده والبحث فيه (وليس صورة للصفحة)، بالإنجليزية دائماً، ومرتب كسجل سريري: بيانات المريض، الشكوى، تاريخ المرض الحالي، التاريخ المرضي والجراحي، الأدوية والحساسية، التاريخ العائلي والاجتماعي، الفحص، الفحوصات، التقييم، الخطة، المتابعة، النتيجة ونقاط التعلم",
-      "الترتيب يتبع المساق (16 مساقاً، من نماذج تدريب منشورة): مثلاً المسح الأولي قبل التاريخ في الطوارئ، والولادة والنمو والتطعيمات بعد التاريخ في الأطفال",
-      "ثلاث صيغ عند تصدير الحالة: حالة كاملة، وعرض ميتنج (صفحة واحدة: ملخص، تفاضلي مضيّق، تحليل، خطة، سؤال للدراسة)، وملخص",
-      "لا شيء يُطبع مرتين، والأقسام الفارغة تُحذف، والحساسية مذكورة دائماً، والعلامات الحيوية بوحداتها، والخطة جدول بالجرعة والطريق والتكرار والمدة مع أدوية البيت منفصلة، وصور النتائج تحت فحصها",
-      "حقول جديدة في محرر الحالة للطوارئ والعناية والقلب والأنف والأذن والعيون والجلدية والمسالك والتخدير والعظام والأعصاب والنفسية والجراحة والأطفال والنسائية، وحقول الفحص تظهر في تبويب الفحص"
-    ]
-  },
-  "5.1.1": {
-    "en": [
-      "Search inside a book: the search box of a book now looks in the text of every chapter and topic, not only in the titles, and shows the sentence and the chapter it found",
-      "A clear message when nothing is found, instead of an empty page"
-    ],
-    "ar": [
-      "البحث داخل الكتاب: مربع بحث الكتاب صار يبحث في نص كل فصل وموضوع وليس العناوين فقط، ويعرض الجملة والفصل اللذين وجدها",
-      "رسالة واضحة عند عدم وجود نتائج بدل صفحة فارغة"
-    ]
-  },
-  "5.1.0": {
-    "en": [
-      "New opening animation: the SharqMed ribbon and the rising sun, then the designer credit (tap to skip)",
-      "The welcome card now fills the width of the screen and is a little shorter, so the name is no longer cut",
-      "The Ask AI button is a small rounded square with the star icon instead of a long pill",
-      "The old logo is gone from the Ask AI chat: it uses the same gold star badge",
-      "The launcher icon background is now the same deep teal of the app logo"
-    ],
-    "ar": [
-      "حركة افتتاح جديدة: شريط SharqMed وشروق الشمس ثم اسم المصمم (اضغط للتخطي)",
-      "بطاقة الترحيب تملأ عرض الشاشة وأقصر قليلاً فلا يُقطع الاسم",
-      "زر اسأل الذكاء الاصطناعي صار مربعاً صغيراً بزوايا مدوّرة وأيقونة النجمة بدل المستطيل الطويل",
-      "اختفى الشعار القديم من محادثة الذكاء الاصطناعي، وصار فيها شارة النجمة الذهبية نفسها",
-      "خلفية أيقونة التطبيق صارت بنفس لون خلفية شعار التطبيق (الأخضر الداكن)"
-    ]
-  },
-  "5.0.0": {
-    "en": [
-      "New name and look: SharqMed, with the Eastern Dawn colours as the default theme (you can switch to the other themes in Settings), a new app icon and logo",
-      "New welcome card: four pictures for the time of the day, and a new gold Ask AI button",
-      "Search inside an article: a find bar with previous and next",
-      "Library search shows the real name of the book each result comes from",
-      "My plan can take several books at once, and AI study (topics, teaching, viva, question bank, pre-shift quiz, case of the day) follows the books and chapters of your plan",
-      "Mock exam: written by the AI from the books you choose, from your plan, or from a name or topic you type",
-      "Answer options now flow side by side instead of standing one under another"
-    ],
-    "ar": [
-      "اسم ومظهر جديدان: SharqMed بألوان فجر الشرق كثيم افتراضي (ويمكنك التبديل إلى الثيمات الأخرى من الإعدادات)، وأيقونة وشعار جديدان",
-      "بطاقة ترحيب جديدة بأربع صور حسب وقت اليوم، وزر «اسأل الذكاء الاصطناعي» الذهبي الجديد",
-      "البحث داخل المقال: شريط بحث مع السابق والتالي",
-      "نتائج بحث المكتبة تُظهر اسم الكتاب الحقيقي الذي جاءت منه",
-      "خطتي تقبل عدة كتب معاً، ودراسة الذكاء الاصطناعي (المواضيع والتعليم والفيفا وبنك الأسئلة واختبار ما قبل المناوبة وحالة اليوم) تتبع كتب خطتك وفصولها",
-      "الامتحان التجريبي: يكتبه الذكاء الاصطناعي من الكتب التي تختارها أو من خطتك أو من اسم أو موضوع تكتبه",
-      "خيارات الإجابة تنساب الآن بجانب بعضها بدل أن تقف واحدة تحت الأخرى"
-    ]
-  },
-  "4.5.1": {
-    "en": [
-      "Updates are easy to find: Settings now has \"Check for updates\" with the version and the switch for the automatic notice, and the same card stays in Notebooks and tools"
-    ],
-    "ar": [
-      "أصبح التحديث أسهل وصولاً: في الإعدادات الآن «Check for updates» مع رقم الإصدار ومفتاح الإشعار التلقائي، وتبقى البطاقة نفسها في Notebooks and tools"
-    ]
-  },
-  "4.5.0": {
-    "en": [
-      "Update from inside the app: a notice when a new version is out, what changed, then download and install in one tap",
-      "The downloaded file is checked against the published checksum before it is installed"
-    ],
-    "ar": [
-      "تحديث من داخل التطبيق: إشعار عند صدور إصدار جديد مع قائمة التحسينات، ثم تنزيل وتثبيت بضغطة واحدة",
-      "يُفحص الملف المنزَّل بالبصمة المنشورة قبل تثبيته"
-    ]
-  },
-  "4.4.1": {
-    "en": [
-      "The access gate is on from the first launch, even without internet"
-    ],
-    "ar": [
-      "بوابة الموافقة تعمل من أول تشغيل حتى بدون إنترنت"
-    ]
-  },
-  "4.4.0": {
-    "en": [
-      "Photo of the result on every investigation, kept under the test",
-      "Plan items with drug, route, dose, frequency and duration; in hospital or take-home",
-      "Background card at the top of History: chronic diseases, home medicines, allergies",
-      "Book reader: first section keeps its name, lists cut by a table are rejoined, repeated sections joined, tables fit the screen"
-    ],
-    "ar": [
-      "صورة النتيجة على كل فحص وتبقى تحته",
-      "بنود الخطة بالدواء والطريق والجرعة والتكرار والمدة، في المستشفى أو للبيت",
-      "بطاقة الخلفية أعلى التاريخ المرضي: الأمراض المزمنة وأدوية البيت والحساسية",
-      "قارئ الكتاب: القسم الأول بعنوانه، القوائم التي قطعها جدول تعود لمكانها، الأقسام المكررة تُدمج، والجداول تناسب الشاشة"
-    ]
-  },
-  "4.3.0": {
-    "en": [
-      "Infection / Sepsis category in Emergency",
-      "23 new complaint templates (infections and common complaints); several complaints per patient",
-      "Clearer add-complaint button and whole-word suggestions"
-    ],
-    "ar": [
-      "فئة العدوى والإنتان في الطوارئ",
-      "23 قالب شكوى جديداً (عدوى وشكاوى شائعة) وعدة شكاوى للمريض الواحد",
-      "زر إضافة شكوى أوضح واقتراحات بالكلمة الكاملة"
-    ]
-  }
+ "5.6.0": {
+  "en": [
+   "Signing in no longer needs copying and pasting codes: press \"Send request to the administrator\" and the app waits; when the administrator approves, it opens by itself",
+   "The administrator sees the waiting requests in a list (Administrator tools > Access requests), taps one and presses Approve; the approval reaches the member's phone automatically",
+   "The request and the approval pass through a free public relay (ntfy.sh): only name, email, note and the signed approval, never patient data. An approval cannot be forged or used on another phone, because it is signed by the administrator key and tied to the phone it was made for",
+   "Without internet the old way is still there, folded under \"No internet, or you received a code?\""
+  ],
+  "ar": [
+   "تسجيل الدخول لم يعد يحتاج نسخ ولصق أكواد: اضغط \"أرسل الطلب للمسؤول\" ويبقى التطبيق بانتظار الموافقة، وعندما يوافق المسؤول يفتح التطبيق وحده",
+   "يرى المسؤول الطلبات المنتظرة في قائمة (أدوات المسؤول > طلبات الدخول)، يضغط على طلب ثم \"موافقة\"، وتصل الموافقة إلى هاتف العضو تلقائياً",
+   "الطلب والموافقة يمران عبر وسيط عام مجاني (ntfy.sh): الاسم والبريد والملاحظة والموافقة الموقَّعة فقط، ولا بيانات مرضى أبداً. لا يمكن تزوير الموافقة ولا استعمالها على هاتف آخر لأنها موقَّعة بمفتاح المسؤول ومربوطة بالهاتف الذي صُنعت له",
+   "بدون إنترنت تبقى الطريقة القديمة موجودة، مطوية تحت \"لا يوجد إنترنت، أو وصلك كود؟\""
+  ]
+ },
+ "5.5.0": {
+  "en": [
+   "The case PDF is now written like a clinical report: paragraphs of full sentences instead of tables of choices",
+   "History of presenting illness opens with the chief complaint and its duration (\"The patient presented to the emergency department with a 12-hour history of abdominal pain.\"), names the place only when you recorded it, then tells onset, course, site, associated symptoms, modifying factors and red flags as running text",
+   "Examination: vital signs in one sentence with units, normal systems together, abnormal ones with what you noted, and \"not examined\" and \"unknown\" kept apart from \"normal\"",
+   "Investigations: \"requested\", \"pending\", \"resulted\" and \"considered\" keep their own meaning, and a requested test says that no result was available; assessment, plan (suggested, ordered, given, stopped) and disposition are sentences too",
+   "Nothing is invented: an empty field says nothing, a denial is written only when you wrote it. Tables remain only for serial results (lab trends, diagnosis changes) and for long drug lists"
+  ],
+  "ar": [
+   "تقرير PDF للحالة صار يُكتب كتقرير سريري: فقرات بجمل كاملة بدل جداول الخيارات",
+   "تاريخ المرض الحالي يبدأ بالشكوى الرئيسية ومدتها (\"The patient presented to the emergency department with a 12-hour history of abdominal pain.\") ويذكر المكان فقط إذا سجّلته، ثم يروي البداية والتطور والموضع والأعراض المصاحبة والعوامل المعدِّلة وعلامات الخطر كنص متصل",
+   "الفحص: العلامات الحيوية في جملة واحدة بوحداتها، والأجهزة الطبيعية معاً، وغير الطبيعية مع ما لاحظته، و\"لم يُفحص\" و\"غير معروف\" منفصلان عن \"طبيعي\"",
+   "الاستقصاءات: \"مطلوب\" و\"معلّق\" و\"صدرت نتيجته\" و\"قيد الدراسة\" كل منها بمعناه، والفحص المطلوب يُذكر معه أن النتيجة لم تتوفر؛ والتقييم والخطة (مقترح، مطلوب، أُعطي، أُوقف) والمآل جمل أيضاً",
+   "لا شيء يُخترع: الحقل الفارغ لا يُكتب عنه، والنفي يُكتب فقط إذا كتبته أنت. تبقى الجداول فقط للنتائج المتسلسلة (اتجاه المختبر، تغيّر التشخيص) وقوائم الأدوية الطويلة"
+  ]
+ },
+ "5.4.2": {
+  "en": [
+   "In the case PDF, the answers of the quick questions are now written as sentences, automatically: \"The onset was sudden. The site is foot. Associated symptoms include redness, warmth and swelling.\" instead of a list of choices",
+   "Each added complaint has its own short paragraph under its name; examination findings are one line each; \"not assessed\" and \"none reported\" are written in words",
+   "Details you type beside a choice are kept inside the sentence, and a choice of \"Other\" is replaced by what you wrote"
+  ],
+  "ar": [
+   "في تقرير PDF للحالة، إجابات الأسئلة السريعة تُكتب الآن جملاً بشكل آلي: \"The onset was sudden. The site is foot. Associated symptoms include redness, warmth and swelling.\" بدل قائمة الخيارات",
+   "لكل شكوى مضافة فقرة قصيرة تحت اسمها، ونتائج الفحص سطر لكل واحدة، وعبارتا \"لم يُقيَّم\" و\"لا شيء مبلَّغ\" تُكتبان بكلمات",
+   "التفاصيل التي تكتبها بجانب الاختيار تبقى داخل الجملة، واختيار \"Other\" يُستبدل بما كتبته"
+  ]
+ },
+ "5.4.1": {
+  "en": [
+   "Case PDF is easier to read: a short summary box at the top (who, why, abnormal vital signs, diagnosis, disposition)",
+   "Answers of the quick questions are grouped under their complaint instead of repeating its name on every line, and a column with nothing in it is no longer printed",
+   "Examination: systems marked normal are one line (\"Normal: General, CVS, ...\"); only abnormal systems get a table row, and an abnormal system with no note says so",
+   "A result that is only a photo says \"See photo below\", and a single photo is printed larger so the writing can be read",
+   "Allergies, short tables and a heading with its content no longer split between two pages"
+  ],
+  "ar": [
+   "تقرير PDF للحالة أسهل في القراءة: صندوق ملخص قصير في الأعلى (من هو المريض، لماذا جاء، العلامات الحيوية غير الطبيعية، التشخيص، المآل)",
+   "إجابات الأسئلة السريعة صارت مجمّعة تحت اسم الشكوى بدل تكرار اسمها في كل سطر، والعمود الفارغ لم يعد يُطبع",
+   "الفحص: الأجهزة الطبيعية في سطر واحد (\"Normal: General, CVS, ...\") والأجهزة غير الطبيعية فقط في جدول، والجهاز غير الطبيعي بلا وصف يُذكر ذلك",
+   "النتيجة التي هي صورة فقط تُكتب \"See photo below\"، والصورة الواحدة تُطبع أكبر ليُقرأ المكتوب عليها",
+   "الحساسية والجداول القصيرة والعنوان مع محتواه لم تعد تنقسم بين صفحتين"
+  ]
+ },
+ "5.4.0": {
+  "en": [
+   "The case screen has a new look: the Info page is grouped into clear cards (Patient, Where, Status and my role), and History, Exam and Investigations are chosen with one sliding selector instead of three separate chips",
+   "Questions inside a case sit in their own panel with the question number in a badge and a thicker progress bar; the next question fades in",
+   "Text fields across the app are lighter: a clean box with a thin line that turns to the main colour when you type, with the label always inside",
+   "Motion: pages inside a case fade in when you switch, cards on Home, Learn, Tools and the case list give slightly under the finger, sections open with a turning arrow, and finishing a case shows a short check animation (all of it off when animations are off)",
+   "Icons are heavier and sturdier across the app (bold weight of the same family), list icons take the main colour, the back, close and section arrows come from the same family, and choices are fully rounded",
+   "The case header no longer cuts its text in Arabic, and the welcome card stays readable while its picture loads"
+  ],
+  "ar": [
+   "شكل جديد لشاشة الحالة: صفحة المعلومات مقسّمة إلى بطاقات واضحة (المريض، المكان والتخصص، الحالة ودوري)، واختيار التاريخ المرضي والفحص والفحوصات صار بمحدِّد واحد منزلق بدل ثلاث رقاقات منفصلة",
+   "الأسئلة داخل الحالة صارت في إطار خاص مع رقم السؤال في شارة وشريط تقدّم أوضح، والسؤال التالي يظهر بتلاشٍ ناعم",
+   "حقول الكتابة في كل التطبيق صارت أخف: صندوق نظيف بخط رفيع يتحول للون الرئيسي عند الكتابة، والعنوان دائماً داخله",
+   "الحركة: صفحات الحالة تظهر بتلاشٍ ناعم عند التبديل، وبطاقات الرئيسية والتعلّم والأدوات وقائمة الحالات تنضغط قليلاً تحت الإصبع، والأقسام تُفتح بسهم يدور، وعند إنهاء الحالة تظهر حركة علامة صح قصيرة (كلها تتوقف عند إيقاف الحركات)",
+   "الأيقونات صارت أثقل وأمتن في كل التطبيق (الوزن العريض من العائلة نفسها)، وأيقونات القوائم باللون الرئيسي، وأسهم الرجوع والإغلاق والأقسام من العائلة نفسها، والخيارات مستديرة بالكامل",
+   "عنوان شاشة الحالة لم يعد يُقطع بالعربية، وبطاقة الترحيب تبقى مقروءة أثناء تحميل صورتها"
+  ]
+ },
+ "5.3.0": {
+  "en": [
+   "One icon family across the whole app (Phosphor): every screen now uses the same style, with Health Icons for organs and rotations, and animated icons in the confirmation and warning messages and in the bottom bar",
+   "Colours that carry a meaning (success, warning, danger, information, starred) are now one set for the whole app, checked for contrast in all nine palettes in light and dark",
+   "Text is never smaller than 12, the two small pop-up menus became the same bottom menu used everywhere, icon buttons have names for screen readers, and the bottom bar is announced as buttons",
+   "Errors while reading or saving your data are no longer swallowed silently: they are recorded in the error log (Settings) so a problem can be reported"
+  ],
+  "ar": [
+   "عائلة أيقونات واحدة في التطبيق كله (Phosphor): كل الشاشات بنفس الأسلوب، مع أيقونات Health Icons للأعضاء والمساقات، وأيقونات متحركة في رسائل التأكيد والتحذير وفي الشريط السفلي",
+   "الألوان ذات المعنى (نجاح، تحذير، خطر، معلومة، نجمة) صارت مجموعة واحدة للتطبيق، ومفحوصة التباين في الألوان التسعة فاتح وداكن",
+   "لا نص أصغر من 12، والقائمتان المنبثقتان الصغيرتان صارتا القائمة السفلية نفسها المستخدمة في كل مكان، وأزرار الأيقونات لها أسماء لقارئ الشاشة، والشريط السفلي يُقرأ كأزرار",
+   "أخطاء قراءة بياناتك أو حفظها لم تعد تُبتلع بصمت: تُسجَّل في سجل الأخطاء (الإعدادات) ليمكن الإبلاغ عن المشكلة"
+  ]
+ },
+ "5.2.0": {
+  "en": [
+   "A new engine for case PDFs: real text you can select and search (not a picture of the page), always in English, and ordered like a clinical record: patient data, chief complaint, history of presenting illness, past medical and surgical history, drugs and allergies, family and social history, examination, investigations, assessment, management, progress, outcome and learning points",
+   "The order follows the rotation (16 rotations, from published clerkship forms): for example the primary survey comes before the history in Emergency, and birth, growth and vaccines come after the history in Pediatrics",
+   "Three formats when you export a case: Full case, Meeting (one page: summary, narrowed differential, analysis, plan, question for self-study) and Summary",
+   "Nothing is printed twice and empty sections are left out; allergies are always stated; vital signs have units; the plan is a table with dose, route, frequency and duration, with take-home medicines apart; photos of results sit under their test",
+   "New fields in the case editor for Emergency, ICU, Cardiology, ENT, Eye, Skin, Urology, Anesthesia, Orthopedics, Neurology, Psychiatry, Surgery, Pediatrics and OB/GYN, and the examination ones appear in the Examination tab"
+  ],
+  "ar": [
+   "محرك جديد لتقارير PDF للحالات: نص حقيقي يمكن تحديده والبحث فيه (وليس صورة للصفحة)، بالإنجليزية دائماً، ومرتب كسجل سريري: بيانات المريض، الشكوى، تاريخ المرض الحالي، التاريخ المرضي والجراحي، الأدوية والحساسية، التاريخ العائلي والاجتماعي، الفحص، الفحوصات، التقييم، الخطة، المتابعة، النتيجة ونقاط التعلم",
+   "الترتيب يتبع المساق (16 مساقاً، من نماذج تدريب منشورة): مثلاً المسح الأولي قبل التاريخ في الطوارئ، والولادة والنمو والتطعيمات بعد التاريخ في الأطفال",
+   "ثلاث صيغ عند تصدير الحالة: حالة كاملة، وعرض ميتنج (صفحة واحدة: ملخص، تفاضلي مضيّق، تحليل، خطة، سؤال للدراسة)، وملخص",
+   "لا شيء يُطبع مرتين، والأقسام الفارغة تُحذف، والحساسية مذكورة دائماً، والعلامات الحيوية بوحداتها، والخطة جدول بالجرعة والطريق والتكرار والمدة مع أدوية البيت منفصلة، وصور النتائج تحت فحصها",
+   "حقول جديدة في محرر الحالة للطوارئ والعناية والقلب والأنف والأذن والعيون والجلدية والمسالك والتخدير والعظام والأعصاب والنفسية والجراحة والأطفال والنسائية، وحقول الفحص تظهر في تبويب الفحص"
+  ]
+ },
+ "5.1.1": {
+  "en": [
+   "Search inside a book: the search box of a book now looks in the text of every chapter and topic, not only in the titles, and shows the sentence and the chapter it found",
+   "A clear message when nothing is found, instead of an empty page"
+  ],
+  "ar": [
+   "البحث داخل الكتاب: مربع بحث الكتاب صار يبحث في نص كل فصل وموضوع وليس العناوين فقط، ويعرض الجملة والفصل اللذين وجدها",
+   "رسالة واضحة عند عدم وجود نتائج بدل صفحة فارغة"
+  ]
+ },
+ "5.1.0": {
+  "en": [
+   "New opening animation: the SharqMed ribbon and the rising sun, then the designer credit (tap to skip)",
+   "The welcome card now fills the width of the screen and is a little shorter, so the name is no longer cut",
+   "The Ask AI button is a small rounded square with the star icon instead of a long pill",
+   "The old logo is gone from the Ask AI chat: it uses the same gold star badge",
+   "The launcher icon background is now the same deep teal of the app logo"
+  ],
+  "ar": [
+   "حركة افتتاح جديدة: شريط SharqMed وشروق الشمس ثم اسم المصمم (اضغط للتخطي)",
+   "بطاقة الترحيب تملأ عرض الشاشة وأقصر قليلاً فلا يُقطع الاسم",
+   "زر اسأل الذكاء الاصطناعي صار مربعاً صغيراً بزوايا مدوّرة وأيقونة النجمة بدل المستطيل الطويل",
+   "اختفى الشعار القديم من محادثة الذكاء الاصطناعي، وصار فيها شارة النجمة الذهبية نفسها",
+   "خلفية أيقونة التطبيق صارت بنفس لون خلفية شعار التطبيق (الأخضر الداكن)"
+  ]
+ },
+ "5.0.0": {
+  "en": [
+   "New name and look: SharqMed, with the Eastern Dawn colours as the default theme (you can switch to the other themes in Settings), a new app icon and logo",
+   "New welcome card: four pictures for the time of the day, and a new gold Ask AI button",
+   "Search inside an article: a find bar with previous and next",
+   "Library search shows the real name of the book each result comes from",
+   "My plan can take several books at once, and AI study (topics, teaching, viva, question bank, pre-shift quiz, case of the day) follows the books and chapters of your plan",
+   "Mock exam: written by the AI from the books you choose, from your plan, or from a name or topic you type",
+   "Answer options now flow side by side instead of standing one under another"
+  ],
+  "ar": [
+   "اسم ومظهر جديدان: SharqMed بألوان فجر الشرق كثيم افتراضي (ويمكنك التبديل إلى الثيمات الأخرى من الإعدادات)، وأيقونة وشعار جديدان",
+   "بطاقة ترحيب جديدة بأربع صور حسب وقت اليوم، وزر «اسأل الذكاء الاصطناعي» الذهبي الجديد",
+   "البحث داخل المقال: شريط بحث مع السابق والتالي",
+   "نتائج بحث المكتبة تُظهر اسم الكتاب الحقيقي الذي جاءت منه",
+   "خطتي تقبل عدة كتب معاً، ودراسة الذكاء الاصطناعي (المواضيع والتعليم والفيفا وبنك الأسئلة واختبار ما قبل المناوبة وحالة اليوم) تتبع كتب خطتك وفصولها",
+   "الامتحان التجريبي: يكتبه الذكاء الاصطناعي من الكتب التي تختارها أو من خطتك أو من اسم أو موضوع تكتبه",
+   "خيارات الإجابة تنساب الآن بجانب بعضها بدل أن تقف واحدة تحت الأخرى"
+  ]
+ },
+ "4.5.1": {
+  "en": [
+   "Updates are easy to find: Settings now has \"Check for updates\" with the version and the switch for the automatic notice, and the same card stays in Notebooks and tools"
+  ],
+  "ar": [
+   "أصبح التحديث أسهل وصولاً: في الإعدادات الآن «Check for updates» مع رقم الإصدار ومفتاح الإشعار التلقائي، وتبقى البطاقة نفسها في Notebooks and tools"
+  ]
+ },
+ "4.5.0": {
+  "en": [
+   "Update from inside the app: a notice when a new version is out, what changed, then download and install in one tap",
+   "The downloaded file is checked against the published checksum before it is installed"
+  ],
+  "ar": [
+   "تحديث من داخل التطبيق: إشعار عند صدور إصدار جديد مع قائمة التحسينات، ثم تنزيل وتثبيت بضغطة واحدة",
+   "يُفحص الملف المنزَّل بالبصمة المنشورة قبل تثبيته"
+  ]
+ },
+ "4.4.1": {
+  "en": [
+   "The access gate is on from the first launch, even without internet"
+  ],
+  "ar": [
+   "بوابة الموافقة تعمل من أول تشغيل حتى بدون إنترنت"
+  ]
+ },
+ "4.4.0": {
+  "en": [
+   "Photo of the result on every investigation, kept under the test",
+   "Plan items with drug, route, dose, frequency and duration; in hospital or take-home",
+   "Background card at the top of History: chronic diseases, home medicines, allergies",
+   "Book reader: first section keeps its name, lists cut by a table are rejoined, repeated sections joined, tables fit the screen"
+  ],
+  "ar": [
+   "صورة النتيجة على كل فحص وتبقى تحته",
+   "بنود الخطة بالدواء والطريق والجرعة والتكرار والمدة، في المستشفى أو للبيت",
+   "بطاقة الخلفية أعلى التاريخ المرضي: الأمراض المزمنة وأدوية البيت والحساسية",
+   "قارئ الكتاب: القسم الأول بعنوانه، القوائم التي قطعها جدول تعود لمكانها، الأقسام المكررة تُدمج، والجداول تناسب الشاشة"
+  ]
+ },
+ "4.3.0": {
+  "en": [
+   "Infection / Sepsis category in Emergency",
+   "23 new complaint templates (infections and common complaints); several complaints per patient",
+   "Clearer add-complaint button and whole-word suggestions"
+  ],
+  "ar": [
+   "فئة العدوى والإنتان في الطوارئ",
+   "23 قالب شكوى جديداً (عدوى وشكاوى شائعة) وعدة شكاوى للمريض الواحد",
+   "زر إضافة شكوى أوضح واقتراحات بالكلمة الكاملة"
+  ]
+ },
+ "5.7.0": {
+  "en": [
+   "New Question bank (Learn > Study tools): import a .zip or .json of questions with their options and answers, the same way you import a book. Learn mode shows the answer and explanation after each question; Exam mode keeps them to the end, with an optional timer (thin bar under the title) and free navigation between questions",
+   "In a question: flag for review, cross out options, add a note, change the text size, and jump through a numbered list of all questions. The result shows the score, time and each topic, and lets you review the mistakes or practise only the wrong ones again",
+   "In Question bank, \"Copy the AI prompt\" gives the prompt that makes an AI (ChatGPT, Gemini) turn a PDF of questions into the file the app reads",
+   "Book chapters have a new option \"Questions from this chapter by AI\" next to \"Test myself on this chapter\"",
+   "Article tables now scroll sideways with comfortable column widths instead of being squeezed; article text is justified to fill the width",
+   "The \"due\" counter on Home now updates at once when you delete a review card",
+   "Performance: Library and Settings open faster with many items (search results load in pages, counting images no longer blocks the screen, search waits for you to stop typing), and review cards are no longer recomputed repeatedly. Not yet measured on a phone: Settings > Error log now also lists slow frames, so the next report can show where time goes"
+  ],
+  "ar": [
+   "بنك الأسئلة الجديد (التعلّم > أدوات الدراسة): استورد ملف .zip أو .json فيه الأسئلة بخياراتها وإجاباتها، بنفس طريقة استيراد الكتب. وضع التعلّم يعرض الإجابة والشرح بعد كل سؤال، ووضع الامتحان يؤجلهما للنهاية مع مؤقت اختياري (شريط رفيع تحت العنوان) وتنقل حر بين الأسئلة",
+   "داخل السؤال: علّم للمراجعة، اشطب خيارات، أضف ملاحظة، غيّر حجم الخط، وانتقل عبر قائمة مرقمة بكل الأسئلة. وتعرض النتيجة الدرجة والوقت وكل موضوع، وتتيح مراجعة الأخطاء أو التدرب على الخاطئة فقط",
+   "في بنك الأسئلة، \"انسخ أمر الذكاء الاصطناعي\" يعطيك الأمر الذي يجعل الذكاء الاصطناعي (ChatGPT, Gemini) يحوّل ملف PDF للأسئلة إلى الملف الذي يقرؤه التطبيق",
+   "فصول الكتب فيها خيار جديد \"أسئلة من هذا الفصل بالذكاء الاصطناعي\" بجانب \"اختبر نفسي في هذا الفصل\"",
+   "جداول المقالات تُسحب أفقياً بعرض أعمدة مريح بدل أن تُضغط، ونص المقالات مضبوط ليملأ العرض",
+   "عداد \"المستحقة\" في الرئيسية يتحدّث فوراً عند حذف بطاقة مراجعة",
+   "الأداء: المكتبة والإعدادات تفتحان أسرع مع العناصر الكثيرة (نتائج البحث تُحمَّل على دفعات، عدّ الصور لم يعد يعطّل الشاشة، والبحث ينتظر توقفك عن الكتابة)، وبطاقات المراجعة لم تعد تُحسب مراراً. لم يُقس بعد على الجوال: سجل الأخطاء في الإعدادات صار يعرض أيضاً الإطارات البطيئة ليظهر في التقرير القادم أين يذهب الوقت"
+  ]
+ }
 }
