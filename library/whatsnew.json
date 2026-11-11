@@ -238,5 +238,21 @@
   "ar": [
    "بنك الأسئلة يعرض الصور: في السؤال وفي الشرح (أكثر من صورة للسؤال)، واضغط على الصورة لتفتح بملء الشاشة مع التكبير. صور حزمة الكتاب (Tintinalli: 88 صورة) تأتي معها، وملف الأسئلة يستطيع تسميتها في \"images\" و\"explanation_images\" داخل الـzip"
   ]
+ },
+ "5.8.0": {
+  "en": [
+   "New case: every question now shows its answers in an orderly layout: short answers in equal chips, longer ones one per line and shown whole (nothing is cut off), and answers such as \"Not assessed\" apart below",
+   "Examination by system: a card for each system (General, CVS, Respiratory, Abdomen, CNS, MSK, ENT, Skin) with one tap for Normal, or a list of abnormal findings to pick; the normal findings are written as a clinician writes them (\"No murmurs\") and flow into the PDF; \"All normal\" fills the rest",
+   "Chief complaint: its own card with Choose complaint (search, suggestions from what you typed); the first complaint also fills the chief complaint text",
+   "History of presenting illness is written for you from the answers as a readable paragraph and updates with each answer; if you type in it, your text is never replaced",
+   "Background card: allergies and chronic diseases use the same orderly answers and the home medicines are a list instead of crowded chips"
+  ],
+  "ar": [
+   "حالة جديدة: كل سؤال يعرض إجاباته بتنسيق مرتب: الإجابات القصيرة بأزرار متساوية، والأطول كل واحدة في سطر وكاملة (لا شيء يُقطع)، وإجابات مثل \"لم تُقيَّم\" منفصلة بالأسفل",
+   "الفحص حسب النظام: بطاقة لكل نظام (عام، قلب، صدر، بطن، أعصاب، عضلات وعظام، أنف وأذن وحنجرة، جلد) بضغطة واحدة لـ Normal أو قائمة بالنتائج غير الطبيعية للاختيار؛ النتائج الطبيعية تُكتب كما يكتبها الطبيب (\"No murmurs\") وتنتقل إلى الـPDF؛ و\"الكل طبيعي\" يملأ الباقي",
+   "الشكوى الرئيسية: بطاقة خاصة مع زر اختر الشكوى (بحث واقتراحات مما كتبته)، وأول شكوى تملأ نص الشكوى الرئيسية أيضاً",
+   "تاريخ المرض الحالي يُكتب لك من الإجابات كفقرة مقروءة ويتحدث مع كل إجابة؛ وإذا كتبت فيه لا يُستبدل نصك أبداً",
+   "بطاقة الخلفية: الحساسية والأمراض المزمنة بنفس تنسيق الإجابات المرتب، والأدوية المنزلية قائمة بدل الأزرار المتزاحمة"
+  ]
  }
 }
