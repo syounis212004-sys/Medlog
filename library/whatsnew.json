@@ -230,5 +230,13 @@
   "ar": [
    "بنك الأسئلة صار يقرأ أيضاً حزمة كتاب أسئلته مطبوعة (ملف .zip فيه .idx و.bin مثل Tintinalli Board Review): تصير أسئلته وخياراته وإجاباته وشروحاته بنكاً مرتباً حسب الفصل. صور الكتاب لا تُنقل"
   ]
+ },
+ "5.7.2": {
+  "en": [
+   "Question bank shows pictures: in the question and in the explanation (several per question), tap one to open it full screen and zoom. A book pack's figures (Tintinalli: 88) come with it; a question file can name them in \"images\" and \"explanation_images\" inside the zip"
+  ],
+  "ar": [
+   "بنك الأسئلة يعرض الصور: في السؤال وفي الشرح (أكثر من صورة للسؤال)، واضغط على الصورة لتفتح بملء الشاشة مع التكبير. صور حزمة الكتاب (Tintinalli: 88 صورة) تأتي معها، وملف الأسئلة يستطيع تسميتها في \"images\" و\"explanation_images\" داخل الـzip"
+  ]
  }
 }
