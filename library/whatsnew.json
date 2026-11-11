@@ -254,5 +254,15 @@
    "تاريخ المرض الحالي يُكتب لك من الإجابات كفقرة مقروءة ويتحدث مع كل إجابة؛ وإذا كتبت فيه لا يُستبدل نصك أبداً",
    "بطاقة الخلفية: الحساسية والأمراض المزمنة بنفس تنسيق الإجابات المرتب، والأدوية المنزلية قائمة بدل الأزرار المتزاحمة"
   ]
+ },
+ "5.9.0": {
+  "en": [
+   "Question bank: a cloud button lists question banks shared online; tap Download to add one, or Update when a newer copy is published (same download method as library books)",
+   "Question banks online are managed from the GitHub folder library/qbanks: a catalog.json plus the bank files, with a README of the upload steps and a prompt that prepares the catalog entry with an AI outside the app"
+  ],
+  "ar": [
+   "بنك الأسئلة: زر سحابة يعرض بنوك الأسئلة المشتركة على الإنترنت؛ اضغط تنزيل لإضافة بنك، أو تحديث عندما تُنشر نسخة أحدث (بنفس طريقة تنزيل كتب المكتبة)",
+   "بنوك الأسئلة على الإنترنت تُدار من مجلد GitHub باسم library/qbanks: ملف catalog.json مع ملفات البنوك، ومعه شرح خطوات الرفع وأمر يجهّز سطر الفهرس بالذكاء الاصطناعي خارج التطبيق"
+  ]
  }
 }
