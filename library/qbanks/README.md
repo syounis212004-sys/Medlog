@@ -36,3 +36,6 @@ The file's own `"id"` must be the same as the catalog entry's `"id"`.
 
 ## Copyright
 Only upload questions you wrote, or whose licence lets you share them. Copyrighted books must not be published here; import those by hand from your own files instead.
+
+## Private use
+The app downloads from `raw.githubusercontent.com`, which only works for a **public** repository. A private repository cannot serve the app; for copyrighted books keep importing the file by hand (Question bank > upload icon).
