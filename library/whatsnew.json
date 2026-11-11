@@ -222,5 +222,13 @@
    "عداد \"المستحقة\" في الرئيسية يتحدّث فوراً عند حذف بطاقة مراجعة",
    "الأداء: المكتبة والإعدادات تفتحان أسرع مع العناصر الكثيرة (نتائج البحث تُحمَّل على دفعات، عدّ الصور لم يعد يعطّل الشاشة، والبحث ينتظر توقفك عن الكتابة)، وبطاقات المراجعة لم تعد تُحسب مراراً. لم يُقس بعد على الجوال: سجل الأخطاء في الإعدادات صار يعرض أيضاً الإطارات البطيئة ليظهر في التقرير القادم أين يذهب الوقت"
   ]
+ },
+ "5.7.1": {
+  "en": [
+   "Question bank now also reads a book pack made of printed questions (the .zip with .idx and .bin files, like the Tintinalli board review): its questions, options, answers and explanations become a bank, grouped by chapter. Figures of the book are not carried over"
+  ],
+  "ar": [
+   "بنك الأسئلة صار يقرأ أيضاً حزمة كتاب أسئلته مطبوعة (ملف .zip فيه .idx و.bin مثل Tintinalli Board Review): تصير أسئلته وخياراته وإجاباته وشروحاته بنكاً مرتباً حسب الفصل. صور الكتاب لا تُنقل"
+  ]
  }
 }
