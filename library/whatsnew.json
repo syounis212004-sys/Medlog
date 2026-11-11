@@ -272,5 +272,19 @@
   "ar": [
    "بنك الأسئلة: صفحة ما قبل الجلسة أُعيد تصميمها: بطاقتان كبيرتان للتعلّم والامتحان، وسطر واحد للمواضيع (يفتح قائمة فيها بحث وعدد الأسئلة لكل موضوع)، وبلاطات للكل / لم يُجب عنها / أخطأت فيها / المعلّمة مع أعدادها، ثم العدد ومؤقت الامتحان، وزر ابدأ ثابت بالأسفل"
   ]
+ },
+ "5.10.0": {
+  "en": [
+   "Examination by system is now a full page of its own inside the case: a card for each of 13 systems (cardiovascular, respiratory, abdomen, neurology, musculoskeletal joint by joint, ENT, eye, skin, genitourinary, lymph nodes, thyroid, mental state, obstetric), ordered for the case's specialty, so any system can be examined in any order",
+   "Each system follows the examiner's order (inspection, palpation, percussion, auscultation...). A step has a Normal button that records every normal finding of that step in the correct wording, and Add finding opens the abnormal findings of that step; a finding asks where (for example right lower zone) and how (timing, grade) and replaces the normal finding it contradicts",
+   "On top of each system page, From this case shows what the case already says about it: the vital signs that matter, the complaint, history answers and tests that mention it. How it reads in the case shows the paragraph that goes into the PDF",
+   "Cases with the older examination cards (CVS, Respiratory...) are converted once, without losing what was written"
+  ],
+  "ar": [
+   "الفحص حسب الجهاز صار صفحة كاملة خاصة داخل الحالة: بطاقة لكل جهاز من 13 جهازاً (قلب، صدر، بطن، أعصاب، عظام وعضلات مفصلاً مفصلاً، أنف وأذن وحنجرة، عين، جلد، بولي تناسلي، عقد لمفاوية، درقية، الحالة النفسية، توليد)، مرتبة حسب تخصص الحالة، فتفحص أي جهاز بأي ترتيب",
+   "كل جهاز يتبع ترتيب الفاحص (معاينة، جس، قرع، سماع...). وفي كل خطوة زر Normal يسجل كل النتائج الطبيعية لهذه الخطوة بصياغتها الصحيحة، وزر أضف نتيجة يفتح النتائج غير الطبيعية للخطوة؛ والنتيجة تسأل أين (مثل الفص السفلي الأيمن) وكيف (التوقيت، الدرجة) وتحل محل النتيجة الطبيعية التي تناقضها",
+   "في أعلى صفحة كل جهاز بطاقة من هذه الحالة تعرض ما تقوله الحالة عنه: العلامات الحيوية المهمة، والشكوى، وإجابات التاريخ والفحوصات التي تذكره. وبطاقة كيف يُقرأ في الحالة تعرض الفقرة التي تدخل في الـPDF",
+   "الحالات ذات بطاقات الفحص القديمة (CVS وغيرها) تُحوَّل مرة واحدة دون فقدان ما كُتب"
+  ]
  }
 }
