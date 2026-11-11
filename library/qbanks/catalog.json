@@ -1,6 +1,4 @@
 {
   "version": 1,
   "banks": []
-  { "id": "tintinalli-emergency-medicine-board-review-2013", "title": "Tintinalli’s Emergency Medicine: Examination & Board Review", "source": "Tintinalli’s Emergency Medicine: Examination & Board Review, edited by Susan B. Promes, McGraw-Hill, 2013", "language": "en", "count": 766, "date": "2026-11-11", "license": "Copyright © 2013 The McGraw-Hill Companies, Inc. All rights reserved.", "desc": "A local MedLog book pack containing 766 emergency medicine review questions with answers, explanations, and 87 original figures across 23 chapters covering topics such as resuscitation, trauma, toxicology, and pediatrics.", "file": "MedLog_Tintinalli_Board_Review_Import.zip", "bytes": 3278082, "sha256": "6b216841ab8c43e326a59b0091b919722d99dee83f1420de51022955d78d7d65" }
 }
-
