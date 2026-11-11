@@ -264,5 +264,13 @@
    "بنك الأسئلة: زر سحابة يعرض بنوك الأسئلة المشتركة على الإنترنت؛ اضغط تنزيل لإضافة بنك، أو تحديث عندما تُنشر نسخة أحدث (بنفس طريقة تنزيل كتب المكتبة)",
    "بنوك الأسئلة على الإنترنت تُدار من مجلد GitHub باسم library/qbanks: ملف catalog.json مع ملفات البنوك، ومعه شرح خطوات الرفع وأمر يجهّز سطر الفهرس بالذكاء الاصطناعي خارج التطبيق"
   ]
+ },
+ "5.9.1": {
+  "en": [
+   "Question bank: the page before a session is redesigned: two big cards for Learn and Exam, one row for the topics (opens a searchable list with the number of questions in each), tiles for All / Not yet answered / Wrong last time / Flagged with their counts, how many, the exam timer, and Start fixed at the bottom"
+  ],
+  "ar": [
+   "بنك الأسئلة: صفحة ما قبل الجلسة أُعيد تصميمها: بطاقتان كبيرتان للتعلّم والامتحان، وسطر واحد للمواضيع (يفتح قائمة فيها بحث وعدد الأسئلة لكل موضوع)، وبلاطات للكل / لم يُجب عنها / أخطأت فيها / المعلّمة مع أعدادها، ثم العدد ومؤقت الامتحان، وزر ابدأ ثابت بالأسفل"
+  ]
  }
 }
