@@ -115,6 +115,17 @@ jobs:
           fi
           cat "$f"
 
+      - name: Skip Android lint vital (the lint tool crashes on the runner with NoSuchMethodError; it does not check our Dart code)
+        run: |
+          mkdir -p ~/.gradle/init.d
+          cat > ~/.gradle/init.d/nolint.gradle <<'EOF'
+          allprojects {
+            tasks.configureEach { t ->
+              if (t.name.toLowerCase().contains('lintvital') || t.name == 'lintAnalyzeRelease' || t.name == 'lintReportRelease') t.enabled = false
+            }
+          }
+          EOF
+
       - name: Build release APK
         working-directory: ${{ env.APP_DIR }}
         run: |
