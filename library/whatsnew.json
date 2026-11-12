@@ -286,5 +286,19 @@
    "في أعلى صفحة كل جهاز بطاقة من هذه الحالة تعرض ما تقوله الحالة عنه: العلامات الحيوية المهمة، والشكوى، وإجابات التاريخ والفحوصات التي تذكره. وبطاقة كيف يُقرأ في الحالة تعرض الفقرة التي تدخل في الـPDF",
    "الحالات ذات بطاقات الفحص القديمة (CVS وغيرها) تُحوَّل مرة واحدة دون فقدان ما كُتب"
   ]
+ },
+ "5.10.1": {
+  "en": [
+   "27 new complaints in Choose complaint: the anorectal ones (anal pain, constipation, anal fissure, haemorrhoids, PR bleeding, perianal abscess/fistula, pruritus ani, faecal incontinence, rectal prolapse) and emergency ones (head injury, major trauma, fall, burns, poisoning, anaphylaxis, epistaxis, foreign body, urinary retention, renal colic, acute scrotum, red eye, hypoglycaemia/DKA, vaginal bleeding in pregnancy, limb ischaemia, laceration/bites, dental emergency, acute asthma/COPD)",
+   "Answers no longer break a word in two (\"Respirator-y rate\"): an answer with a long word takes a full line",
+   "Image details and imaging readings ask for a View, plane or window only where it exists (X-ray, CT, MRI, ultrasound); an ECG, lab report or skin photo has none",
+   "Clinical sense: pregnancy and period questions are not asked of a man, testis and prostate questions not of a woman; Acute scrotum is not offered for a woman nor Vaginal bleeding in pregnancy for a man; the obstetric examination is not offered for a man or a child"
+  ],
+  "ar": [
+   "27 شكوى جديدة في اختر الشكوى: شكاوى الشرج والمستقيم (ألم الشرج، الإمساك، الشق الشرجي، البواسير، النزف الشرجي، خراج وناسور حول الشرج، حكة الشرج، سلس البراز، هبوط المستقيم) وشكاوى الطوارئ (إصابة الرأس، الرضوض الكبرى، السقوط، الحروق، التسمم، التحسس المفرط، الرعاف، الجسم الغريب، احتباس البول، مغص الكلية، الصفن الحاد، احمرار العين، هبوط السكر/DKA، نزف مهبلي في الحمل، نقص التروية الحاد للطرف، الجروح والعضات، طوارئ الأسنان، نوبة الربو/COPD)",
+   "الإجابات لم تعد تقطع الكلمة نصفين (\"Respirator-y rate\"): الإجابة التي فيها كلمة طويلة تأخذ سطراً كاملاً",
+   "تفاصيل الصورة وقراءات التصوير تسأل عن الوضعية أو المستوى أو النافذة فقط حيث توجد (أشعة سينية، CT، رنين، سونار)؛ تخطيط القلب وتقرير المختبر وصورة الجلد لا وضعية لها",
+   "المنطق الطبي: أسئلة الحمل والدورة لا تُسأل للرجل، وأسئلة الخصية والبروستات لا تُسأل للمرأة؛ والصفن الحاد لا يُعرض للمرأة ولا النزف المهبلي في الحمل للرجل؛ والفحص التوليدي لا يُعرض للرجل ولا للطفل"
+  ]
  }
 }
