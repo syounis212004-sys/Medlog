@@ -300,5 +300,17 @@
    "تفاصيل الصورة وقراءات التصوير تسأل عن الوضعية أو المستوى أو النافذة فقط حيث توجد (أشعة سينية، CT، رنين، سونار)؛ تخطيط القلب وتقرير المختبر وصورة الجلد لا وضعية لها",
    "المنطق الطبي: أسئلة الحمل والدورة لا تُسأل للرجل، وأسئلة الخصية والبروستات لا تُسأل للمرأة؛ والصفن الحاد لا يُعرض للمرأة ولا النزف المهبلي في الحمل للرجل؛ والفحص التوليدي لا يُعرض للرجل ولا للطفل"
   ]
+ },
+ "5.10.2": {
+  "en": [
+   "New examination system: Anorectal and perianal (immediate safety check, perianal inspection with the clock position of a finding, external palpation, digital rectal examination, adjacent pelvic structures, anoscopy/proctoscopy), placed first for General Surgery and after the abdomen for Gastroenterology",
+   "Patient safety in documentation: All normal never marks a step that is done only when indicated or possible (rectal examination, speculum, bimanual, intrapartum examination, anoscopy), so a procedure that was not performed is never written as normal; such steps say Only if examined",
+   "The app can now load further examination files (exam_systems_02.json and later) without changes to the code"
+  ],
+  "ar": [
+   "جهاز فحص جديد: الشرج وحوله (تقييم السلامة الفوري، معاينة حول الشرج مع موضع النتيجة على ساعة الوجه، الجس الخارجي، الفحص الشرجي الإصبعي، التراكيب الحوضية المجاورة، منظار الشرج/المستقيم)، ويظهر أولاً في الجراحة العامة وبعد البطن في الجهاز الهضمي",
+   "سلامة المريض في التوثيق: زر الكل طبيعي لا يعلّم أبداً الخطوات التي تُفحص فقط عند الاستطباب أو الإمكان (الفحص الشرجي، المنظار المهبلي، الفحص باليدين، الفحص أثناء المخاض، منظار الشرج)، فلا يُكتب إجراء لم يُجرَ على أنه طبيعي؛ وهذه الخطوات مكتوب عليها: فقط إذا فُحص",
+   "التطبيق صار يقرأ ملفات فحص إضافية (exam_systems_02.json وما بعده) بدون تعديل في الكود"
+  ]
  }
 }
