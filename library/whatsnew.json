@@ -320,5 +320,13 @@
    "Added safety options: Capillary refill normal, suspected tibiofemoral dislocation, tense compartments and suspected acute compartment syndrome, open-fracture pathway, suspected acute aortic syndrome, suspected tension pneumothorax, ectopic pregnancy and adnexal torsion, suspected ruptured AAA, Fournier gangrene warning signs, ketone and osmolality tests, upper GI endoscopy, group and save",
    "Hypertensive urgency or emergency was split into Hypertensive emergency and Severe hypertension without acute target-organ injury; RTA now reads Road traffic crash. Content comes from an external AI audit and is a draft not yet clinically reviewed"
   ]
+ },
+ "5.10.4": {
+  "en": [
+   "Safer bedside cards after a clinical audit: unstable tachyarrhythmia (polymorphic VT needs an unsynchronized shock), lumbar puncture and CT wording, stroke call on clinical suspicion, status epilepticus first action at 5 minutes, suspected knee dislocation and compartment syndrome, open globe exceptions for eye irrigation and tonometry, digital vaginal examination deferred when placenta previa is possible, infant fever threshold (under 3 months, 38 C), neonatal jaundice rules, severe hypertension written as systolic 160 OR diastolic 110",
+   "Curriculum red flags rewritten so they do not delay action (septic shock, anuria, postpartum hemorrhage, torsion, Fournier gangrene, septic arthritis, hyperkalemia, STEMI and LBBB, tension pneumothorax) and combined topics split into separate objectives",
+   "Arabic glossary: clearer terms for melena, hematochezia, nocturia, vasopressors, thrombolytics, D-dimer, bronchus, duodenum; Hypertension crisis is now Hypertensive crisis",
+   "AI quality check answers are graded on more precise key phrases (route of adrenaline, potassium before insulin, serum bilirubin, plateau pressure, and others). Content comes from an external AI audit and is a draft not yet clinically reviewed"
+  ]
  }
 }
