@@ -344,5 +344,11 @@
    "Complaint templates (chest pain, dyspnea, cough, fever, headache): a No abnormality detected option in the examination lists so a normal examination can be recorded; added dangerous diagnoses to the assessment lists (pericarditis/myocarditis, cardiac tamponade, esophageal rupture, upper airway obstruction, anaphylaxis, metabolic acidosis, pertussis, infective endocarditis, septic arthritis, necrotizing infection, febrile neutropenia, cerebral venous sinus thrombosis, cervical artery dissection, hypertensive emergency or preeclampsia, carbon monoxide, intracranial hypertension)",
    "Added red flags and findings: tearing chest pain (the pain character can now have several choices), stridor, silent chest, unable to speak full sentences, persistent hoarseness, suspected neutropenic sepsis, new heart murmur, pulse or blood pressure asymmetry, pericardial rub, papilledema, pregnancy or postpartum in headache. Cough can no longer be both dry and productive; unilateral and bilateral headache exclude each other; None reported is exclusive in Emergency. Content comes from an external AI audit and is a draft not yet clinically reviewed"
   ]
+ },
+ "5.10.8": {
+  "en": [
+   "Bedside cards after a second audit: compartment syndrome (keep the limb at heart level, release constrictive dressings, pain out of proportion and pain on passive stretch as separate red flags), pre-excited AF drug list, orthostatic blood pressure thresholds, FUO definition, thunderclap headache CT timing, stroke blood pressure limits, meningitis CT-before-LP indications, infant fever thresholds, post-obstructive diuresis, chemical eye injury, DRESS, IM adrenaline dose, cauda equina and abdominal examination split into two items, pregnancy bleeding differential by trimester",
+   "Arabic glossary: corrected terms for myocardial infarction, atherosclerosis, pneumothorax, pleural effusion, ARDS, cirrhosis, IBD, PCOS, CKD, nephrotic and nephritic syndrome, septic shock, sprain, alopecia. Drug-dose rows of the audit (oxygen targets, insulin, hypertonic saline, magnesium and others) were NOT applied and need physician approval. Content comes from an external AI audit and is a draft not yet clinically reviewed"
+  ]
  }
 }
