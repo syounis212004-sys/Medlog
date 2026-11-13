@@ -333,5 +333,10 @@
   "en": [
    "Emergency Medicine: new presentation category Anorectal / perianal (anal pain, perianal abscess, bleeding, prolapse, impaction, foreign body) with its own problem, symptom, red flag, examination, investigation, assessment and management lists. This is a draft written by the assistant and has not been clinically reviewed"
   ]
+ },
+ "5.10.6": {
+  "en": [
+   "Clinical calculators wording after an audit: HEART troponin bands now read above 1x up to 3x and above 3x the upper limit of normal; HAS-BLED alcohol (8 or more units/week), renal and bleeding definitions; Glasgow-Blatchford urea with BUN mg/dL equivalents; Apgar grimace (cough, sneeze, vigorous cry or active withdrawal); SOFA vasopressor band. The points and totals are unchanged. Content comes from an external AI audit and is a draft not yet clinically reviewed"
+  ]
  }
 }
