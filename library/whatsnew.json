@@ -338,5 +338,11 @@
   "en": [
    "Clinical calculators wording after an audit: HEART troponin bands now read above 1x up to 3x and above 3x the upper limit of normal; HAS-BLED alcohol (8 or more units/week), renal and bleeding definitions; Glasgow-Blatchford urea with BUN mg/dL equivalents; Apgar grimace (cough, sneeze, vigorous cry or active withdrawal); SOFA vasopressor band. The points and totals are unchanged. Content comes from an external AI audit and is a draft not yet clinically reviewed"
   ]
+ },
+ "5.10.7": {
+  "en": [
+   "Complaint templates (chest pain, dyspnea, cough, fever, headache): a No abnormality detected option in the examination lists so a normal examination can be recorded; added dangerous diagnoses to the assessment lists (pericarditis/myocarditis, cardiac tamponade, esophageal rupture, upper airway obstruction, anaphylaxis, metabolic acidosis, pertussis, infective endocarditis, septic arthritis, necrotizing infection, febrile neutropenia, cerebral venous sinus thrombosis, cervical artery dissection, hypertensive emergency or preeclampsia, carbon monoxide, intracranial hypertension)",
+   "Added red flags and findings: tearing chest pain (the pain character can now have several choices), stridor, silent chest, unable to speak full sentences, persistent hoarseness, suspected neutropenic sepsis, new heart murmur, pulse or blood pressure asymmetry, pericardial rub, papilledema, pregnancy or postpartum in headache. Cough can no longer be both dry and productive; unilateral and bilateral headache exclude each other; None reported is exclusive in Emergency. Content comes from an external AI audit and is a draft not yet clinically reviewed"
+  ]
  }
 }
