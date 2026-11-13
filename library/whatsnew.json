@@ -350,5 +350,10 @@
    "Bedside cards after a second audit: compartment syndrome (keep the limb at heart level, release constrictive dressings, pain out of proportion and pain on passive stretch as separate red flags), pre-excited AF drug list, orthostatic blood pressure thresholds, FUO definition, thunderclap headache CT timing, stroke blood pressure limits, meningitis CT-before-LP indications, infant fever thresholds, post-obstructive diuresis, chemical eye injury, DRESS, IM adrenaline dose, cauda equina and abdominal examination split into two items, pregnancy bleeding differential by trimester",
    "Arabic glossary: corrected terms for myocardial infarction, atherosclerosis, pneumothorax, pleural effusion, ARDS, cirrhosis, IBD, PCOS, CKD, nephrotic and nephritic syndrome, septic shock, sprain, alopecia. Drug-dose rows of the audit (oxygen targets, insulin, hypertonic saline, magnesium and others) were NOT applied and need physician approval. Content comes from an external AI audit and is a draft not yet clinically reviewed"
   ]
+ },
+ "5.10.9": {
+  "en": [
+   "Bedside cards now state doses and targets instead of only saying per local protocol: oxygen targets, aspirin, needle decompression site, hypertensive emergency lowering, transfusion threshold and variceal bleeding, N-acetylcysteine, hypertonic saline and sodium correction limits, hyperkalemia calcium, insulin-glucose and salbutamol, DKA potassium and fixed-rate insulin and dextrose, hypoglycemia treatment, sepsis fluids and norepinephrine, status epilepticus drugs, thiamine and naloxone, pediatric rehydration, preeclampsia blood pressure and magnesium. These doses were reviewed against standard guidelines by the assistant, come from an external AI audit and are a draft not yet clinically reviewed by a physician: check them against your hospital protocol before relying on them"
+  ]
  }
 }
