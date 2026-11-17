@@ -655,7 +655,9 @@ def cmd_record(p):
             snap = A.get("pending", {}).pop(call_key(p, cmd), None)
             if snap is not None:
                 after = changed_map(rules)
-                delta = [v for v in set(after) | set(snap) if after.get(v) != snap.get(v)]
+                # Only files still different from HEAD can be "changed by this command". A file that vanished from
+                # `git status` was committed or reverted (git commit / checkout), which is not an edit.
+                delta = [v for v in after if after.get(v) != snap.get(v)]
                 for v in delta:
                     note_edit(st, A, rules, v, via="bash")
                 msg = bash_debt(st, A, rules, delta)

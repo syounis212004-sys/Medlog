@@ -26,7 +26,7 @@ Understand-Anything and `understand-diff` are never required. Their definitions 
 4. **Changed files come from git.** `git status` is compared with a session-start baseline, so old dirty files do not trigger demands and sub-agent or Bash edits are seen.
 5. **Old skill state covering new changes.** Review and verification store a fingerprint of the changed files at invocation; any later change makes them stale. Debug/TDD skills are required again for each new task.
 6. **Sub-agents.** State is per actor (`agent_id` or `main`). A sub-agent must invoke skills itself; `SubagentStart` tells it so; `SubagentStop` runs the same finish check.
-7. **Loops and heavy hooks.** Stop blocks at most once (`stop_hook_active`). A rule that denies 3 times in a row with no new skill call lets the action through and logs it. Only path-classified edits are checked; reads, greps and normal commands pass instantly. A hook crash is logged and never blocks. Plain words like "fix" do not trigger debugging.
+7. **Loops and heavy hooks.** Stop blocks at most once (`stop_hook_active`). A rule that denies 3 times in a row with no new skill call lets the action through and logs it. Only path-classified edits are checked; reads, greps and normal commands pass instantly. A hook crash is logged and never blocks. A `git commit`/revert is not an edit: files that disappear from `git status` are ignored by the Bash snapshot check. Plain words like "fix" do not trigger debugging.
 
 ## Limits (honest)
 - A log entry proves a skill was **invoked**, not that its guidance was applied well. TDD order is checked, not a real failing test. Quality is for ponytail-review, CI and humans.
@@ -39,5 +39,5 @@ Understand-Anything and `understand-diff` are never required. Their definitions 
 `ENFORCE-WAIVE: <ui|motion|debug|tdd|review|verify|audit|medical-logic|config|*> <reason>` and `ENABLE-UNDERSTAND: <reason>`. Hooks read the user's prompt, so Claude cannot create one. Waivers are logged in `state/log/waivers.jsonl` and last for the session.
 
 ## Test and report
-`python3 .claude/enforce/test_enforce.py` (24 light tests, simulated payloads in a temp git repo; never touches app code).
+`python3 .claude/enforce/test_enforce.py` (26 light tests, simulated payloads in a temp git repo; never touches app code).
 `python3 .claude/enforce/enforce.py report` summarizes the logs. State and logs are in `.claude/enforce/state/` (git-ignored).

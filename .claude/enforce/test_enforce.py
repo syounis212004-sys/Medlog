@@ -222,6 +222,34 @@ class TestBashAndPython(Base):
         self.assertIn("ui-ux-pro-max", err)
 
 
+class TestCommitIsNotAnEdit(Base):
+    def test_committing_changed_files_does_not_look_like_a_bash_edit(self):
+        # pre-existing dirty files (baseline) are committed by a Bash command: the status set shrinks, which is not an edit
+        prot = os.path.join(self.d, ".claude", "enforce", "notes.txt")  # a protected file (rules.json must stay valid)
+        wr(prot, "a\n")
+        sh(self.d, "git", "add", "-A")
+        sh(self.d, "git", "-c", "user.email=t@t", "-c", "user.name=t", "commit", "-qm", "notes")
+        wr(os.path.join(self.d, "lib", "screens_home.dart"), "// dirty ui\n", "a")
+        wr(prot, "dirty\n", "a")
+        self.fresh()
+        cmd = "git add -A && git -c user.email=t@t -c user.name=t commit -qm wip && python3 -c \"print(1)\""
+        uid = self.tid()
+        g = self.run_hook("gate", {"tool_name": "Bash", "tool_input": {"command": cmd}, "tool_use_id": uid})
+        self.assertEqual(g[0], 0)
+        sh(self.d, "git", "add", "-A")
+        sh(self.d, "git", "-c", "user.email=t@t", "-c", "user.name=t", "commit", "-qm", "wip")
+        code, _, err = self.run_hook("record", {"tool_name": "Bash", "tool_input": {"command": cmd}, "tool_use_id": uid, "tool_response": {"stdout": "", "stderr": ""}})
+        self.assertEqual((code, err), (0, ""))
+
+    def test_a_real_bash_edit_after_a_commit_is_still_caught(self):
+        uid = self.tid()
+        cmd = "python3 -c \"import os;open(os.path.join('li'+'b','screens_home.dart'),'a').write('x')\""
+        self.run_hook("gate", {"tool_name": "Bash", "tool_input": {"command": cmd}, "tool_use_id": uid})
+        wr(os.path.join(self.d, "lib", "screens_home.dart"), "x\n", "a")
+        code, _, err = self.run_hook("record", {"tool_name": "Bash", "tool_input": {"command": cmd}, "tool_use_id": uid, "tool_response": {"stdout": "", "stderr": ""}})
+        self.assertEqual(code, 2)
+
+
 class TestReviewAndStop(Base):
     def many_changes(self, n=7):
         for i in range(n):
