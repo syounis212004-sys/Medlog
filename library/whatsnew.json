@@ -355,5 +355,11 @@
   "en": [
    "Bedside cards now state doses and targets instead of only saying per local protocol: oxygen targets, aspirin, needle decompression site, hypertensive emergency lowering, transfusion threshold and variceal bleeding, N-acetylcysteine, hypertonic saline and sodium correction limits, hyperkalemia calcium, insulin-glucose and salbutamol, DKA potassium and fixed-rate insulin and dextrose, hypoglycemia treatment, sepsis fluids and norepinephrine, status epilepticus drugs, thiamine and naloxone, pediatric rehydration, preeclampsia blood pressure and magnesium. These doses were reviewed against standard guidelines by the assistant, come from an external AI audit and are a draft not yet clinically reviewed by a physician: check them against your hospital protocol before relying on them"
   ]
+ },
+ "5.10.10": {
+  "en": [
+   "Fixed the case PDF export that failed with \"Widget won't fit into the page as its height ... exceed a page height\" when a case had a long section (for example a long history, examination text, reasoning, a long list of learning points, or a long investigation result). Any block longer than one page is now split over pages; short blocks still stay together with their heading, and the text is printed in full",
+   "A table with a very long cell is printed as stacked lines (red rows stay red) instead of failing. No medical content or logic was changed"
+  ]
  }
 }

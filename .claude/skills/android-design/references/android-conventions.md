@@ -1,0 +1,7 @@
+# Android conventions for specific screens
+
+Platform behavior for settings, onboarding and sign-in, and notifications, from Android's design guides (developer.android.com/design/ui). The general conventions are in SKILL.md, Android conventions.
+
+- **Settings:** only infrequent preferences; frequent ones sit next to their feature. App version, licenses, and account management get their own destinations, not settings rows. The overview shows each setting's current value; 15 or more settings means subscreens whose titles match the row that opened them. Labels lead with the important word and avoid generic verbs (Set, Change, Manage, Use). A switch for on/off, never a lone radio button. Place "Settings" in secondary navigation, after everything except "Help & feedback."
+- **Onboarding and sign-in:** show value before asking for permissions or an account; ask for a permission at the moment it's needed, after explaining why; every intro step is skippable. Passkeys first ("Create a passkey," "Sign in"), with recovery always visible.
+- **Notifications:** only timely value (never promotions, "we miss you," or rating requests). Title under 30 characters, text under 40, up to three actions, a large icon only when it adds content (circular for a person, square otherwise), never for branding. Pick channel importance honestly (HIGH only for time-critical messages, calls, alarms), and a tap must open the screen that notification is about.
