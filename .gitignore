@@ -1,0 +1,4 @@
+# Claude Code enforcement state
+.claude/enforce/state/
+__pycache__/
+*.pyc

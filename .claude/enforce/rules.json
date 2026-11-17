@@ -1,0 +1,34 @@
+{
+  "version": 2,
+  "comment": "MedLog skill enforcement rules. Paths are 'virtual': a leading 'app/' is stripped, so the same rules match lib/... in the repo, app/lib/... and files in the extra_roots source checkout.",
+  "extra_roots": ["../Medlog-dev/app"],
+  "protected": [".claude/enforce/*", ".claude/settings.json", ".claude/settings.local.json"],
+  "exempt": ["*.md", "docs/*", ".claude/*", ".github/*", "library/*", "store/*", "signing/*", "*.png", "*.jpg", "build/*", "test_output/*", "*.log"],
+  "package_files": ["medlog.zip"],
+  "classes": {
+    "ui": ["lib/screens*.dart", "lib/widgets.dart", "lib/*_widgets.dart", "lib/ui.dart", "lib/ui_kit.dart", "lib/case_ui.dart", "lib/theme.dart", "lib/sem.dart", "lib/background_card.dart", "lib/home_hero.dart", "lib/rotation_bar.dart", "lib/focus_pill.dart", "lib/quick_add.dart", "lib/motion.dart", "lib/anim_icons.dart", "lib/app_icons.dart", "lib/ph.dart", "lib/main.dart", "lib/study_screens.dart", "lib/recall_screen.dart", "lib/ai/ai_chat.dart", "lib/ai/ai_fab.dart", "lib/ai/ai_widgets.dart", "lib/ai/ai_doc_widgets.dart", "lib/ai/ai_render.dart"],
+    "medical": ["assets/data/*", "lib/choices_engine.dart", "lib/exam_engine.dart", "lib/dose_calc.dart", "lib/dose_context.dart", "lib/dosing.dart", "lib/score_engine.dart", "lib/case_scores.dart", "lib/calculators.dart", "lib/formulary.dart", "lib/patient_kind.dart", "lib/clinical_terms.dart", "lib/med_terms*.dart", "lib/drug_compare.dart", "lib/case_templates.dart", "lib/templates_data.dart", "lib/core_topics.dart", "lib/ref_data.dart"],
+    "code": ["lib/*", "pubspec.yaml", "tool/*", "assets/data/*"],
+    "test": ["test/*"]
+  },
+  "ui_skills": ["ui-ux-pro-max", "android-design"],
+  "motion": {
+    "skill": "medlog-motion-guidance",
+    "pattern": "AnimationController|AnimatedContainer|AnimatedSwitcher|AnimatedOpacity|AnimatedSize|AnimatedPositioned|AnimatedAlign|AnimatedCrossFade|TweenAnimationBuilder|FadeTransition|SlideTransition|ScaleTransition|PageRouteBuilder|PageTransitionsTheme|FadeSlideIn|PressScale|AnimatedBar|AnimatedRing|Curves\\."
+  },
+  "tasks": {
+    "debug_strong": "Exception|StackTrace|stack trace|RenderFlex|overflowed|NoSuchMethod|Null check|crash|\\bANR\\b|regression|failing test|test failed|لا يعمل|ما بيشتغل|ما بشتغل|تعطل|يتجمد|بتعلق|يعلق|انهار|كراش",
+    "debug_weak": "\\bfix\\b|\\bbug\\b|إصلاح|اصلح|أصلح|خطأ|مشكلة|عطل",
+    "tdd": "\\bTDD\\b|test[- ]driven|اكتب\\w* اختبار|أضف\\w* اختبار|اضف\\w* اختبار|write (a |some )?tests?|add (a |some )?tests?|failing test first",
+    "design": "تصميم|واجهة|\\bUI\\b|\\bUX\\b|layout|\\btheme\\b|ثيم|animation|حركة|spacing|redesign|ترتيب الشاشة|شكل الشاشة",
+    "logic_words": "منطق|دواء|أدوية|جرعة|بيانات|محتوى|\\bjson\\b|choices|\\bexam|score|حاسبة|فحص|تدقيق",
+    "audit": "تدقيق|\\baudit\\b|security review|مراجعة أمنية"
+  },
+  "audit_paths": ["docs/audits/*", "*audit*.md", "*AUDIT*.md"],
+  "large_change": {"lines": 150, "files": 6, "package_weight": 300},
+  "verify_commands": "(flutter|dart)\\s+(analyze|test)|pytest|test_enforce\\.py|git diff --check|json\\.load|\\bjq\\b",
+  "diffview_commands": "git\\s+(diff|show)|git\\s+status",
+  "bash_mutation_hint": "(^|[^<>=!\\-])>>?\\s*[^&\\s]|\\btee\\b|sed\\s+-[a-zA-Z]*i|perl\\s+-[a-zA-Z]*i|\\b(cp|mv|install|rsync|rm|mkdir|touch|truncate|dd|patch|unzip|zip)\\b|git\\s+(apply|checkout|restore|reset|stash|clean|merge|rebase|cherry-pick|am)\\b|python3?\\b|node\\b|ruby\\b|perl\\b|dart\\s+(format|fix|run)|flutter\\s+(pub|create|gen)|write_text|open\\(",
+  "disabled_skills": ["understand-anything", "understand", "understand-diff", "understand-chat", "understand-dashboard", "understand-domain", "understand-explain", "understand-onboard", "understand-knowledge", "understand-figma"],
+  "breaker": 3
+}
